@@ -498,7 +498,7 @@ export function executeReleaseDocs(
                 () => docGitProject.commit(commitMsg),
                 () => docGitProject.createBranch("gh-pages"),
                 () => docGitProject.setRemote(rrr.cloneUrl(credentials)),
-                () => docGitProject.push({ force: true }),
+                () => docGitProject.push(),
             ];
             const els = gitOps.map(op => gitExecuteLogger(docGitProject, op));
             const gitRes = await executeLoggers(els, rwlc.progressLog);
