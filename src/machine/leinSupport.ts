@@ -35,7 +35,9 @@ import {
     asSpawnCommand,
     spawnAndWatch,
 } from "@atomist/sdm/util/misc/spawned";
+import { SpawnOptions } from "child_process";
 import * as df from "dateformat";
+import * as _ from "lodash/";
 import * as path from "path";
 
 export const LeinSupport: ExtensionPack = {
@@ -75,13 +77,15 @@ export const LeinSupport: ExtensionPack = {
     },
 };
 
+const key = "(12 15 6 4 13 3 9 10 0 8 8 14 7 16 0 3)";
+
 function leinBuilder(projectLoader: ProjectLoader): Builder {
     return new SpawnBuilder(
         {
             projectLoader,
             options: {
                 name: "atomist.sh",
-                commands: [asSpawnCommand("./atomist.sh", {})],
+                commands: [asSpawnCommand("./atomist.sh", {env: {}})],
                 errorFinder: (code, signal, l) => {
                     return code !== 0;
                 },
@@ -92,13 +96,19 @@ function leinBuilder(projectLoader: ProjectLoader): Builder {
                         message: "lein errors",
                     };
                 },
+                enrich: async (options: SpawnOptions, p: GitProject): Promise<SpawnOptions> => {
+                    const encryptedEnv = {env: {ARTIFACTORY_USER: clj.vault(key, `${p.baseDir}/vault.txt`)["artifactory-user"],
+                                                ARTIFACTORY_PWD: clj.vault(key, `${p.baseDir}/vault.txt`)["artifactory-pwd"]}};
+                    const enriched = _.merge(options, encryptedEnv) as SpawnOptions;
+                    return enriched;
+                },
                 projectToAppInfo: async (p: GitProject) => {
                     const projectClj = await p.findFile("project.clj");
                     logger.info(`run projectToAppInfo in ${p.baseDir}/${projectClj.path}`);
                     return {
                         name: clj.getName(`${p.baseDir}/${projectClj.path}`),
                         version: clj.getVersion(`${p.baseDir}/${projectClj.path}`),
-                        id: new GitHubRepoRef("owner", "repo"),
+                        id: new GitHubRepoRef( "owner", "repo"),
                     };
                 },
                 options: {

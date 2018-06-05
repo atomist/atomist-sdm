@@ -222,7 +222,7 @@ export const LibraryPublished = new Goal({
 });
 
 export const LeinBuildGoals = new Goals(
-    "Lein Docker Build",
+    "Lein Build",
     ...CheckGoals.goals,
     BuildGoal,
     TagGoal,
