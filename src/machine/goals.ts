@@ -44,6 +44,17 @@ export const PublishGoal = new GoalWithPrecondition({
     isolated: true,
 }, BuildGoal);
 
+export const PublishBranchGoal = new GoalWithPrecondition({
+    uniqueName: "PublishBranch",
+    environment: IndependentOfEnvironment,
+    orderedName: "2-publish-branch",
+    displayName: "publish",
+    workingDescription: "Publishing...",
+    completedDescription: "Published",
+    failedDescription: "Published failed",
+    isolated: true,
+}, BuildGoal);
+
 export const StagingDeploymentGoal = new GoalWithPrecondition({
     uniqueName: "DeployToTest",
     environment: StagingEnvironment,
@@ -130,7 +141,7 @@ export const BuildGoals = new Goals(
     "Build",
     ...CheckGoals.goals,
     BuildGoal,
-    PublishGoal,
+    PublishBranchGoal,
     TagGoal,
 );
 

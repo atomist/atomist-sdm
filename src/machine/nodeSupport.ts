@@ -58,7 +58,7 @@ import { tslintFix } from "@atomist/sdm/pack/node/tslint";
 import { tagRepo } from "@atomist/sdm/util/github/tagRepo";
 import { AutomationClientTagger } from "../support/tagger";
 import {
-    ProductionDeploymentGoal,
+    ProductionDeploymentGoal, PublishBranchGoal,
     PublishGoal,
     ReleaseDockerGoal,
     ReleaseDocsGoal,
@@ -110,6 +110,14 @@ export const NodeSupport: ExtensionPack = {
                     NpmPreparations,
                     {
                         ...sdm.configuration.sdm.npm as NpmOptions,
+                    }), { pushTest: IsNode })
+            .addGoalImplementation("nodePublishBranch", PublishBranchGoal,
+                executePublish(sdm.configuration.sdm.projectLoader,
+                    NodeProjectIdentifier,
+                    NpmPreparations,
+                    {
+                        ...sdm.configuration.sdm.npm as NpmOptions,
+                        tag: "branch",
                     }), { pushTest: IsNode })
             .addGoalImplementation("nodeNpmRelease", ReleaseNpmGoal,
                 executeReleaseNpm(sdm.configuration.sdm.projectLoader,
