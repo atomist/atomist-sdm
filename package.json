@@ -18,11 +18,11 @@
     "url": "https://github.com/atomist/atomist-sdm/issues"
   },
   "dependencies": {
-    "@atomist/automation-client": "0.17.2-20180605032022",
+    "@atomist/automation-client": "^0.17.2-20180605032022",
     "@atomist/automation-client-ext-logzio": "https://r.atomist.com/HySRtF2Qg7",
     "@atomist/automation-client-ext-raven": "https://r.atomist.com/HJEc7FnQlQ",
     "@atomist/clj-editors": "0.0.20",
-    "@atomist/sdm": "https://r.atomist.com/Sy7xhirGOlX",
+    "@atomist/sdm": "^0.2.2",
     "@atomist/slack-messages": "^0.12.1",
     "@jessitron/git-branch-to-npm-tag": "^2.0.0",
     "fs-extra": "^6.0.0",

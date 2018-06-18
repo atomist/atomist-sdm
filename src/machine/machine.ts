@@ -36,7 +36,6 @@ import { summarizeGoalsInGitHubStatus } from "@atomist/sdm/internal/delivery/goa
 import { createSoftwareDeliveryMachine } from "@atomist/sdm/machine/machineFactory";
 import { HasTravisFile } from "@atomist/sdm/mapping/pushtest/ci/ciPushTests";
 import { HasDockerfile } from "@atomist/sdm/mapping/pushtest/docker/dockerPushTests";
-import { IsLein } from "@atomist/sdm/mapping/pushtest/jvm/jvmPushTests";
 import {
     IsAtomistAutomationClient,
     IsNode,
@@ -59,7 +58,7 @@ import {
     SimplifiedKubernetesDeployGoals,
     StagingKubernetesDeployGoals,
 } from "./goals";
-import { addLeinSupport } from "./leinSupport";
+import { addLeinSupport, IsLein } from "./leinSupport";
 import { addNodeSupport } from "./nodeSupport";
 
 export function machine(configuration: SoftwareDeliveryMachineConfiguration): SoftwareDeliveryMachine {

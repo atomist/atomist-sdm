@@ -26,6 +26,7 @@ import {
     editorAutofixRegistration,
     ExecuteGoalResult,
     hasFile,
+    PredicatePushTest,
     ProjectLoader,
     RunWithLogContext,
     SoftwareDeliveryMachine,
@@ -41,7 +42,6 @@ import {
     ProjectVersioner,
 } from "@atomist/sdm/internal/delivery/build/local/projectVersioner";
 import { SpawnBuilder } from "@atomist/sdm/internal/delivery/build/local/SpawnBuilder";
-import { IsLein } from "@atomist/sdm/mapping/pushtest/jvm/jvmPushTests";
 import {
     DefaultDockerImageNameCreator,
     DockerOptions,
@@ -53,6 +53,8 @@ import {
 } from "@atomist/sdm/util/misc/spawned";
 import * as df from "dateformat";
 import * as path from "path";
+
+export const IsLein: PredicatePushTest = hasFile("project.clj");
 
 /**
  * Add Clojure/Lein implementations of goals to SDM.
