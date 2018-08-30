@@ -32,13 +32,16 @@ import {
     NoGoals,
     summarizeGoalsInGitHubStatus,
 } from "@atomist/sdm-core";
+import {changelogSupport} from "@atomist/sdm-pack-changelog/lib/changelog";
 import {
     IsAtomistAutomationClient,
     IsNode,
 } from "@atomist/sdm-pack-node";
+import {IsMaven} from "@atomist/sdm-pack-spring/lib/maven/pushTests";
 import { HasTravisFile } from "@atomist/sdm/api-helper/pushtest/ci/ciPushTests";
 import { isSdmEnabled } from "@atomist/sdm/api-helper/pushtest/configuration/configurationTests";
 import { gitHubTeamVote } from "@atomist/sdm/api-helper/voter/githubTeamVote";
+import {anySatisfied} from "@atomist/sdm/api/mapping/support/pushTestUtils";
 import { buildAwareCodeTransforms } from "@atomist/sdm/pack/build-aware-transform";
 import { BadgeSupport } from "../command/badge";
 import {
@@ -46,6 +49,8 @@ import {
     isTeam,
 } from "../support/identityPushTests";
 import { MaterialChangeToNodeRepo } from "../support/materialChangeToNodeRepo";
+import {addDockerSupport} from "./dockerSupport";
+import {addGithubSupport} from "./githubSupport";
 import {
     BuildGoals,
     BuildReleaseGoals,
@@ -54,9 +59,12 @@ import {
     DockerReleaseGoals,
     KubernetesDeployGoals,
     LocalGoals,
+    ReleaseChangelogGoal,
     SimplifiedKubernetesDeployGoals,
     StagingKubernetesDeployGoals,
 } from "./goals";
+import {addk8Support} from "./k8Support";
+import {addMavenSupport} from "./mavenSupport";
 import { addNodeSupport } from "./nodeSupport";
 import { addTeamPolicies } from "./teamPolicies";
 
@@ -99,15 +107,15 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             .itMeans("Staging Deploy")
             .setGoals(StagingKubernetesDeployGoals),
 
-        whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, IsDeployEnabled, IsAtomistAutomationClient)
+        whenPushSatisfies(anySatisfied(IsNode, IsMaven), HasDockerfile, ToDefaultBranch, IsDeployEnabled)
             .itMeans("Deploy")
             .setGoals(KubernetesDeployGoals),
 
-        whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch)
+        whenPushSatisfies(anySatisfied(IsNode, IsMaven), HasDockerfile, ToDefaultBranch)
             .itMeans("Docker Release Build")
             .setGoals(DockerReleaseGoals),
 
-        whenPushSatisfies(IsNode, HasDockerfile)
+        whenPushSatisfies(anySatisfied(IsNode, IsMaven), HasDockerfile)
             .itMeans("Docker Build")
             .setGoals(DockerGoals),
 
@@ -123,10 +131,15 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
     sdm.addCommand(EnableDeploy)
         .addCommand(DisableDeploy);
 
+    addGithubSupport(sdm);
+    addDockerSupport(sdm);
+    addk8Support(sdm);
+    addMavenSupport(sdm);
     addNodeSupport(sdm);
     addTeamPolicies(sdm);
 
     sdm.addExtensionPacks(
+        changelogSupport(ReleaseChangelogGoal),
         BadgeSupport,
         buildAwareCodeTransforms({ issueRouter: { raiseIssue: async () => { /* intentionally left empty */ }}}),
     );

@@ -568,11 +568,12 @@ export function executeReleaseDocs(
 }
 
 /**
- * Increment patch level in package.json version.
+ * Increment patch level in project version.
  */
 export function executeReleaseVersion(
     projectLoader: ProjectLoader,
     projectIdentifier: ProjectIdentifier,
+    incrementPatchCmd: SpawnCommand = { command: "npm", args: ["version", "--no-git-tag-version", "patch"] },
 ): ExecuteGoal {
 
     return async (gi: GoalInvocation): Promise<ExecuteGoalResult> => {
@@ -600,7 +601,7 @@ export function executeReleaseVersion(
 
             const pi = await projectIdentifier(p);
             if (pi.version !== versionRelease) {
-                const message = `current master package version (${pi.version}) seems to have already been ` +
+                const message = `current master version (${pi.version}) seems to have already been ` +
                     `incremented after ${releaseVersion} release`;
                 await loglog(log, message);
                 await log.close();
@@ -608,7 +609,7 @@ export function executeReleaseVersion(
             }
 
             const postEls: ExecuteLogger[] = [
-                spawnExecuteLogger({ cmd: { command: "npm", args: ["version", "--no-git-tag-version", "patch"] }, cwd: gp.baseDir }),
+                spawnExecuteLogger({ cmd: incrementPatchCmd, cwd: gp.baseDir }),
                 gitExecuteLogger(gp, () => gp.commit(`Version: increment after ${versionRelease} release
 
 [atomist:generated]`)),
