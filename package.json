@@ -32,6 +32,7 @@
     "@atomist/sdm-pack-docker": "^1.0.0-docker-pack.20180903214340",
     "@atomist/sdm-pack-k8": "^1.0.0-M.3",
     "@atomist/sdm-pack-node": "^1.0.0-M.3",
+    "@atomist/sdm-pack-spring": "^1.0.0-M.3",
     "@atomist/slack-messages": "^1.0.0",
     "fs-extra": "^7.0.0",
     "license-checker": "^20.2.0",
