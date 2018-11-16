@@ -204,7 +204,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
 
         const msgId = guid();
         const msg = slackQuestionMessage("Goal Approval", `Goal ${italic(gi.goal.url ? url(gi.goal.url, gi.goal.name) : gi.goal.name)} on ${
-            codeLine(gi.goal.sha.slice(0, 7))} of ${bold(`${gi.goal.repo.owner}/${gi.goal.repo.name}`)} requires your confirmation to approve`,
+            codeLine(gi.goal.sha.slice(0, 7))} of ${bold(`${gi.goal.repo.owner}/${gi.goal.repo.name}/${gi.goal.branch}`)} requires your confirmation to approve`,
             {
                 actions: [buttonForCommand(
                     { text: "Approve" },

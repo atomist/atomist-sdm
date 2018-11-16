@@ -95,7 +95,7 @@ export const ApprovalCommand: CommandHandlerRegistration<ApprovalParameters> = {
             slackSuccessMessage(
                 "Approve Goal",
                 `Successfully approved goal ${italic(goal.url ? url(goal.url, goal.name) : goal.name)} on ${
-                codeLine(goal.sha.slice(0, 7))} of ${bold(`${goal.repo.owner}/${goal.repo.name}`)}`,
+                codeLine(goal.sha.slice(0, 7))} of ${bold(`${goal.repo.owner}/${goal.repo.name}/${goal.branch}`)}`,
                 {
                     footer: `${slackFooter()} | ${goal.goalSet} | ${goal.goalSetId.slice(0, 7)} | ${channel(goal.approval.channelId)}`,
                 }),
@@ -148,7 +148,7 @@ export const CancelApprovalCommand: CommandHandlerRegistration<ApprovalParameter
             slackWarningMessage(
                 "Approve Goal",
                 `Successfully canceled approval of goal ${italic(goal.url ? url(goal.url, goal.name) : goal.name)} on ${
-                codeLine(goal.sha.slice(0, 7))} of ${bold(`${goal.repo.owner}/${goal.repo.name}`)} | ${channel(goal.approval.channelId)}`,
+                codeLine(goal.sha.slice(0, 7))} of ${bold(`${goal.repo.owner}/${goal.repo.name}/${goal.branch}`)} | ${channel(goal.approval.channelId)}`,
                 ci.context,
                 {
                     footer: `${slackFooter()} | ${goal.goalSet} | ${goal.goalSetId.slice(0, 7)}`,
