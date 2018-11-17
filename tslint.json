@@ -37,6 +37,7 @@
     "cyclomatic-complexity": {
       "severity": "warning"
     },
+    "deprecation": true,
     "eofline": true,
     "forin": true,
     "import-spacing": true,
