@@ -101,6 +101,10 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         configuration,
     },
 
+        whenPushSatisfies(isNamed("manifesto"))
+            .itMeans("sdd-manifesto org")
+            .setGoals(DoNotSetAnyGoals),
+
         whenPushSatisfies(not(IsNode))
             .itMeans("Non Node repository")
             .setGoals(DoNotSetAnyGoals),
