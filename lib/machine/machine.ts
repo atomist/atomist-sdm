@@ -70,6 +70,7 @@ import { BadgeSupport } from "../command/badge";
 import { CreateTag } from "../command/tag";
 import {
     isNamed,
+    isOrgNamed,
     isTeam,
 } from "../support/identityPushTests";
 import { MaterialChangeToNodeRepo } from "../support/materialChangeToNodeRepo";
@@ -101,7 +102,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         configuration,
     },
 
-        whenPushSatisfies(isNamed("manifesto"))
+        whenPushSatisfies(isOrgNamed("sdd-manifesto"))
             .itMeans("sdd-manifesto org")
             .setGoals(DoNotSetAnyGoals),
 

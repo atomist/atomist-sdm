@@ -32,6 +32,18 @@ export function isNamed(...names: string[]): PushTest {
     });
 }
 
+export function isOrgNamed(...names: string[]): PushTest {
+    return pushTest(`Org name is one of these '${names.join(", ")}'`, async pci => {
+        if (names.includes(pci.push.repo.owner)) {
+            logger.info("True: Org %s (in repo %s) in my list of names, which is %s", pci.push.repo.owner, pci.id.repo, names);
+            return true;
+        } else {
+            logger.info("False: Org %s (in repo %s) is not in my list of names, which is %s", pci.push.repo.owner, pci.id.repo, names);
+            return false;
+        }
+    });
+}
+
 export function isTeam(...teams: string[]): PushTest {
     return pushTest(`Atomist team is one of these '${teams.join(", ")}'`, async pci => {
         return teams.includes(pci.context.workspaceId);
