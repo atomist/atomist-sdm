@@ -62,7 +62,7 @@ export class CreateTagParameters {
 
 export const CreateTag: CommandHandlerRegistration<CreateTagParameters> = {
     name: "CreateTag",
-    intent: "create tag",
+    intent: ["ct", "create tag"],
     description: "Create tag on GitHub",
     paramsMaker: CreateTagParameters,
     listener: async ci => {
