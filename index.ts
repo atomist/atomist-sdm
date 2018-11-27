@@ -41,6 +41,10 @@ export const configuration: Configuration = {
         configureRaven,
         // configureEventLog(),
         configureSdm(machine, machineOptions),
+        async config => {
+            config.logging.file.enabled = true;
+            return config;
+        },
     ],
     sdm: {
         npm: {
