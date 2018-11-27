@@ -38,7 +38,7 @@ describe("release", () => {
             } as any as GoalInvocation;
 
             const version = releaseOrPreRelease("1.0.0", gi);
-            assert.equal(version, "1.0.0-M.1");
+            assert.strictEqual(version, "1.0.0-M.1");
 
         });
 
@@ -55,7 +55,7 @@ describe("release", () => {
             } as any as GoalInvocation;
 
             const version = releaseOrPreRelease("1.0.0", gi);
-            assert.equal(version, "1.0.0-RC.1");
+            assert.strictEqual(version, "1.0.0-RC.1");
 
         });
 
@@ -71,7 +71,7 @@ describe("release", () => {
             } as any as GoalInvocation;
 
             const version = releaseOrPreRelease("1.0.0", gi);
-            assert.equal(version, "1.0.0");
+            assert.strictEqual(version, "1.0.0");
 
         });
     });

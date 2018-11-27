@@ -21,9 +21,9 @@ import {
 import {
     allSatisfied,
     anySatisfied,
-    DoNotSetAnyGoals,
     gitHubTeamVoter,
     GoalApprovalRequestVote,
+    goals,
     Immaterial,
     IsDeployEnabled,
     not,
@@ -104,15 +104,15 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
 
         whenPushSatisfies(allSatisfied(isOrgNamed("sdd-manifesto"), isNamed("manifesto")))
             .itMeans("Manifesto repository")
-            .setGoals(DoNotSetAnyGoals),
+            .setGoals(goals("No Goals")),
 
         whenPushSatisfies(not(IsNode))
             .itMeans("Non Node repository")
-            .setGoals(DoNotSetAnyGoals),
+            .setGoals(goals("No Goals")),
 
         whenPushSatisfies(IsReleaseCommit)
             .itMeans("Release commit")
-            .setGoals(DoNotSetAnyGoals),
+            .setGoals(goals("No Goals")),
 
         whenPushSatisfies(IsNode, IsInLocalMode)
             .itMeans("Node repository in local mode")
@@ -120,7 +120,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
 
         whenPushSatisfies(not(isSdmEnabled(configuration.name)), isTeam(AtomistHQWorkspace))
             .itMeans("Disabled repository in atomisthq workspace")
-            .setGoals(DoNotSetAnyGoals),
+            .setGoals(goals("No Goals")),
 
         // Node
         whenPushSatisfies(allSatisfied(IsNode, not(IsMaven)), not(MaterialChangeToNodeRepo))
@@ -209,7 +209,8 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
 
         const msgId = guid();
         const msg = slackQuestionMessage("Goal Approval", `Goal ${italic(gi.goal.url ? url(gi.goal.url, gi.goal.name) : gi.goal.name)} on ${
-            codeLine(gi.goal.sha.slice(0, 7))} of ${bold(`${gi.goal.repo.owner}/${gi.goal.repo.name}/${gi.goal.branch}`)} requires your confirmation to approve`,
+            codeLine(gi.goal.sha.slice(0, 7))} of ${
+                bold(`${gi.goal.repo.owner}/${gi.goal.repo.name}/${gi.goal.branch}`)} requires your confirmation to approve`,
             {
                 actions: [buttonForCommand(
                     { text: "Approve" },

@@ -22,11 +22,11 @@ import {
     SoftwareDeliveryMachine,
     StagingEnvironment,
 } from "@atomist/sdm";
-import { KubernetesDeploymentOptions } from "@atomist/sdm-pack-k8";
+import { KubernetesApplicationOptions } from "@atomist/sdm-pack-k8";
 import { IsMaven } from "@atomist/sdm-pack-spring";
 
-export function kubernetesDeploymentData(sdm: SoftwareDeliveryMachine): (g: SdmGoalEvent, c: RepoContext) => Promise<KubernetesDeploymentOptions> {
-    return async (goal: SdmGoalEvent, context: RepoContext): Promise<KubernetesDeploymentOptions> => {
+export function kubernetesDeploymentData(sdm: SoftwareDeliveryMachine): (g: SdmGoalEvent, c: RepoContext) => Promise<KubernetesApplicationOptions> {
+    return async (goal: SdmGoalEvent, context: RepoContext): Promise<KubernetesApplicationOptions> => {
         return sdm.configuration.sdm.projectLoader.doWithProject({
             credentials: context.credentials,
             id: context.id,
