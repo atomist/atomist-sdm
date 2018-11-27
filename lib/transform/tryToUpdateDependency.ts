@@ -102,7 +102,7 @@ export const UpdateDependencyTransform: CodeTransform<UpdateDependencyParameters
         await pjFile.setContent(`${JSON.stringify(pj, undefined, 2)}\n`);
 
         if (!(await (p as GitProject).isClean())) {
-            await sendMessage(`\nVersions updated. Running ${codeLine("npm install")}`);
+            await sendMessage(`\nVersion updated. Running ${codeLine("npm install")}`);
             // NPM doesn't like to go back to older versions; hence we delete the lock file here to force the
             // dependencies in
             p.deleteFileSync("package-lock.json");
@@ -125,7 +125,7 @@ export const UpdateDependencyTransform: CodeTransform<UpdateDependencyParameters
                 `\n:atomist_build_failed: ${codeLine("npm install")} failed`);
         }
 
-        params.commitMessage = `Update NPM dependency to tag ${params.tag}
+        params.commitMessage = `Update ${params.package} dependency to tag ${params.tag}
 
 ${versions.join("\n")}
 
