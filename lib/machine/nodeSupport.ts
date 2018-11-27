@@ -26,9 +26,7 @@ import {
     DefaultDockerImageNameCreator,
     DockerOptions,
 } from "@atomist/sdm-pack-docker";
-import {
-    singleIssuePerCategoryManaging,
-} from "@atomist/sdm-pack-issue";
+import { singleIssuePerCategoryManaging } from "@atomist/sdm-pack-issue";
 import {
     executePublish,
     IsNode,
@@ -57,6 +55,7 @@ import { AutomationClientTagger } from "../support/tagger";
 import { RewriteImports } from "../transform/rewriteImports";
 import { TryToUpdateAtomistDependencies } from "../transform/tryToUpdateAtomistDependencies";
 import { TryToUpdateAtomistPeerDependencies } from "../transform/tryToUpdateAtomistPeerDependencies";
+import { TryToUpdateDependency } from "../transform/tryToUpdateDependency";
 import { UpdatePackageAuthor } from "../transform/updatePackageAuthor";
 import { UpdatePackageVersion } from "../transform/updatePackageVersion";
 import {
@@ -191,6 +190,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         sdm.configuration.sdm.npm as NpmOptions));
 
     sdm.addCodeTransformCommand(TryToUpdateAtomistDependencies)
+        .addCodeTransformCommand(TryToUpdateDependency)
         .addCodeTransformCommand(UpdatePackageVersion)
         .addCodeTransformCommand(TryToUpdateAtomistPeerDependencies)
         .addCodeTransformCommand(UpdatePackageAuthor)
