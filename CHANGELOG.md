@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 -   Move TSLint from build step to code inspection. [#82](https://github.com/atomist/atomist-sdm/issues/82)
 
+### Removed
+
+-   Remove autostart package script. [#84](https://github.com/atomist/atomist-sdm/issues/84)
+
 ## [0.3.4](https://github.com/atomist/atomist-sdm/compare/0.3.3...0.3.4) - 2018-11-07
 
 ## [0.3.3](https://github.com/atomist/atomist-sdm/compare/0.3.2...0.3.3) - 2018-11-07
