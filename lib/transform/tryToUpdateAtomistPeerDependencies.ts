@@ -104,7 +104,9 @@ const UpdateAtomistPeerDependenciesStarTransform: CodeTransform<UpdateAtomistPee
                 if (result.code !== 0) {
                     return {
                         edited: false,
-                    };
+                        target: p,
+                        success: false,
+                    }
                 }
             }
 
