@@ -129,7 +129,7 @@ export const UpdateDependencyTransform: CodeTransform<UpdateDependencyParameters
             if (result.code !== 0) {
                 return {
                     edited: false,
-                }
+                };
             }
         }
 

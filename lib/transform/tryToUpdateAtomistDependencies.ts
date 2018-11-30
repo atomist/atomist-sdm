@@ -119,7 +119,7 @@ export const UpdateAtomistDependenciesTransform: CodeTransform<UpdateAtomistDepe
             if (result.code !== 0) {
                 return {
                     edited: false,
-                }
+                };
             }
         }
 
