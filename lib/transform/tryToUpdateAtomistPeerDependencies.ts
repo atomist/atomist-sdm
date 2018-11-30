@@ -95,9 +95,17 @@ const UpdateAtomistPeerDependenciesStarTransform: CodeTransform<UpdateAtomistPee
                     new StringCapturingProgressLog(),
                     {},
                 );
+
                 await sendMessage(result.code === 0 ?
                     `\n:atomist_build_passed: ${codeLine("npm install")} completed successfully` :
                     `\n:atomist_build_failed: ${codeLine("npm install")} failed`);
+
+                // Exit if npm install failed
+                if (result.code !== 0) {
+                    return {
+                        edited: false,
+                    }
+                }
             }
 
             params.commitMessage = `Update @atomist NPM peer dependencies to *
