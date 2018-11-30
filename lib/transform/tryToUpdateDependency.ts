@@ -131,7 +131,7 @@ export const UpdateDependencyTransform: CodeTransform<UpdateDependencyParameters
                     edited: false,
                     target: p,
                     success: false,
-                }
+                };
             }
         }
 

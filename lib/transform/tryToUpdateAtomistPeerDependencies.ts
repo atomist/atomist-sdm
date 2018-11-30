@@ -106,7 +106,7 @@ const UpdateAtomistPeerDependenciesStarTransform: CodeTransform<UpdateAtomistPee
                         edited: false,
                         target: p,
                         success: false,
-                    }
+                    };
                 }
             }
 
