@@ -102,7 +102,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         configuration,
     },
 
-        whenPushSatisfies(allSatisfied(isOrgNamed("sdd-manifesto"), isNamed("manifesto")))
+        whenPushSatisfies(allSatisfied(isOrgNamed("sdd-manifesto"), isNamed("manifesto", "manifesto-app")))
             .itMeans("Manifesto repository")
             .setGoals(goals("No Goals")),
 
