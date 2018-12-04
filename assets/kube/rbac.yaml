@@ -10,6 +10,9 @@ metadata:
   name: sdm-role
   namespace: sdm
 rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
   - apiGroups: ["extensions", "apps"]
     resources: ["deployments"]
     verbs: ["get", "list", "watch"]
