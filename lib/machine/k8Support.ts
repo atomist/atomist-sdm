@@ -32,16 +32,23 @@ export function kubernetesDeploymentData(sdm: SoftwareDeliveryMachine): (g: SdmG
             id: context.id,
             readOnly: true,
         }, async p => {
+            const name = goal.repo.name;
+            const environment = sdm.configuration.environment.split("_")[0];
             const ns = namespaceFromGoal(goal);
             const ingress = ingressFromGoal(goal.repo.name, ns);
             const port = (await IsMaven.predicate(p)) ? 8080 : 2866;
+            let replicas = 1;
+            if (ns === "production") {
+                replicas = 3;
+            } else if (ns === "sdm" && name === "atomist-sdm") {
+                replicas = 3;
+            }
             return {
-                name: goal.repo.name,
-                environment: sdm.configuration.environment.split("_")[0],
+                name,
+                environment,
                 port,
                 ns,
-                imagePullSecret: "atomistjfrog",
-                replicas: ns === "production" ? 3 : 1,
+                replicas,
                 ...ingress,
             };
         });
