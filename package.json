@@ -22,7 +22,7 @@
     "url": "https://github.com/atomist/atomist-sdm/issues"
   },
   "dependencies": {
-    "@atomist/automation-client": "1.1.0-master.20181207124108",
+    "@atomist/automation-client": "1.1.0-promise-pool.20181207192108",
     "@atomist/automation-client-ext-dashboard": "^1.0.1",
     "@atomist/automation-client-ext-logzio": "^1.0.1",
     "@atomist/automation-client-ext-raven": "^1.0.1",
