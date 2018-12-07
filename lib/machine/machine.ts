@@ -45,7 +45,7 @@ import {
 import { buildAwareCodeTransforms } from "@atomist/sdm-pack-build";
 import { changelogSupport } from "@atomist/sdm-pack-changelog/lib/changelog";
 import { HasDockerfile } from "@atomist/sdm-pack-docker";
-import { IssueSupport } from "@atomist/sdm-pack-issue";
+import { issueSupport } from "@atomist/sdm-pack-issue";
 import {
     IsAtomistAutomationClient,
     IsNode,
@@ -98,9 +98,12 @@ const AtomistHQWorkspace = "T095SFFBK";
 
 export function machine(configuration: SoftwareDeliveryMachineConfiguration): SoftwareDeliveryMachine {
     const sdm = createSoftwareDeliveryMachine({
-        name: "Atomist Software Delivery Machine",
-        configuration,
-    },
+            name: "Atomist Software Delivery Machine",
+            configuration,
+        },
+
+        whenPushSatisfies(isOrgNamed("atomist-playground"))
+            .setGoals(goals("No Goals")),
 
         whenPushSatisfies(allSatisfied(isOrgNamed("sdd-manifesto"), isNamed("manifesto", "manifesto-app")))
             .itMeans("Manifesto repository")
@@ -193,7 +196,13 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         }),
         goalState(),
         gitHubGoalStatus(),
-        IssueSupport,
+        issueSupport({
+            labelIssuesOnDeployment: true,
+            closeCodeInspectionIssuesOnBranchDeletion: {
+                enabled: true,
+                source: "tslint",
+            },
+        }),
     );
 
     sdm.addGoalApprovalRequestVoter(gitHubTeamVoter("atomist-automation"));
@@ -209,7 +218,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
 
         const msgId = guid();
         const msg = slackQuestionMessage("Goal Approval", `Goal ${italic(gi.goal.url ? url(gi.goal.url, gi.goal.name) : gi.goal.name)} on ${
-            codeLine(gi.goal.sha.slice(0, 7))} of ${
+                codeLine(gi.goal.sha.slice(0, 7))} of ${
                 bold(`${gi.goal.repo.owner}/${gi.goal.repo.name}/${gi.goal.branch}`)} requires your confirmation to approve`,
             {
                 actions: [buttonForCommand(
@@ -221,14 +230,14 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
                         goalState: gi.goal.state,
                         msgId,
                     }), buttonForCommand(
-                        { text: "Cancel" },
-                        "CancelApproveSdmGoalCommand",
-                        {
-                            goalSetId: gi.goal.goalSetId,
-                            goalUniqueName: gi.goal.uniqueName,
-                            goalState: gi.goal.state,
-                            msgId,
-                        })],
+                    { text: "Cancel" },
+                    "CancelApproveSdmGoalCommand",
+                    {
+                        goalSetId: gi.goal.goalSetId,
+                        goalUniqueName: gi.goal.uniqueName,
+                        goalState: gi.goal.state,
+                        msgId,
+                    })],
                 footer: `${slackFooter()} | ${gi.goal.goalSetId.slice(0, 7)} | ${channel(gi.goal.approval.channelId)}`,
             });
         await gi.context.messageClient.addressUsers(msg, gi.goal.approval.userId, { id: msgId });
