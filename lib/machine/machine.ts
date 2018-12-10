@@ -67,6 +67,7 @@ import {
     CancelApprovalCommand,
 } from "../command/approval";
 import { BadgeSupport } from "../command/badge";
+import { GenerateChangelog } from "../command/changelog";
 import { CreateTag } from "../command/tag";
 import {
     isNamed,
@@ -173,7 +174,8 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
 
     sdm.addCommand(EnableDeploy)
         .addCommand(DisableDeploy)
-        .addCommand(CreateTag);
+        .addCommand(CreateTag)
+        .addCommand(GenerateChangelog);
 
     addGithubSupport(sdm);
     addDockerSupport(sdm);

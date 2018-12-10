@@ -1,0 +1,78 @@
+import {
+    GitCommandGitProject,
+    GitHubRepoRef,
+    ProjectOperationCredentials,
+    Secrets,
+    Success,
+} from "@atomist/automation-client";
+import {
+    CommandHandlerRegistration,
+    DeclarationType,
+    slackSuccessMessage,
+} from "@atomist/sdm";
+import { readChangelog } from "@atomist/sdm-pack-changelog/lib/changelog/changelog";
+import * as _ from "lodash";
+
+const ChangelogRepos = [{
+    repo: "automation-client-ts",
+    owner: "atomist",
+}, {
+    repo: "sdm",
+    owner: "atomist",
+}, {
+    repo: "sdm-core",
+    owner: "atomist",
+}, {
+    repo: "sdm-local",
+    owner: "atomist",
+}, {
+    repo: "cli",
+    owner: "atomist",
+},
+];
+
+export const GenerateChangelog: CommandHandlerRegistration<{ token: string }> = {
+    name: "generate-changelog",
+    intent: "release changelog",
+    description: "Generate a changelog across automation-client, sdm, sdm-core, sdm-local and cli projects",
+    parameters: { token: { declarationType: DeclarationType.secret, uri: Secrets.userToken("repo") } },
+    listener: async ci => {
+        // "added" | "changed" | "deprecated" | "removed" | "fixed" | "security";
+        const changelog = {
+            added: [],
+            changed: [],
+            deprecated: [],
+            removed: [],
+            fixed: [],
+            security: [],
+        };
+
+        for (const repo of ChangelogRepos) {
+            const rcl = await getChangelog(repo.repo, repo.owner, { token: ci.parameters.token });
+            const entries = rcl.versions[1].parsed;
+            _.forEach(entries, (v, k) => {
+                if (k !== "_") {
+                    changelog[_.lowerFirst(k)].push(...v.map(e => `${e} \`@${repo.owner}/${repo.repo}@${rcl.versions[1].version}\``));
+                }
+            });
+        }
+
+        let content = [];
+        _.forEach(changelog, (v, k) => {
+            content.push(`## ${_.upperFirst(k)}
+            
+${v.join("\n")}
+`);
+        });
+
+        await ci.addressChannels(slackSuccessMessage("Changelog", content.join("\n")));
+
+        return Success;
+    },
+};
+
+async function getChangelog(repo: string, owner: string, creds: ProjectOperationCredentials): Promise<any> {
+    const id = GitHubRepoRef.from({ owner, repo, branch: "master" });
+    const gp = await GitCommandGitProject.cloned(creds, id);
+    return readChangelog(gp);
+}
