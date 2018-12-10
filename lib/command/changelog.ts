@@ -67,7 +67,7 @@ export const GenerateChangelog: CommandHandlerRegistration<{ token: string }> = 
         for (const repo of ChangelogRepos) {
             const rcl = await getChangelog(repo.repo, repo.owner, { token: ci.parameters.token });
             const entries = rcl.versions[1].parsed;
-            versions.push(`-   [\`@${repo.owner}/${repo.repo}@${rcl.versions[0].version}\`](https://npmjs.com/package/@${repo.owner}/${repo.repo})`);
+            versions.push(`-   [\`@${repo.owner}/${repo.repo}@${rcl.versions[1].version}\`](https://npmjs.com/package/@${repo.owner}/${repo.repo})`);
             _.forEach(entries, (v, k) => {
                 if (k !== "_") {
                     changelog[_.lowerFirst(k)].push(...v.map(e => `${e} \`@${repo.owner}/${repo.repo}@${rcl.versions[1].version}\``));
