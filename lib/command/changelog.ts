@@ -75,10 +75,12 @@ export const GenerateChangelog: CommandHandlerRegistration<{ token: string }> = 
 
         let content = [];
         _.forEach(changelog, (v, k) => {
-            content.push(`## ${_.upperFirst(k)}
-            
+            if (v && v.length > 0) {
+                content.push(`## ${_.upperFirst(k)}
+
 ${v.join("\n")}
 `);
+            }
         });
 
         await ci.addressChannels(slackSuccessMessage("Changelog", content.join("\n")));
