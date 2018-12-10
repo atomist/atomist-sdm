@@ -36,7 +36,7 @@ const ChangelogRepos = [{
     repo: "sdm-core",
     owner: "atomist",
 }, {
-    repo: "automation-client-ts",
+    repo: "automation-client",
     owner: "atomist",
 }, {
     repo: "sdm-local",
