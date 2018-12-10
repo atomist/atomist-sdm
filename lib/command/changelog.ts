@@ -30,13 +30,13 @@ import { readChangelog } from "@atomist/sdm-pack-changelog/lib/changelog/changel
 import * as _ from "lodash";
 
 const ChangelogRepos = [{
-    repo: "automation-client-ts",
-    owner: "atomist",
-}, {
     repo: "sdm",
     owner: "atomist",
 }, {
     repo: "sdm-core",
+    owner: "atomist",
+}, {
+    repo: "automation-client-ts",
     owner: "atomist",
 }, {
     repo: "sdm-local",
