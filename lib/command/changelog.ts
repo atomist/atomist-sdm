@@ -62,10 +62,12 @@ export const GenerateChangelog: CommandHandlerRegistration<{ token: string }> = 
             fixed: [],
             security: [],
         };
+        const versions = [];
 
         for (const repo of ChangelogRepos) {
             const rcl = await getChangelog(repo.repo, repo.owner, { token: ci.parameters.token });
             const entries = rcl.versions[1].parsed;
+            versions.push(`-   [\`@${repo.owner}/${repo.repo}@${rcl.versions[0].version}\`](https://npmjs.com/package/@${repo.owner}/${repo.repo})`);
             _.forEach(entries, (v, k) => {
                 if (k !== "_") {
                     changelog[_.lowerFirst(k)].push(...v.map(e => `${e} \`@${repo.owner}/${repo.repo}@${rcl.versions[1].version}\``));
@@ -74,9 +76,18 @@ export const GenerateChangelog: CommandHandlerRegistration<{ token: string }> = 
         }
 
         let content = [];
+        content.push(`## Changelog
+
+Here is the combined changelog for the following released projects:
+
+${versions.join("\n")}
+
+The format is based on [Keep a Changelog](http://keepachangelog.com/) and the projects adhere to [Semantic Versioning](http://semver.org/).
+`)
+
         _.forEach(changelog, (v, k) => {
             if (v && v.length > 0) {
-                content.push(`## ${_.upperFirst(k)}
+                content.push(`### ${_.upperFirst(k)}
 
 ${v.join("\n")}
 `);
