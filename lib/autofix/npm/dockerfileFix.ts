@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-import {
-    logger,
-    spawnAndWatch,
-    SuccessIsReturn0ErrorFinder,
-} from "@atomist/automation-client";
+import { logger } from "@atomist/automation-client";
 import {
     allSatisfied,
     AutofixRegistration,
     hasFile,
+    spawnAndLog,
     StringCapturingProgressLog,
     ToDefaultBranch,
 } from "@atomist/sdm";
@@ -52,14 +49,11 @@ export function npmDockerfileFix(...modules: string[]): AutofixRegistration {
 
 export async function updateToLatestVersion(module: string, content: string): Promise<string> {
     const log = new StringCapturingProgressLog();
-    const result = await spawnAndWatch({
-        command: "npm",
-        args: ["show", module, "version"],
-    },
-        {},
+    const result = await spawnAndLog(
         log,
+        "npm",
+        ["show", module, "version"],
         {
-            errorFinder: SuccessIsReturn0ErrorFinder,
             logCommand: false,
         });
 

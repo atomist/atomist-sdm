@@ -22,12 +22,11 @@ import {
     MessageOptions,
     Parameter,
     Parameters,
-    spawnAndWatch,
-    SuccessIsReturn0ErrorFinder,
 } from "@atomist/automation-client";
 import {
     CodeTransform,
     CodeTransformRegistration,
+    spawnAndLog,
     StringCapturingProgressLog,
 } from "@atomist/sdm";
 import { BuildAwareMarker } from "@atomist/sdm-pack-build";
@@ -98,10 +97,10 @@ export const UpdateAtomistDependenciesTransform: CodeTransform<UpdateAtomistDepe
             // NPM doesn't like to go back to older versions; hence we delete the lock file here to force the
             // dependencies in
             p.deleteFileSync("package-lock.json");
-            const result = await spawnAndWatch({
-                    command: "npm",
-                    args: ["i"],
-                },
+            const result = await spawnAndLog(
+                new StringCapturingProgressLog(),
+                "npm",
+                ["i"],
                 {
                     cwd: (p as GitProject).baseDir,
                     env: {
@@ -109,8 +108,6 @@ export const UpdateAtomistDependenciesTransform: CodeTransform<UpdateAtomistDepe
                         NODE_ENV: "development",
                     },
                 },
-                new StringCapturingProgressLog(),
-                {},
             );
             await sendMessage(result.code === 0 ?
                 `\n:atomist_build_passed: ${codeLine("npm install")} completed successfully` :
@@ -157,14 +154,11 @@ async function updateDependencies(deps: any,
 
 async function latestVersion(module: string): Promise<string | undefined> {
     const log = new StringCapturingProgressLog();
-    const result = await spawnAndWatch({
-            command: "npm",
-            args: ["show", module, "version"],
-        },
-        {},
+    const result = await spawnAndLog(
         log,
+        "npm",
+        ["show", module, "version"],
         {
-            errorFinder: SuccessIsReturn0ErrorFinder,
             logCommand: false,
         });
 

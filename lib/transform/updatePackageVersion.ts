@@ -19,13 +19,12 @@ import {
     GitProject,
     Parameter,
     Parameters,
-    SuccessIsReturn0ErrorFinder,
 } from "@atomist/automation-client";
 import {
     CodeTransform,
     CodeTransformRegistration,
     LoggingProgressLog,
-    spawnAndWatch,
+    spawnAndLog,
 } from "@atomist/sdm";
 
 @Parameters()
@@ -43,16 +42,12 @@ export class UpdatePackageVersionParameters {
 export const UpdatePackageVersionTransform: CodeTransform<UpdatePackageVersionParameters> =
     async (p, ctx, params) => {
         const log = new LoggingProgressLog("npm version");
-        await spawnAndWatch({
-            command: "npm",
-            args: ["version", "--no-git-tag-version", params.version],
-        },
+        await spawnAndLog(
+            log,
+            "npm",
+            ["version", "--no-git-tag-version", params.version],
             {
                 cwd: (p as GitProject).baseDir,
-            },
-            log,
-            {
-                errorFinder: SuccessIsReturn0ErrorFinder,
                 logCommand: false,
             });
 
@@ -72,7 +67,8 @@ export const UpdatePackageVersion: CodeTransformRegistration<UpdatePackageVersio
 
 class MasterCommit implements EditMode {
 
-    constructor(private readonly params: UpdatePackageVersionParameters) { }
+    constructor(private readonly params: UpdatePackageVersionParameters) {
+    }
 
     get message(): string {
         return `Update NPM package version to ${this.params ? this.params.version : ""}`;

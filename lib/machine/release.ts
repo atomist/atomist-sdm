@@ -17,7 +17,6 @@
 // tslint:disable:max-file-line-count
 
 import {
-    ChildProcessResult,
     configurationValue,
     GitCommandGitProject,
     GitHubRepoRef,
@@ -25,8 +24,6 @@ import {
     logger,
     NodeFsLocalProject,
     RemoteRepoRef,
-    spawnAndWatch,
-    SpawnCommand,
     Success,
     TokenCredentials,
 } from "@atomist/automation-client";
@@ -38,6 +35,8 @@ import {
     PrepareForGoalExecution,
     ProgressLog,
     PushTest,
+    spawnAndLog,
+    SpawnLogCommand,
 } from "@atomist/sdm";
 import {
     createTagForStatus,
@@ -125,7 +124,7 @@ function dockerImage(p: ProjectRegistryInfo): string {
 type ExecuteLogger = (l: ProgressLog) => Promise<ExecuteGoalResult>;
 
 interface SpawnWatchCommand {
-    cmd: SpawnCommand;
+    cmd: SpawnLogCommand;
     cwd?: string;
 }
 
@@ -146,15 +145,13 @@ function spawnExecuteLogger(swc: SpawnWatchCommand): ExecuteLogger {
         if (swc.cwd) {
             opts.cwd = swc.cwd;
         }
-        let res: ChildProcessResult;
+        let res;
         try {
-            res = await spawnAndWatch(swc.cmd, opts, log);
+            res = await spawnAndLog(log, swc.cmd.command, swc.cmd.args, opts);
         } catch (e) {
             res = {
-                error: true,
                 code: -1,
                 message: `Spawned command errored: ${swc.cmd.command} ${swc.cmd.args.join(" ")}: ${e.message}`,
-                childProcess: undefined,
             };
         }
         if (res.error) {
@@ -341,7 +338,12 @@ export function executeReleaseNpm(
     }
     return async (gi: GoalInvocation) => {
         const { configuration, credentials, id, context } = gi;
-        return configuration.sdm.projectLoader.doWithProject({ credentials, id, context, readOnly: false }, async (project: GitProject) => {
+        return configuration.sdm.projectLoader.doWithProject({
+            credentials,
+            id,
+            context,
+            readOnly: false,
+        }, async (project: GitProject) => {
 
             await fs.writeFile(path.join(project.baseDir, ".npmrc"), options.npmrc);
 
@@ -363,10 +365,13 @@ export function executeReleaseNpm(
                     "--tag", "next",
                 );
             }
-            const result = await spawnAndWatch({
-                command: "npm",
+            const result = await spawnAndLog(
+                gi.progressLog,
+                "npm",
                 args,
-            }, { cwd: project.baseDir }, gi.progressLog);
+                {
+                    cwd: project.baseDir,
+                });
             if (result.error) {
                 return result;
             }
@@ -435,7 +440,12 @@ export function executeReleaseDocker(
         if (!options.registry) {
             throw new Error(`No registry defined in Docker options`);
         }
-        return configuration.sdm.projectLoader.doWithProject({ credentials, id, context, readOnly: false }, async (project: GitProject) => {
+        return configuration.sdm.projectLoader.doWithProject({
+            credentials,
+            id,
+            context,
+            readOnly: false,
+        }, async (project: GitProject) => {
 
             for (const preparation of preparations) {
                 const pResult = await preparation(project, gi);
@@ -547,7 +557,12 @@ export function executeReleaseDocs(
 
     return async (gi: GoalInvocation) => {
         const { configuration, credentials, id, context } = gi;
-        return configuration.sdm.projectLoader.doWithProject({ credentials, id, context, readOnly: false }, async (project: GitProject) => {
+        return configuration.sdm.projectLoader.doWithProject({
+            credentials,
+            id,
+            context,
+            readOnly: false,
+        }, async (project: GitProject) => {
 
             for (const preparation of preparations) {
                 const pResult = await preparation(project, gi);
@@ -592,7 +607,7 @@ export function executeReleaseDocs(
  */
 export function executeReleaseVersion(
     projectIdentifier: ProjectIdentifier,
-    incrementPatchCmd: SpawnCommand = { command: "npm", args: ["version", "--no-git-tag-version", "patch"] },
+    incrementPatchCmd: SpawnLogCommand = { command: "npm", args: ["version", "--no-git-tag-version", "patch"] },
 ): ExecuteGoal {
 
     return async (gi: GoalInvocation): Promise<ExecuteGoalResult> => {

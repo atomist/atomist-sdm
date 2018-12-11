@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { spawnAndWatch } from "@atomist/automation-client";
 import {
     CommandHandlerRegistration,
+    spawnAndLog,
     StringCapturingProgressLog,
 } from "@atomist/sdm";
 import { codeBlock } from "@atomist/slack-messages";
@@ -28,15 +28,13 @@ export const DiskUsageCommandRegistration: CommandHandlerRegistration = {
     listener: async ci => {
 
         const log = new StringCapturingProgressLog();
-        const result = await spawnAndWatch({
-                command: "du",
-                args: ["-sha", "-d",  "1"],
-            },
+        const result = await spawnAndLog(
+            log,
+            "du",
+            ["-sha", "-d", "1"],
             {
                 cwd: "/",
             },
-            log,
-            {},
         );
         await ci.context.messageClient.respond(codeBlock(log.log.trim()));
         return result;

@@ -22,11 +22,11 @@ import {
     ProjectFile,
     projectUtils,
     RemoteRepoRef,
-    safeExec,
 } from "@atomist/automation-client";
 import {
     allSatisfied,
     DelimitedWriteProgressLogDecorator,
+    execPromise,
     ExecuteGoal,
     GoalInvocation,
     LogSuppressor,
@@ -89,7 +89,7 @@ export function executeReleaseHomebrew(projectIdentifier: ProjectIdentifier): Ex
                 const pkgSha = await fileSha256(pkgInfo.path);
                 log.write(`Calculated SHA256 for ${path.basename(pkgInfo.path)}: ${pkgSha}\n`);
                 try {
-                    await safeExec("rm", ["-rf", path.dirname(pkgInfo.path)]);
+                    await execPromise("rm", ["-rf", path.dirname(pkgInfo.path)]);
                 } catch (e) {
                     const errMsg = `Failed to remove downloaded NPM package: ${e.message}`;
                     logger.warn(errMsg);

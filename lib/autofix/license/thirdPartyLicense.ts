@@ -18,8 +18,6 @@ import {
     GitProject,
     NoParameters,
     Project,
-    spawnAndWatch,
-    SuccessIsReturn0ErrorFinder,
 } from "@atomist/automation-client";
 import {
     allSatisfied,
@@ -27,6 +25,7 @@ import {
     CodeTransform,
     not,
     PushTest,
+    spawnAndLog,
     StringCapturingProgressLog,
     ToDefaultBranch,
 } from "@atomist/sdm";
@@ -70,16 +69,12 @@ export function addThirdPartyLicenseTransform(): CodeTransform<NoParameters> {
         const ownModule = `${pj.name}@${pj.version}`;
 
         if (!(await p.hasDirectory("node_modules"))) {
-            const result = await spawnAndWatch({
-                    command: "npm",
-                    args: ["ci"],
-                },
+            const result = await spawnAndLog(
+                new StringCapturingProgressLog(),
+                "npm",
+                ["ci"],
                 {
                     cwd,
-                },
-                new StringCapturingProgressLog(),
-                {
-                    errorFinder: SuccessIsReturn0ErrorFinder,
                 });
             if (result && result.code !== 0) {
                 return p;

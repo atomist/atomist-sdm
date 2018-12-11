@@ -22,11 +22,11 @@ import {
     logger,
     MessageOptions,
     Parameters,
-    spawnAndWatch,
 } from "@atomist/automation-client";
 import {
     CodeTransform,
     CodeTransformRegistration,
+    spawnAndLog,
     StringCapturingProgressLog,
 } from "@atomist/sdm";
 import { BuildAwareMarker } from "@atomist/sdm-pack-build";
@@ -81,10 +81,10 @@ const UpdateAtomistPeerDependenciesStarTransform: CodeTransform<UpdateAtomistPee
 
             if (!(await (p as GitProject).isClean())) {
                 await sendMessage(`\nAtomist peer dependency versions updated. Running ${codeLine("npm install")}`);
-                const result = await spawnAndWatch({
-                    command: "npm",
-                    args: ["i"],
-                },
+                const result = await spawnAndLog(
+                    new StringCapturingProgressLog(),
+                    "npm",
+                    ["i"],
                     {
                         cwd: (p as GitProject).baseDir,
                         env: {
@@ -92,8 +92,6 @@ const UpdateAtomistPeerDependenciesStarTransform: CodeTransform<UpdateAtomistPee
                             NODE_ENV: "development",
                         },
                     },
-                    new StringCapturingProgressLog(),
-                    {},
                 );
 
                 await sendMessage(result.code === 0 ?

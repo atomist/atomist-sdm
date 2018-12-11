@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-    asSpawnCommand,
-    Success,
-} from "@atomist/automation-client";
+import { Success } from "@atomist/automation-client";
 import {
     GoalInvocation,
     LogSuppressor,
@@ -87,9 +84,15 @@ export function addMavenSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryM
     releaseVersion.with({
         ...MavenDefaultOptions,
         name: "mvn-release-version",
-        goalExecutor: executeReleaseVersion(MavenProjectIdentifier, asSpawnCommand("./mvnw build-helper:parse-version versions:set -DnewVersion=" +
-            "\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}" +
-            "-\${parsedVersion.qualifier} versions:commit"))});
+        goalExecutor: executeReleaseVersion(
+            MavenProjectIdentifier,
+            {
+                command: "./mvnw",
+                args: ["build-helper:parse-version", "versions:set", "-DnewVersion=" +
+                "\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}-" +
+                "\${parsedVersion.qualifier}", "versions:commit"],
+        }),
+    });
 
     publish.with({
         ...MavenDefaultOptions,

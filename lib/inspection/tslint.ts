@@ -21,13 +21,13 @@ import {
     Project,
     ProjectReview,
     ReviewComment,
-    safeExec,
     Severity,
     SourceLocation,
 } from "@atomist/automation-client";
 import {
     CodeInspection,
     CodeInspectionRegistration,
+    execPromise,
 } from "@atomist/sdm";
 import * as appRoot from "app-root-path";
 import * as path from "path";
@@ -140,11 +140,11 @@ export const RunTslintOnProject: CodeInspection<ProjectReview, NoParameters> = a
     ];
     try {
         const env = { ...process.env, NODE_ENV: "development" };
-        const npmCiResult = await safeExec("npm", ["ci"], { cwd, env });
+        const npmCiResult = await execPromise("npm", ["ci"], { cwd, env });
         if (npmCiResult.stderr) {
             logger.debug(`NPM ci standard error from ${p.name}: ${npmCiResult.stderr}`);
         }
-        const tslintResult = await safeExec(tslintExe, tslintArgs, { cwd });
+        const tslintResult = await execPromise(tslintExe, tslintArgs, { cwd });
         if (tslintResult.stderr) {
             logger.debug(`TSLint standard error from ${p.name}: ${tslintResult.stderr}`);
         }
