@@ -35,8 +35,9 @@ import {
     PrepareForGoalExecution,
     ProgressLog,
     PushTest,
-    spawnAndLog,
+    spawnLog,
     SpawnLogCommand,
+    SpawnLogOptions,
 } from "@atomist/sdm";
 import {
     createTagForStatus,
@@ -49,7 +50,6 @@ import {
     DevelopmentEnvOptions,
     NpmOptions,
 } from "@atomist/sdm-pack-node";
-import { SpawnOptions } from "child_process";
 import * as fs from "fs-extra";
 import * as _ from "lodash";
 import * as path from "path";
@@ -70,11 +70,11 @@ interface ProjectRegistryInfo {
 
 export async function rwlcVersion(gi: GoalInvocation): Promise<string> {
     const version = await readSdmVersion(
-        gi.sdmGoal.repo.owner,
-        gi.sdmGoal.repo.name,
-        gi.sdmGoal.repo.providerId,
-        gi.sdmGoal.sha,
-        gi.sdmGoal.branch,
+        gi.goalEvent.repo.owner,
+        gi.goalEvent.repo.name,
+        gi.goalEvent.repo.providerId,
+        gi.goalEvent.sha,
+        gi.goalEvent.branch,
         gi.context);
     return version;
 }
@@ -89,7 +89,7 @@ export function releaseOrPreRelease(version: string, gi: GoalInvocation): string
 }
 
 function preReleaseVersion(gi: GoalInvocation): string | undefined {
-    const tags = _.get(gi, "sdmGoal.push.after.tags") || [];
+    const tags = _.get(gi, "goalEvent.push.after.tags") || [];
     const tag = tags.find(t => {
         if (isNextVersion(t.name)) {
             return true;
@@ -139,15 +139,16 @@ interface SpawnWatchCommand {
 function spawnExecuteLogger(swc: SpawnWatchCommand): ExecuteLogger {
 
     return async (log: ProgressLog) => {
-        const opts: SpawnOptions = {
+        const opts: SpawnLogOptions = {
             ...swc.cmd.options,
+            log,
         };
         if (swc.cwd) {
             opts.cwd = swc.cwd;
         }
         let res;
         try {
-            res = await spawnAndLog(log, swc.cmd.command, swc.cmd.args, opts);
+            res = await spawnLog(swc.cmd.command, swc.cmd.args, opts);
         } catch (e) {
             res = {
                 code: -1,
@@ -365,12 +366,12 @@ export function executeReleaseNpm(
                     "--tag", "next",
                 );
             }
-            const result = await spawnAndLog(
-                gi.progressLog,
+            const result = await spawnLog(
                 "npm",
                 args,
                 {
                     cwd: project.baseDir,
+                    log: gi.progressLog,
                 });
             if (result.error) {
                 return result;
@@ -458,12 +459,12 @@ export function executeReleaseDocker(
             const versionRelease = releaseOrPreRelease(version, gi);
             const image = dockerImage({
                 registry: options.registry,
-                name: gi.sdmGoal.repo.name,
+                name: gi.goalEvent.repo.name,
                 version,
             });
             const tag = dockerImage({
                 registry: options.registry,
-                name: gi.sdmGoal.repo.name,
+                name: gi.goalEvent.repo.name,
                 version: versionRelease,
             });
 
@@ -494,10 +495,10 @@ export function executeReleaseTag(): ExecuteGoal {
         return configuration.sdm.projectLoader.doWithProject({ credentials, id, context, readOnly: true }, async p => {
             const version = await rwlcVersion(gi);
             const versionRelease = releaseOrPreRelease(version, gi);
-            if (!(gi.sdmGoal.push.after.tags || []).some(t => t.name === versionRelease)) {
-                await createTagForStatus(id, gi.sdmGoal.sha, gi.sdmGoal.push.after.message, versionRelease, credentials);
+            if (!(gi.goalEvent.push.after.tags || []).some(t => t.name === versionRelease)) {
+                await createTagForStatus(id, gi.goalEvent.sha, gi.goalEvent.push.after.message, versionRelease, credentials);
             }
-            const commitTitle = gi.sdmGoal.push.after.message.replace(/\n[\S\s]*/, "");
+            const commitTitle = gi.goalEvent.push.after.message.replace(/\n[\S\s]*/, "");
             const release = {
                 tag_name: versionRelease,
                 name: `${versionRelease}: ${commitTitle}`,
@@ -529,7 +530,10 @@ export async function docsReleasePreparation(p: GitProject, gi: GoalInvocation):
             cmd: {
                 command: "npm",
                 args: ["ci"],
-                options: DevelopmentEnvOptions,
+                options: {
+                    ...DevelopmentEnvOptions,
+                    log: gi.progressLog,
+                },
             },
             cwd: p.baseDir,
         },
@@ -620,7 +624,7 @@ export function executeReleaseVersion(
 
             const log = new DelimitedWriteProgressLogDecorator(gi.progressLog, "\n");
             const slug = `${gp.id.owner}/${gp.id.repo}`;
-            const branch = gi.sdmGoal.branch;
+            const branch = gi.goalEvent.branch;
             const remote = gp.remote || "origin";
             const preEls: ExecuteLogger[] = [
                 gitExecuteLogger(gp, () => gp.checkout(branch), "checkout"),

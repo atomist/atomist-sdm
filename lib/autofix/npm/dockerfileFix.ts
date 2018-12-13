@@ -19,7 +19,7 @@ import {
     allSatisfied,
     AutofixRegistration,
     hasFile,
-    spawnAndLog,
+    spawnLog,
     StringCapturingProgressLog,
     ToDefaultBranch,
 } from "@atomist/sdm";
@@ -49,12 +49,12 @@ export function npmDockerfileFix(...modules: string[]): AutofixRegistration {
 
 export async function updateToLatestVersion(module: string, content: string): Promise<string> {
     const log = new StringCapturingProgressLog();
-    const result = await spawnAndLog(
-        log,
+    const result = await spawnLog(
         "npm",
         ["show", module, "version"],
         {
             logCommand: false,
+            log,
         });
 
     if (result.code !== 0) {

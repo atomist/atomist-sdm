@@ -26,7 +26,7 @@ import {
 import {
     CodeTransform,
     CodeTransformRegistration,
-    spawnAndLog,
+    spawnLog,
     StringCapturingProgressLog,
 } from "@atomist/sdm";
 import { BuildAwareMarker } from "@atomist/sdm-pack-build";
@@ -97,8 +97,7 @@ export const UpdateAtomistDependenciesTransform: CodeTransform<UpdateAtomistDepe
             // NPM doesn't like to go back to older versions; hence we delete the lock file here to force the
             // dependencies in
             p.deleteFileSync("package-lock.json");
-            const result = await spawnAndLog(
-                new StringCapturingProgressLog(),
+            const result = await spawnLog(
                 "npm",
                 ["i"],
                 {
@@ -107,6 +106,7 @@ export const UpdateAtomistDependenciesTransform: CodeTransform<UpdateAtomistDepe
                         ...process.env,
                         NODE_ENV: "development",
                     },
+                    log: new StringCapturingProgressLog(),
                 },
             );
             await sendMessage(result.code === 0 ?
@@ -154,12 +154,12 @@ async function updateDependencies(deps: any,
 
 async function latestVersion(module: string): Promise<string | undefined> {
     const log = new StringCapturingProgressLog();
-    const result = await spawnAndLog(
-        log,
+    const result = await spawnLog(
         "npm",
         ["show", module, "version"],
         {
             logCommand: false,
+            log,
         });
 
     if (result.code === 0) {

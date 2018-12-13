@@ -25,7 +25,7 @@ import {
     CodeTransform,
     not,
     PushTest,
-    spawnAndLog,
+    spawnLog,
     StringCapturingProgressLog,
     ToDefaultBranch,
 } from "@atomist/sdm";
@@ -69,12 +69,12 @@ export function addThirdPartyLicenseTransform(): CodeTransform<NoParameters> {
         const ownModule = `${pj.name}@${pj.version}`;
 
         if (!(await p.hasDirectory("node_modules"))) {
-            const result = await spawnAndLog(
-                new StringCapturingProgressLog(),
+            const result = await spawnLog(
                 "npm",
                 ["ci"],
                 {
                     cwd,
+                    log: new StringCapturingProgressLog(),
                 });
             if (result && result.code !== 0) {
                 return p;

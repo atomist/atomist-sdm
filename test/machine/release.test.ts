@@ -34,7 +34,7 @@ describe("release", () => {
                 },
             } as any as SdmGoalEvent;
             const gi: GoalInvocation = {
-                sdmGoal: goal,
+                goalEvent: goal,
             } as any as GoalInvocation;
 
             const version = releaseOrPreRelease("1.0.0", gi);
@@ -51,7 +51,7 @@ describe("release", () => {
                 },
             } as any as SdmGoalEvent;
             const gi: GoalInvocation = {
-                sdmGoal: goal,
+                goalEvent: goal,
             } as any as GoalInvocation;
 
             const version = releaseOrPreRelease("1.0.0", gi);
@@ -67,7 +67,7 @@ describe("release", () => {
                 },
             } as any as SdmGoalEvent;
             const gi: GoalInvocation = {
-                sdmGoal: goal,
+                goalEvent: goal,
             } as any as GoalInvocation;
 
             const version = releaseOrPreRelease("1.0.0", gi);
