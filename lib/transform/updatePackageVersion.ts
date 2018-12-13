@@ -24,7 +24,7 @@ import {
     CodeTransform,
     CodeTransformRegistration,
     LoggingProgressLog,
-    spawnAndLog,
+    spawnLog,
 } from "@atomist/sdm";
 
 @Parameters()
@@ -42,13 +42,13 @@ export class UpdatePackageVersionParameters {
 export const UpdatePackageVersionTransform: CodeTransform<UpdatePackageVersionParameters> =
     async (p, ctx, params) => {
         const log = new LoggingProgressLog("npm version");
-        await spawnAndLog(
-            log,
+        await spawnLog(
             "npm",
             ["version", "--no-git-tag-version", params.version],
             {
                 cwd: (p as GitProject).baseDir,
                 logCommand: false,
+                log,
             });
 
         return p;

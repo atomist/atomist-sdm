@@ -26,7 +26,7 @@ import {
 import {
     CodeTransform,
     CodeTransformRegistration,
-    spawnAndLog,
+    spawnLog,
     StringCapturingProgressLog,
 } from "@atomist/sdm";
 import { BuildAwareMarker } from "@atomist/sdm-pack-build";
@@ -81,8 +81,7 @@ const UpdateAtomistPeerDependenciesStarTransform: CodeTransform<UpdateAtomistPee
 
             if (!(await (p as GitProject).isClean())) {
                 await sendMessage(`\nAtomist peer dependency versions updated. Running ${codeLine("npm install")}`);
-                const result = await spawnAndLog(
-                    new StringCapturingProgressLog(),
+                const result = await spawnLog(
                     "npm",
                     ["i"],
                     {
@@ -91,6 +90,7 @@ const UpdateAtomistPeerDependenciesStarTransform: CodeTransform<UpdateAtomistPee
                             ...process.env,
                             NODE_ENV: "development",
                         },
+                        log: new StringCapturingProgressLog(),
                     },
                 );
 

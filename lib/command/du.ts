@@ -16,7 +16,7 @@
 
 import {
     CommandHandlerRegistration,
-    spawnAndLog,
+    spawnLog,
     StringCapturingProgressLog,
 } from "@atomist/sdm";
 import { codeBlock } from "@atomist/slack-messages";
@@ -28,12 +28,12 @@ export const DiskUsageCommandRegistration: CommandHandlerRegistration = {
     listener: async ci => {
 
         const log = new StringCapturingProgressLog();
-        const result = await spawnAndLog(
-            log,
+        const result = await spawnLog(
             "du",
             ["-sha", "-d", "1"],
             {
                 cwd: "/",
+                log,
             },
         );
         await ci.context.messageClient.respond(codeBlock(log.log.trim()));
