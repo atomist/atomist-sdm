@@ -67,7 +67,7 @@ export const BadgeSupport: ExtensionPack = {
                 };
                 await cli.context.messageClient.send(badge, addressEvent("SdmGoalSetBadge"));
 
-                const url = `http://badge.atomist.com/${cli.context.workspaceId}/${cli.parameters.owner}/${cli.parameters.repo}/${token}`;
+                const url = `https://badge.atomist.com/${cli.context.workspaceId}/${cli.parameters.owner}/${cli.parameters.repo}/${token}`;
 
                 const msg = slackSuccessMessage(
                     "Badge Url",
