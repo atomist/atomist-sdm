@@ -19,6 +19,7 @@ import {
     GitHubRepoRef,
     ProjectOperationCredentials,
     Secrets,
+    SlackFileMessage,
     Success,
 } from "@atomist/automation-client";
 import {
@@ -95,7 +96,13 @@ ${v.join("\n")}
             }
         });
 
-        await ci.addressChannels(slackSuccessMessage("Changelog", content.join("\n")));
+        const msg: SlackFileMessage = {
+            fileName: "changelog.md",
+            fileType: "markdown",
+            content: content.join("\n"),
+            title: "Combined Changelog",
+        }
+        await ci.context.messageClient.respond(msg);
 
         return Success;
     },
