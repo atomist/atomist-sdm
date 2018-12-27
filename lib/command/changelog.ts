@@ -25,7 +25,6 @@ import {
 import {
     CommandHandlerRegistration,
     DeclarationType,
-    slackSuccessMessage,
 } from "@atomist/sdm";
 import { readChangelog } from "@atomist/sdm-pack-changelog/lib/changelog/changelog";
 import * as _ from "lodash";
