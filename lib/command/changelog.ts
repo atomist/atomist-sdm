@@ -101,7 +101,7 @@ ${v.join("\n")}
             fileType: "markdown",
             content: content.join("\n"),
             title: "Combined Changelog",
-        }
+        };
         await ci.context.messageClient.respond(msg);
 
         return Success;
