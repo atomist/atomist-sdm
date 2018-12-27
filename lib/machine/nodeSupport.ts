@@ -118,7 +118,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         .withProjectListener(NodeModulesProjectListener);
 
     autoCodeInspection.with(RunTslint)
-        .withListener(singleIssuePerCategoryManaging("tslint", true, p => true))
+        .withListener(singleIssuePerCategoryManaging("tslint", true, () => true))
         .withListener(ApproveGoalIfErrorComments);
 
     publish.with({
