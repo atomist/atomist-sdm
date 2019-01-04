@@ -50,7 +50,7 @@ import {
 } from "../autofix/test/testNamingFix";
 import { UpdateSupportFilesTransform } from "../autofix/updateSupportFiles";
 import { deleteDistTagOnBranchDeletion } from "../event/deleteDistTagOnBranchDeletion";
-import { RunTslint } from "../inspection/tslint";
+import { RunTslint, tsLintReviewCategory } from "../inspection/tslint";
 import { AutomationClientTagger } from "../support/tagger";
 import { RewriteImports } from "../transform/rewriteImports";
 import { TryToUpdateAtomistDependencies } from "../transform/tryToUpdateAtomistDependencies";
@@ -118,7 +118,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         .withProjectListener(NodeModulesProjectListener);
 
     autoCodeInspection.with(RunTslint)
-        .withListener(singleIssuePerCategoryManaging("tslint", true, () => true))
+        .withListener(singleIssuePerCategoryManaging(tsLintReviewCategory, true, () => true))
         .withListener(ApproveGoalIfErrorComments);
 
     publish.with({
