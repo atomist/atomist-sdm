@@ -50,7 +50,10 @@ import {
 } from "../autofix/test/testNamingFix";
 import { UpdateSupportFilesTransform } from "../autofix/updateSupportFiles";
 import { deleteDistTagOnBranchDeletion } from "../event/deleteDistTagOnBranchDeletion";
-import { RunTslint, tsLintReviewCategory } from "../inspection/tslint";
+import {
+    RunTslint,
+    tsLintReviewCategory,
+} from "../inspection/tslint";
 import { AutomationClientTagger } from "../support/tagger";
 import { RewriteImports } from "../transform/rewriteImports";
 import { TryToUpdateAtomistDependencies } from "../transform/tryToUpdateAtomistDependencies";
