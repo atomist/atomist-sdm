@@ -60,6 +60,8 @@ export interface TslintResult {
 
 export type TslintResults = TslintResult[];
 
+export const tsLintReviewCategory = "tslint";
+
 /**
  * Return a review comment for a TSLint violation.
  */
@@ -71,7 +73,7 @@ function tslintReviewComment(
 ): ReviewComment {
 
     return {
-        category: "tslint",
+        category: tsLintReviewCategory,
         detail,
         severity,
         sourceLocation,
