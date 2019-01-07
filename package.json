@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@atomist/automation-client": "1.2.1-remove-sha-branch-defaults.20190107113217",
-    "@atomist/automation-client-ext-dashboard": "1.0.2-master.20181213233954",
+    "@atomist/automation-client-ext-dashboard": "1.0.2-master.20190107121940",
     "@atomist/automation-client-ext-logzio": "1.0.2-master.20181213233859",
     "@atomist/automation-client-ext-raven": "1.0.2-master.20181213200324",
     "@atomist/microgrammar": "1.0.1-master.20181109093737",
