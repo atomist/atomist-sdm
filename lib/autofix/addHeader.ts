@@ -130,7 +130,8 @@ function separatePrefixLines(content: string): [string, string] {
 }
 
 /**
- * Add or replace `header` in `content`.
+ * Add or replace begining empty lines and any header comment in
+ * `content` with `header`.
  *
  * @param header header that should be upserted into content
  * @param content current content to be updated
