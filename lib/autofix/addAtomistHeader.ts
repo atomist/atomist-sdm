@@ -36,6 +36,7 @@ export function addAtomistHeader(name: string,
     const parametersInstance = new AddHeaderParameters();
     parametersInstance.glob = glob;
     parametersInstance.excludeGlob = "**/*.d.ts";
+    parametersInstance.onlyChangedFiles = true;
     return {
         name,
         pushTest: allSatisfied(pushTest, hasFileContaining(LicenseFilename, /Apache License/)),

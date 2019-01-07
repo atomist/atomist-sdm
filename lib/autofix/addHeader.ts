@@ -15,6 +15,7 @@
  */
 
 import {
+    logger,
     Parameter,
     Parameters,
     Project,
@@ -22,7 +23,7 @@ import {
 } from "@atomist/automation-client";
 import {
     CodeTransformRegistration,
-    ParametersInvocation,
+    PushAwareParametersInvocation,
 } from "@atomist/sdm";
 import * as minimatch from "minimatch";
 import { CFamilyLanguageSourceFiles } from "./GlobPatterns";
@@ -39,6 +40,9 @@ export class AddHeaderParameters extends RequestedCommitParameters {
 
     @Parameter({ required: false })
     public excludeGlob: string;
+
+    @Parameter({ required: false })
+    public onlyChangedFiles: boolean = false;
 
     @Parameter({ required: false })
     public license: "apache" = "apache";
@@ -58,7 +62,7 @@ export class AddHeaderParameters extends RequestedCommitParameters {
 }
 
 export const ApacheHeader = `/*
- * Copyright © 2018 Atomist, Inc.
+ * Copyright © 2019 Atomist, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,13 +85,25 @@ export const AddApacheLicenseTransform: CodeTransformRegistration<AddHeaderParam
 };
 
 export async function addHeaderTransform(p: Project,
-                                         ci: ParametersInvocation<AddHeaderParameters>): Promise<Project> {
+                                         ci: PushAwareParametersInvocation<AddHeaderParameters>): Promise<Project> {
 
     const filesWithDifferentHeaders: any[] = [];
     await projectUtils.doWithFiles(p, ci.parameters.glob, async f => {
         if (ci.parameters.excludeGlob && minimatch(f.path, ci.parameters.excludeGlob)) {
             return;
         }
+
+        if (ci.parameters.onlyChangedFiles) {
+            if (ci.push.filesChanged &&
+                ci.push.filesChanged.length > 0) {
+                if (!ci.push.filesChanged.includes(f.path)) {
+                    return;
+                }
+            } else {
+                return;
+            }
+        }
+
         const content = await f.getContent();
         if (content.includes(ci.parameters.header)) {
             return;
