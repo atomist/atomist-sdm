@@ -15,7 +15,7 @@
  */
 
 import { Configuration } from "@atomist/automation-client";
-// import { configureEventLog } from "@atomist/automation-client-ext-eventlog";
+import { configureDashboardNotifications } from "@atomist/automation-client-ext-dashboard";
 import { configureLogzio } from "@atomist/automation-client-ext-logzio";
 import { configureRaven } from "@atomist/automation-client-ext-raven";
 import {
@@ -39,7 +39,7 @@ export const configuration: Configuration = {
     postProcessors: [
         configureLogzio,
         configureRaven,
-        // configureEventLog(),
+        configureDashboardNotifications,
         configureSdm(machine, machineOptions),
     ],
     sdm: {
