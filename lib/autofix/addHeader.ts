@@ -21,7 +21,6 @@ import {
     projectUtils,
 } from "@atomist/automation-client";
 import {
-    CodeTransformRegistration,
     PushAwareParametersInvocation,
 } from "@atomist/sdm";
 import * as minimatch from "minimatch";
@@ -53,15 +52,17 @@ export class AddHeaderParameters extends RequestedCommitParameters {
     get header(): string {
         switch (this.license) {
             case "apache":
-                return ApacheHeader;
+                return apacheHeader();
             default:
                 throw new Error(`'${this.license}' is not a supported license`);
         }
     }
 }
 
-export const ApacheHeader = `/*
- * Copyright © 2019 Atomist, Inc.
+export function apacheHeader(): string {
+    const year = (new Date()).getFullYear();
+    return `/*
+ * Copyright © ${year} Atomist, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,19 +75,14 @@ export const ApacheHeader = `/*
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */`;
+ */
+`;
+}
 
-export const AddApacheLicenseTransform: CodeTransformRegistration<AddHeaderParameters> = {
-    transform: addHeaderTransform,
-    name: "addHeader",
-    paramsMaker: AddHeaderParameters,
-    transformPresentation: ahp => ahp.parameters.editMode,
-};
-
-export async function addHeaderTransform(p: Project,
-                                         ci: PushAwareParametersInvocation<AddHeaderParameters>): Promise<Project> {
-
-    const filesWithDifferentHeaders: any[] = [];
+/**
+ * CodeTransform that upserts headers into files per [[AddHeaderParameters]].
+ */
+export async function addHeaderTransform(p: Project, ci: PushAwareParametersInvocation<AddHeaderParameters>): Promise<Project> {
     await projectUtils.doWithFiles(p, ci.parameters.glob, async f => {
         if (ci.parameters.excludeGlob && minimatch(f.path, ci.parameters.excludeGlob)) {
             return;
@@ -104,15 +100,11 @@ export async function addHeaderTransform(p: Project,
         }
 
         const content = await f.getContent();
-        if (content.includes(ci.parameters.header)) {
-            return;
+        const header = ci.parameters.header;
+        const newContent = upsertHeader(header, content);
+        if (newContent !== content) {
+            await f.setContent(newContent);
         }
-        if (hasDifferentHeader(ci.parameters.header, content)) {
-            filesWithDifferentHeaders.push(f);
-            return;
-        }
-        const [prefix, rest] = separatePrefixLines(content);
-        await f.setContent(prefix + ci.parameters.header + "\n\n" + rest);
         return;
     });
     return p;
@@ -121,8 +113,9 @@ export async function addHeaderTransform(p: Project,
 /**
  * There are some lines that really need to be at the top.
  *
- * If a file starts with '#!/executable/to/run', leave that at the top.
- * It's invalid to put a comment before it.
+ * If a file starts with '#!/executable/to/run', leave that at the
+ * top.  It's invalid to put a comment before it.
+ *
  * @param content to extract sh-bang line from
  * @return two-element array, the first element if the sh-bang line or
  *         an empty string if there is no sh-bang line, the second element
@@ -136,18 +129,15 @@ function separatePrefixLines(content: string): [string, string] {
     return ["", content];
 }
 
-export function hasDifferentHeader(header: string, content: string): boolean {
-    let checkContent: string = content;
-    if (content.startsWith("#!")) {
-        checkContent = content.split("\n").slice(1).join("\n");
-    }
-    if (checkContent.startsWith("/*")) {
-        if (checkContent.startsWith(header)
-            || checkContent.startsWith("/* tslint:disable */")) {
-            // great
-            return false;
-        }
-        return true;
-    }
-    return false;
+/**
+ * Add or replace `header` in `content`.
+ *
+ * @param header header that should be upserted into content
+ * @param content current content to be updated
+ * @return updated content that contains header
+ */
+export function upsertHeader(header: string, content: string): string {
+    const [prefix, rest] = separatePrefixLines(content);
+    const preamble = prefix + header + "\n";
+    return preamble + rest.replace(/^(?:\s*\n)?(?:\/\*[\s\S]*?\*\/\s*\n)?/, "");
 }

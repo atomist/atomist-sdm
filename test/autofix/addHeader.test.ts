@@ -20,8 +20,8 @@ import * as assert from "power-assert";
 import {
     AddHeaderParameters,
     addHeaderTransform,
-    ApacheHeader,
-    hasDifferentHeader,
+    apacheHeader,
+    upsertHeader,
 } from "../../lib/autofix/addHeader";
 
 describe("addHeader", () => {
@@ -37,29 +37,259 @@ describe("addHeader", () => {
 
     });
 
-    describe("hasDifferentHeader", () => {
+    describe("upsertHeader", () => {
 
-        it("should find a different header", () => {
-            const c = "/*\n * Some header\n */\n";
-            assert(hasDifferentHeader(ApacheHeader, c));
+        it("should add the header at the very top of the file", () => {
+            const c = "import stuff from \"stuff\";\n\nconst foo = \"bar\";\n";
+            const n = upsertHeader("/*\n * Junk Header\n */\n", c);
+            const e = "/*\n * Junk Header\n */\n\nimport stuff from \"stuff\";\n\nconst foo = \"bar\";\n";
+            assert(n === e);
         });
 
-        it("should find a different header after #!", () => {
-            const c = "#!/use/bin/env node\n/*\n * Some license\n */\n";
-            assert(hasDifferentHeader(ApacheHeader, c));
+        it("should add the header replacing empty lines", () => {
+            const c = "\n\n\n\n\n\nimport stuff from \"stuff\";\n\nconst foo = \"bar\";\n";
+            const n = upsertHeader("/*\n * Junk Header\n */\n", c);
+            const e = "/*\n * Junk Header\n */\n\nimport stuff from \"stuff\";\n\nconst foo = \"bar\";\n";
+            assert(n === e);
         });
 
-        it("should ignore the same header", () => {
-            assert(!hasDifferentHeader(ApacheHeader, ApacheHeader));
+        it("should add the header after a sh-bang", () => {
+            const c = "#!/usr/bin/env ts-node;\nimport stuff from \"stuff\";\n\nconst foo = \"bar\";\n";
+            const n = upsertHeader("/*\n * Sub Header\n */\n", c);
+            const e = "#!/usr/bin/env ts-node;\n/*\n * Sub Header\n */\n\nimport stuff from \"stuff\";\n\nconst foo = \"bar\";\n";
+            assert(n === e);
         });
 
-        it("should ignore the same header after #!", () => {
-            assert(!hasDifferentHeader(ApacheHeader, `#!/usr/bin/env node\n${ApacheHeader}`));
+        it("should replace the current header", () => {
+            const c = `/*
+ * Copyright © 1892 Natomist, Inc.
+ *
+ * Licensed under the Restrictive License, get off my lawn.
+ */
+
+import * as path from "path";
+console.log(path.join(__dirname, "index.ts");
+process.exit(2);
+`;
+            const h = `/*
+ * Copyright © 2016 Atomist, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ */
+`;
+            const n = upsertHeader(h, c);
+            const e = `/*
+ * Copyright © 2016 Atomist, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ */
+
+import * as path from "path";
+console.log(path.join(__dirname, "index.ts");
+process.exit(2);
+`;
+            assert(n === e);
+        });
+
+        it("should only replace the first comment", () => {
+            const c = `/*
+ * Copyright © 1892 Natomist, Inc.
+ *
+ * Licensed under the Restrictive License, get off my lawn.
+ */
+
+/*
+ * This is just a regular comment.
+ */
+
+import * as path from "path";
+console.log(path.join(__dirname, "index.ts");
+process.exit(2);
+`;
+            const h = `/*
+ * Copyright © 2016 Atomist, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ */
+`;
+            const n = upsertHeader(h, c);
+            const e = `/*
+ * Copyright © 2016 Atomist, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ */
+
+/*
+ * This is just a regular comment.
+ */
+
+import * as path from "path";
+console.log(path.join(__dirname, "index.ts");
+process.exit(2);
+`;
+            assert(n === e);
+        });
+
+        it("should replace the current header after empty lines", () => {
+            const c = `
+
+/*
+ * Copyright © 1892 Natomist, Inc.
+ *
+ * Licensed under the Restrictive License, get off my lawn.
+ */
+
+import * as path from "path";
+console.log(path.join(__dirname, "index.ts");
+process.exit(2);
+`;
+            const h = `/*
+ * Copyright © 2016 Atomist, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ */
+`;
+            const n = upsertHeader(h, c);
+            const e = `/*
+ * Copyright © 2016 Atomist, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ */
+
+import * as path from "path";
+console.log(path.join(__dirname, "index.ts");
+process.exit(2);
+`;
+            assert(n === e);
+        });
+
+        it("should replace the current header after sh-bang", () => {
+            const c = `#!/usr/bin/env node
+/*
+ * Copyright © 1892 Natomist, Inc.
+ *
+ * Licensed under the Restrictive License, get off my lawn.
+ */
+
+import * as path from "path";
+console.log(path.join(__dirname, "index.ts");
+process.exit(2);
+`;
+            const h = `/*
+ * Copyright © 2016 Atomist, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ */
+`;
+            const n = upsertHeader(h, c);
+            const e = `#!/usr/bin/env node
+/*
+ * Copyright © 2016 Atomist, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ */
+
+import * as path from "path";
+console.log(path.join(__dirname, "index.ts");
+process.exit(2);
+`;
+            assert(n === e);
+        });
+
+        it("should replace the current header after sh-bang and empty lines", () => {
+            const c = `#! /usr/bin/env node
+
+/*
+ * Copyright (C) 1892 Natomist, Inc.
+ *
+ * Licensed under the Restrictive License, get off my lawn.
+ */
+
+import * as path from "path";
+console.log(path.join(__dirname, "index.ts");
+process.exit(2);
+`;
+            const h = `/*
+ * Copyright © 2016 Atomist, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ */
+`;
+            const n = upsertHeader(h, c);
+            const e = `#! /usr/bin/env node
+/*
+ * Copyright © 2016 Atomist, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ */
+
+import * as path from "path";
+console.log(path.join(__dirname, "index.ts");
+process.exit(2);
+`;
+            assert(n === e);
+        });
+
+        it("should update the date in the header", () => {
+            const c = `/*
+ * Copyright © 1763 Atomist, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import * as path from "path";
+console.log(path.join(__dirname, "index.ts");
+process.exit(2);
+`;
+            const n = upsertHeader(apacheHeader(), c);
+            const y = (new Date()).getFullYear();
+            const e = `/*
+ * Copyright © ${y} Atomist, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import * as path from "path";
+console.log(path.join(__dirname, "index.ts");
+process.exit(2);
+`;
+            assert(n === e);
         });
 
     });
 
-    describe("Allowed pre-header lines", () => {
+    describe("addHeaderTransform", () => {
+
         it("usually adds the header at the very top of the file", async () => {
             const p = InMemoryProject.of({
                 path: "something.ts",
@@ -70,7 +300,7 @@ describe("addHeader", () => {
 
             const newContent = (await p.findFile("something.ts")).getContentSync();
 
-            assert(newContent.startsWith(ApacheHeader));
+            assert(newContent.startsWith(apacheHeader()));
         });
 
         it("adds the header after a #! line", async () => {
@@ -83,7 +313,60 @@ describe("addHeader", () => {
 
             const newContent = (await p.findFile("something.ts")).getContentSync();
 
-            assert(newContent.startsWith("#!/usr/bin/env ts-node;\n" + ApacheHeader));
+            assert(newContent.startsWith("#!/usr/bin/env ts-node;\n" + apacheHeader()));
         });
+
+        it("should update the date in the header", async () => {
+            const p = InMemoryProject.of({
+                path: "index.ts",
+                content: `/*
+ * Copyright © 1763 Atomist, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import * as path from "path";
+console.log(path.join(__dirname, "index.ts");
+process.exit(2);
+`,
+            });
+            await addHeaderTransform(p, { parameters: new AddHeaderParameters() } as any);
+            const f = await p.getFile("index.ts");
+            const n = await f.getContent();
+            const y = (new Date()).getFullYear();
+            const e = `/*
+ * Copyright © ${y} Atomist, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import * as path from "path";
+console.log(path.join(__dirname, "index.ts");
+process.exit(2);
+`;
+            assert(n === e);
+        });
+
     });
+
 });
