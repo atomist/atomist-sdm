@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 -   Move TSLint from build step to code inspection. [#82](https://github.com/atomist/atomist-sdm/issues/82)
 -   Fail transfrom when npm install fails. [280d6b8](https://github.com/atomist/atomist-sdm/commit/280d6b893ac2c3c5d09454c0155971d8e1dec53e)
 -   Sync up kube specs and Dockerfile. [#85](https://github.com/atomist/atomist-sdm/issues/85)
+-   Upsert license headers. [#93](https://github.com/atomist/atomist-sdm/issues/93)
 
 ### Removed
 
