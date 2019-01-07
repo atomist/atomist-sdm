@@ -15,7 +15,6 @@
  */
 
 import {
-    logger,
     Parameter,
     Parameters,
     Project,
