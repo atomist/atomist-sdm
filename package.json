@@ -22,7 +22,7 @@
     "url": "https://github.com/atomist/atomist-sdm/issues"
   },
   "dependencies": {
-    "@atomist/automation-client": "1.2.1-remove-sha-branch-defaults.20190107113217",
+    "@atomist/automation-client": "1.2.1-remove-sha-branch-defaults.20190107134738",
     "@atomist/automation-client-ext-dashboard": "1.0.2-master.20190107121940",
     "@atomist/automation-client-ext-logzio": "1.0.2-master.20181213233859",
     "@atomist/automation-client-ext-raven": "1.0.2-master.20181213200324",
