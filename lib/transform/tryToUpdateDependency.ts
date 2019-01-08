@@ -26,6 +26,7 @@ import {
 import {
     CodeTransform,
     CodeTransformRegistration,
+    formatDate,
     spawnLog,
     StringCapturingProgressLog,
 } from "@atomist/sdm";
@@ -201,6 +202,6 @@ class BranchCommit implements EditMode {
     }
 
     get branch(): string {
-        return `atomist-update-${this.params.tag}-${Date.now()}`;
+        return `atomist-update-${this.params.tag}-${formatDate()}`;
     }
 }

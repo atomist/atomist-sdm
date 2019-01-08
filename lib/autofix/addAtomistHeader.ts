@@ -17,6 +17,8 @@
 import {
     allSatisfied,
     AutofixRegistration,
+    CommandHandlerRegistration,
+    DeclarationType,
     hasFileContaining,
     PushTest,
 } from "@atomist/sdm";
@@ -44,4 +46,9 @@ export function addAtomistHeader(name: string,
         transform: addHeaderTransform,
         parametersInstance,
     };
+}
+
+export const test: CommandHandlerRegistration = {
+    name: "bla",
+    parameters: { test: { required: true, pattern: "test" } }
 }

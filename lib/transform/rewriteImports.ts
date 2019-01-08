@@ -23,6 +23,7 @@ import {
 import {
     CodeTransform,
     CodeTransformRegistration,
+    formatDate,
 } from "@atomist/sdm";
 
 export const AutoMergeCheckSuccessLabel = "auto-merge:on-check-success";
@@ -100,6 +101,6 @@ class BranchCommit implements EditMode {
     }
 
     get branch(): string {
-        return `rewrite-imports-${Date.now()}`;
+        return `rewrite-imports-${formatDate()}`;
     }
 }
