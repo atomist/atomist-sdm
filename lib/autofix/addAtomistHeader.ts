@@ -17,8 +17,6 @@
 import {
     allSatisfied,
     AutofixRegistration,
-    CommandHandlerRegistration,
-    DeclarationType,
     hasFileContaining,
     PushTest,
 } from "@atomist/sdm";
