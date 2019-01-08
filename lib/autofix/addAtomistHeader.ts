@@ -50,5 +50,5 @@ export function addAtomistHeader(name: string,
 
 export const test: CommandHandlerRegistration = {
     name: "bla",
-    parameters: { test: { required: true, pattern: "test" } }
-}
+    parameters: { test: { required: true, pattern: "test" } },
+};
