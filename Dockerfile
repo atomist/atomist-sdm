@@ -44,9 +44,6 @@ ENV LEIN_ROOT true
 RUN curl -sL -o /usr/local/bin/lein https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein \
     && chmod +x /usr/local/bin/lein
 
-RUN curl -sL -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v1.10.8/bin/linux/amd64/kubectl \
-    && chmod +x /usr/local/bin/kubectl
-
 COPY package.json package-lock.json ./
 
 RUN npm ci \
