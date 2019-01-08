@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019 Atomist, Inc.
+ * Copyright © 2018 Atomist, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,3 @@ export function addAtomistHeader(name: string,
         parametersInstance,
     };
 }
-
-export const test: CommandHandlerRegistration = {
-    name: "bla",
-    parameters: { test: { required: true, pattern: "test" } },
-};
