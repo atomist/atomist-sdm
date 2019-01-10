@@ -28,7 +28,7 @@
     "@atomist/automation-client-ext-raven": "1.0.2-master.20181213200324",
     "@atomist/microgrammar": "1.0.1-master.20181109093737",
     "@atomist/sdm": "1.2.1-master.20190107094905",
-    "@atomist/sdm-core": "1.2.1-kubectl-removal.20190110162518",
+    "@atomist/sdm-core": "1.2.1-kubectl-removal.20190110171320",
     "@atomist/sdm-pack-build": "1.0.4-master.20181217220011",
     "@atomist/sdm-pack-changelog": "1.0.2-master.20181217165351",
     "@atomist/sdm-pack-docker": "1.0.3-master.20181218081846",
