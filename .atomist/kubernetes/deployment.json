@@ -7,10 +7,6 @@
           {
             "env": [
               {
-                "name": "ATOMIST_DEPLOYMENT_NAME",
-                "value": "atomist-sdm"
-              },
-              {
                 "name": "ATOMIST_DEPLOYMENT_NAMESPACE",
                 "valueFrom": {
                   "fieldRef": {
