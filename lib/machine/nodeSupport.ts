@@ -151,7 +151,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         options: {
             ...sdm.configuration.sdm.docker.hub as DockerOptions,
             push: true,
-            builder: "kaniko",
+            builder: "docker",
         },
     })
         .withProjectListener(NodeModulesProjectListener)
