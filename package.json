@@ -31,7 +31,7 @@
     "@atomist/sdm-core": "1.2.1-kubectl-removal.20190110194041",
     "@atomist/sdm-pack-build": "1.0.4-master.20181217220011",
     "@atomist/sdm-pack-changelog": "1.0.2-master.20181217165351",
-    "@atomist/sdm-pack-docker": "1.0.3-kaniko.20190111093749",
+    "@atomist/sdm-pack-docker": "1.1.0-kaniko.20190111103520",
     "@atomist/sdm-pack-issue": "1.1.1-master.20190108144409",
     "@atomist/sdm-pack-k8": "1.0.2-master.20181211175728",
     "@atomist/sdm-pack-node": "1.0.3-master.20181226020915",
