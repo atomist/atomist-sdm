@@ -151,10 +151,10 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
     dockerBuild.with({
         ...NodeDefaultOptions,
         name: "npm-docker-build",
-        imageNameCreator: DefaultDockerImageNameCreator,
         options: {
             ...sdm.configuration.sdm.docker.hub as DockerOptions,
             push: true,
+            builder: "kaniko",
         },
     })
         .withProjectListener(NodeModulesProjectListener)

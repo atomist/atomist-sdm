@@ -1,5 +1,3 @@
-FROM gcr.io/kaniko-project/executor:v0.7.0
-
 FROM ubuntu:18.04
 
 LABEL maintainer="Atomist <docker@atomist.com>"
@@ -27,6 +25,7 @@ RUN apt-get update && apt-get install -y \
         build-essential \
         curl \
         git \
+        vim \
     && rm -rf /var/lib/apt/lists/*
 
 RUN git config --global user.email "bot@atomist.com" \
@@ -45,6 +44,8 @@ RUN apt-get update && apt-get install -y \
 ENV LEIN_ROOT true
 RUN curl -sL -o /usr/local/bin/lein https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein \
     && chmod +x /usr/local/bin/lein
+
+COPY --from=gcr.io/kaniko-project/executor:v0.7.0 /kaniko /kaniko
 
 COPY package.json package-lock.json ./
 
