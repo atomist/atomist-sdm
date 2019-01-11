@@ -14,14 +14,14 @@ RUN mkdir -p /atomist-sdm/app
 
 WORKDIR /atomist-sdm/app
 
-# Declaring a volume will instruct kaniko to skip the directory when snapshotting
-VOLUME /atomist-sdm
-
 COPY package.json package-lock.json ./
 
 RUN npm ci \
     && npm cache clean --force
 
 COPY . .
+
+# Declaring a volume will instruct kaniko to skip the directory when snapshotting
+VOLUME /atomist-sdm
 
 CMD ["/atomist-sdm/app/node_modules/.bin/atm-start"]
