@@ -48,9 +48,9 @@
     "minimatch": "^3.0.4",
     "semver": "^5.6.0",
     "spdx-license-list": "^4.0.0",
-    "tslint": "^5.11.0",
-    "typedoc": "^0.13.0",
-    "typescript": "^3.1.6",
+    "tslint": "^5.12.1",
+    "typedoc": "^0.14.2",
+    "typescript": "^3.2.4",
     "uuid": "^3.2.1"
   },
   "devDependencies": {
