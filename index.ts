@@ -59,6 +59,6 @@ export const configuration: Configuration = {
         },
         kubernetes: {
             isolateAll: true,
-        }
+        },
     },
 };
