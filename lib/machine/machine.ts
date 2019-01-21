@@ -39,6 +39,7 @@ import {
     DisableDeploy,
     EnableDeploy,
     gitHubGoalStatus,
+    goalScheduling,
     goalState,
     IsInLocalMode,
 } from "@atomist/sdm-core";
@@ -185,6 +186,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
     addTeamPolicies(sdm);
 
     sdm.addExtensionPacks(
+        goalScheduling(),
         changelogSupport(),
         BadgeSupport,
         buildAwareCodeTransforms({
