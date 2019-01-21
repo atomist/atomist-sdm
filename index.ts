@@ -57,5 +57,8 @@ export const configuration: Configuration = {
             enabled: true,
             path: "/opt/data",
         },
+        kubernetes: {
+            isolateAll: true,
+        }
     },
 };
