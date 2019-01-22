@@ -21,6 +21,7 @@ ENV SUPPRESS_NO_CONFIG_WARNING true
 RUN apt-get update && apt-get install -y \
         build-essential \
         curl \
+        wget \
         git \
         vim \
         docker.io \
