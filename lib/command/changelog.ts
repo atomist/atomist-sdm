@@ -51,7 +51,7 @@ export const GenerateChangelog: CommandHandlerRegistration<{ token: string }> = 
     name: "generate-changelog",
     intent: "release changelog",
     description: "Generate a changelog across automation-client, sdm, sdm-core, sdm-local and cli projects",
-    parameters: { token: { declarationType: DeclarationType.secret, uri: Secrets.userToken("repo") } },
+    parameters: { token: { declarationType: DeclarationType.Secret, uri: Secrets.userToken("repo") } },
     listener: async ci => {
         // "added" | "changed" | "deprecated" | "removed" | "fixed" | "security";
         const changelog = {
