@@ -15,18 +15,22 @@
  */
 
 import {
+    allSatisfied,
     LogSuppressor,
+    not,
     SoftwareDeliveryMachine,
 } from "@atomist/sdm";
 import {
     DockerOptions,
     HasDockerfile,
 } from "@atomist/sdm-pack-docker";
-import { releaseDocker } from "./goals";
+import { IsNode } from "@atomist/sdm-pack-node";
 import {
-    DockerReleasePreparations,
-    executeReleaseDocker,
-} from "./release";
+    isNamed,
+    isOrgNamed,
+} from "../support/identityPushTests";
+import { releaseDocker } from "./goals";
+import { executeReleaseDocker } from "./release";
 
 /**
  * Add Docker implementations of goals to SDM.
@@ -36,12 +40,18 @@ import {
  */
 export function addDockerSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMachine {
 
-    releaseDocker.with({
+    releaseDocker
+        .with({
+            name: "docker-release-global-sdm",
+            goalExecutor: executeReleaseDocker(
+                sdm.configuration.sdm.docker.t095sffbk as DockerOptions),
+            pushTest: allSatisfied(IsNode, HasDockerfile, allSatisfied(isOrgNamed("atomisthq"), isNamed("global-sdm"))),
+            logInterpreter: LogSuppressor,
+        }).with({
         name: "docker-release",
         goalExecutor: executeReleaseDocker(
-            DockerReleasePreparations,
             sdm.configuration.sdm.docker.hub as DockerOptions),
-        pushTest: HasDockerfile,
+        pushTest: allSatisfied(IsNode, HasDockerfile, not(allSatisfied(isOrgNamed("atomisthq"), isNamed("global-sdm")))),
         logInterpreter: LogSuppressor,
     });
 

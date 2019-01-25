@@ -415,83 +415,63 @@ export function executeReleaseNpm(
     };
 }
 
-export async function dockerReleasePreparation(p: GitProject, gi: GoalInvocation): Promise<ExecuteGoalResult> {
-    const version = await rwlcVersion(gi);
-    const dockerOptions = configurationValue<DockerOptions>("sdm.docker.hub");
-    const image = dockerImage({
-        registry: dockerOptions.registry,
-        name: p.name,
-        version,
-    });
-
-    const cmds: SpawnWatchCommand[] = [
-        {
-            cmd: {
-                command: "docker",
-                args: ["login", "--username", dockerOptions.user, "--password", dockerOptions.password],
-            },
-        },
-        {
-            cmd: { command: "docker", args: ["pull", image] },
-        },
-    ];
-    const els = cmds.map(spawnExecuteLogger);
-    return executeLoggers(els, gi.progressLog);
-}
-
-export const DockerReleasePreparations: PrepareForGoalExecution[] = [dockerReleasePreparation];
-
 export function executeReleaseDocker(
-    preparations: PrepareForGoalExecution[] = DockerReleasePreparations,
     options?: DockerOptions,
 ): ExecuteGoal {
 
     return async (gi: GoalInvocation) => {
-        const { configuration, credentials, id, context } = gi;
         if (!options.registry) {
             throw new Error(`No registry defined in Docker options`);
         }
-        return configuration.sdm.projectLoader.doWithProject({
-            credentials,
-            id,
-            context,
-            readOnly: false,
-        }, async (project: GitProject) => {
-
-            for (const preparation of preparations) {
-                const pResult = await preparation(project, gi);
-                if (pResult && pResult.code !== 0) {
-                    return pResult;
-                }
-            }
-
-            const version = await rwlcVersion(gi);
-            const versionRelease = releaseOrPreRelease(version, gi);
-            const image = dockerImage({
-                registry: options.registry,
-                name: gi.goalEvent.repo.name,
-                version,
-            });
-            const tag = dockerImage({
-                registry: options.registry,
-                name: gi.goalEvent.repo.name,
-                version: versionRelease,
-            });
-
-            const cmds: SpawnWatchCommand[] = [
-                {
-                    cmd: { command: "docker", args: ["tag", image, tag] },
-                },
-                {
-                    cmd: { command: "docker", args: ["push", tag] },
-                },
-                {
-                    cmd: { command: "docker", args: ["rmi", tag] },
-                },
-            ];
-            const els = cmds.map(spawnExecuteLogger);
-            return executeLoggers(els, gi.progressLog);
+        const version = await rwlcVersion(gi);
+        const image = dockerImage({
+            registry: options.registry,
+            name: gi.goalEvent.repo.name,
+            version,
         });
+
+        const loginArgs = [];
+        if (/[^A-Za-z0-9]/.test(options.registry)) {
+            loginArgs.push(options.registry);
+        }
+
+        const loginCmds: SpawnWatchCommand[] = [
+            {
+                cmd: {
+                    command: "docker",
+                    args: ["login", "--username", options.user, "--password", options.password, ...loginArgs],
+                },
+            },
+            {
+                cmd: { command: "docker", args: ["pull", image] },
+            },
+        ];
+        let els = loginCmds.map(spawnExecuteLogger);
+        const result = await executeLoggers(els, gi.progressLog);
+        if (result.code !== 0) {
+            return result;
+        }
+
+        const versionRelease = releaseOrPreRelease(version, gi);
+        const tag = dockerImage({
+            registry: options.registry,
+            name: gi.goalEvent.repo.name,
+            version: versionRelease,
+        });
+
+        const cmds: SpawnWatchCommand[] = [
+            {
+                cmd: { command: "docker", args: ["tag", image, tag] },
+            },
+            {
+                cmd: { command: "docker", args: ["push", tag] },
+            },
+            {
+                cmd: { command: "docker", args: ["rmi", tag] },
+            },
+        ];
+        els = cmds.map(spawnExecuteLogger);
+        return executeLoggers(els, gi.progressLog);
     };
 }
 
