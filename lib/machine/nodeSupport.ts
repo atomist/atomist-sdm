@@ -51,6 +51,10 @@ import {
     RunTslint,
     tsLintReviewCategory,
 } from "../inspection/tslint";
+import {
+    isNamed,
+    isOrgNamed,
+} from "../support/identityPushTests";
 import { AutomationClientTagger } from "../support/tagger";
 import { RewriteImports } from "../transform/rewriteImports";
 import { TryToUpdateAtomistDependencies } from "../transform/tryToUpdateAtomistDependencies";
@@ -146,6 +150,15 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         .withProjectListener(NpmCompileProjectListener);
 
     dockerBuild.with({
+        ...NodeDefaultOptions,
+        name: "npm-docker-build-global-sdm",
+        options: {
+            ...sdm.configuration.sdm.docker.t095sffbk as DockerOptions,
+            push: true,
+            builder: "docker",
+        },
+        pushTest: allSatisfied(isOrgNamed("atomisthq"), isNamed("global-sdm")),
+    }).with({
         ...NodeDefaultOptions,
         name: "npm-docker-build",
         options: {
