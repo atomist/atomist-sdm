@@ -57,7 +57,7 @@ export function kubernetesDeploymentData(sdm: SoftwareDeliveryMachine): (g: SdmG
 
 function namespaceFromGoal(goal: SdmGoalEvent): string {
     const name = goal.repo.name;
-    if (name === "atomist-internal-sdm") {
+    if (name === "atomist-internal-sdm" || name === "global-sdm") {
         if (goal.environment === StagingEnvironment.replace(/\/$/, "")) {
             return "sdm-testing";
         } else if (goal.environment === ProductionEnvironment.replace(/\/$/, "")) {

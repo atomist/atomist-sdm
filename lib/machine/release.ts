@@ -34,7 +34,9 @@ import {
     GoalInvocation,
     PrepareForGoalExecution,
     ProgressLog,
+    projectConfigurationValue,
     PushTest,
+    SdmGoalState,
     spawnLog,
     SpawnLogCommand,
     SpawnLogOptions,
@@ -345,6 +347,14 @@ export function executeReleaseNpm(
             context,
             readOnly: false,
         }, async (project: GitProject) => {
+
+            if (!(await projectConfigurationValue<boolean>("npm.publish.enabled", project, true))) {
+                return {
+                    code: 0,
+                    description: "Publish disabled",
+                    state: SdmGoalState.success,
+                };
+            }
 
             await fs.writeFile(path.join(project.baseDir, ".npmrc"), options.npmrc);
 
