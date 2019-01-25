@@ -22,7 +22,10 @@ import {
     SoftwareDeliveryMachine,
 } from "@atomist/sdm";
 import { tagRepo } from "@atomist/sdm-core";
-import { DockerOptions } from "@atomist/sdm-pack-docker";
+import {
+    DockerOptions,
+    HasDockerfile,
+} from "@atomist/sdm-pack-docker";
 import { singleIssuePerCategoryManaging } from "@atomist/sdm-pack-issue";
 import {
     executePublish,
@@ -157,7 +160,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
             push: true,
             builder: "docker",
         },
-        pushTest: allSatisfied(isOrgNamed("atomisthq"), isNamed("global-sdm")),
+        pushTest: allSatisfied(IsNode, HasDockerfile, isOrgNamed("atomisthq"), isNamed("global-sdm")),
     }).with({
         ...NodeDefaultOptions,
         name: "npm-docker-build",
@@ -166,6 +169,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
             push: true,
             builder: "docker",
         },
+        pushTest: allSatisfied(IsNode, HasDockerfile, not(allSatisfied(isOrgNamed("atomisthq"), isNamed("global-sdm")))),
     })
         .withProjectListener(NodeModulesProjectListener)
         .withProjectListener(NpmVersionProjectListener)
