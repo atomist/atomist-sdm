@@ -47,16 +47,16 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 |`@atomist/automation-client-ext-dashboard`|`1.0.2-master.20190107121940`|Atomist|[https://github.com/atomist/automation-client-ext-dashboard](https://github.com/atomist/automation-client-ext-dashboard)|
 |`@atomist/automation-client-ext-logzio`|`1.0.2-master.20181213233859`|Atomist|[https://github.com/atomist/automation-client-ext-logzio](https://github.com/atomist/automation-client-ext-logzio)|
 |`@atomist/automation-client-ext-raven`|`1.0.2-master.20181213200324`|Atomist|[https://github.com/atomist/automation-client-ext-raven](https://github.com/atomist/automation-client-ext-raven)|
-|`@atomist/sdm-core`|`1.3.0-master.20190124142143`|Atomist|[https://github.com/atomist/sdm-core](https://github.com/atomist/sdm-core)|
+|`@atomist/sdm-core`|`1.3.0-master.20190129203235`|Atomist|[https://github.com/atomist/sdm-core](https://github.com/atomist/sdm-core)|
 |`@atomist/sdm-pack-build`|`1.0.3`|Atomist|[https://github.com/atomist/sdm-pack-build](https://github.com/atomist/sdm-pack-build)|
 |`@atomist/sdm-pack-build`|`1.0.4-master.20181217220011`|Atomist|[https://github.com/atomist/sdm-pack-build](https://github.com/atomist/sdm-pack-build)|
 |`@atomist/sdm-pack-changelog`|`1.0.2-master.20181217165351`|Atomist|[https://github.com/atomist/sdm-pack-changelog](https://github.com/atomist/sdm-pack-changelog)|
-|`@atomist/sdm-pack-docker`|`1.1.0-kaniko.20190121092507`|Atomist|[https://github.com/atomist/sdm-pack-docker](https://github.com/atomist/sdm-pack-docker)|
+|`@atomist/sdm-pack-docker`|`1.1.0-kaniko.20190125114959`|Atomist|[https://github.com/atomist/sdm-pack-docker](https://github.com/atomist/sdm-pack-docker)|
 |`@atomist/sdm-pack-issue`|`1.1.1-master.20190120184619`|Atomist|[https://github.com/atomist/sdm-pack-issue](https://github.com/atomist/sdm-pack-issue)|
 |`@atomist/sdm-pack-k8`|`1.0.2-master.20181211175728`|Atomist|[https://github.com/atomist/sdm-pack-k8](https://github.com/atomist/sdm-pack-k8)|
-|`@atomist/sdm-pack-node`|`1.0.3-master.20190110120831`|Atomist|[https://github.com/atomist/sdm-pack-node](https://github.com/atomist/sdm-pack-node)|
+|`@atomist/sdm-pack-node`|`1.0.3-master.20190129042022`|Atomist|[https://github.com/atomist/sdm-pack-node](https://github.com/atomist/sdm-pack-node)|
 |`@atomist/sdm-pack-spring`|`1.1.1-master.20190111110331`|Atomist|[https://github.com/atomist/sdm-pack-spring](https://github.com/atomist/sdm-pack-spring)|
-|`@atomist/sdm`|`1.3.0-master.20190125092715`|Atomist|[https://github.com/atomist/sdm](https://github.com/atomist/sdm)|
+|`@atomist/sdm`|`1.3.0-master.20190129205714`|Atomist|[https://github.com/atomist/sdm](https://github.com/atomist/sdm)|
 |`@atomist/slack-messages`|`1.1.0`|Atomist|[https://github.com/atomist/slack-messages](https://github.com/atomist/slack-messages)|
 |`@atomist/slack-messages`|`1.1.0-master.20181115202354`|Atomist|[https://github.com/atomist/slack-messages](https://github.com/atomist/slack-messages)|
 |`@kubernetes/client-node`|`0.7.2`|Kubernetes Authors|[https://github.com/kubernetes-client/javascript](https://github.com/kubernetes-client/javascript)|
@@ -265,7 +265,7 @@ GNU General Public License v3.0 only - [http://www.gnu.org/licenses/gpl-3.0-stan
 | Name | Version | Publisher | Repository |
 |------|---------|-----------|------------|
 |`@atomist/antlr`|`1.0.2`|Atomist|[https://github.com/atomist/antlr-ts](https://github.com/atomist/antlr-ts)|
-|`@atomist/automation-client`|`1.3.0-master.20190124132630`|Atomist|[https://github.com/atomist/automation-client](https://github.com/atomist/automation-client)|
+|`@atomist/automation-client`|`1.3.0-master.20190128222233`|Atomist|[https://github.com/atomist/automation-client](https://github.com/atomist/automation-client)|
 |`@atomist/microgrammar`|`1.0.1`|Atomist|[https://github.com/atomist/microgrammar](https://github.com/atomist/microgrammar)|
 |`@atomist/microgrammar`|`1.0.1-master.20181109093737`|Atomist|[https://github.com/atomist/microgrammar](https://github.com/atomist/microgrammar)|
 |`@atomist/microgrammar`|`1.0.3`|Atomist|[https://github.com/atomist/microgrammar](https://github.com/atomist/microgrammar)|
@@ -549,7 +549,7 @@ MIT License - [http://www.opensource.org/licenses/MIT](http://www.opensource.org
 |`apollo-codegen-scala`|`0.32.1`|Apollo GraphQL|[https://github.com/apollographql/apollo-tooling](https://github.com/apollographql/apollo-tooling)|
 |`apollo-codegen-swift`|`0.32.1`|Apollo GraphQL|[https://github.com/apollographql/apollo-tooling](https://github.com/apollographql/apollo-tooling)|
 |`apollo-codegen-typescript`|`0.32.1`|Apollo GraphQL|[https://github.com/apollographql/apollo-tooling](https://github.com/apollographql/apollo-tooling)|
-|`apollo-datasource`|`0.2.1`|opensource@apollographql.com|[https://github.com/apollographql/apollo-server/tree/master/packages/apollo-datasource](https://github.com/apollographql/apollo-server/tree/master/packages/apollo-datasource)|
+|`apollo-datasource`|`0.2.2`|opensource@apollographql.com|[https://github.com/apollographql/apollo-server/tree/master/packages/apollo-datasource](https://github.com/apollographql/apollo-server/tree/master/packages/apollo-datasource)|
 |`apollo-engine-reporting-protobuf`|`0.0.1`|Apollo|[https://github.com/apollographql/apollo-engine-reporting/tree/master/packages/apollo-engine-reporting-protobuf](https://github.com/apollographql/apollo-engine-reporting/tree/master/packages/apollo-engine-reporting-protobuf)|
 |`apollo-engine-reporting`|`0.0.2`|Apollo|[https://github.com/apollographql/apollo-engine-reporting](https://github.com/apollographql/apollo-engine-reporting)|
 |`apollo-env`|`0.3.0`|opensource@apollographql.com|[https://github.com/apollographql/apollo-tooling](https://github.com/apollographql/apollo-tooling)|
@@ -561,7 +561,7 @@ MIT License - [http://www.opensource.org/licenses/MIT](http://www.opensource.org
 |`apollo-link-http`|`1.5.9`|Evans Hauser|[https://github.com/apollographql/apollo-link](https://github.com/apollographql/apollo-link)|
 |`apollo-link-ws`|`1.0.12`|Evans Hauser|[https://github.com/apollographql/apollo-link](https://github.com/apollographql/apollo-link)|
 |`apollo-link`|`1.2.6`|Evans Hauser|[https://github.com/apollographql/apollo-link](https://github.com/apollographql/apollo-link)|
-|`apollo-server-caching`|`0.2.1`|opensource@apollographql.com|[https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-caching](https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-caching)|
+|`apollo-server-caching`|`0.2.2`|opensource@apollographql.com|[https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-caching](https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-caching)|
 |`apollo-server-env`|`2.0.2`|opensource@apollographql.com|[https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-env](https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-env)|
 |`apollo-server-env`|`2.2.0`|opensource@apollographql.com|[https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-env](https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-env)|
 |`apollo-server-errors`|`2.2.0`|opensource@apollographql.com|[https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-errors](https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-errors)|
@@ -690,7 +690,7 @@ MIT License - [http://www.opensource.org/licenses/MIT](http://www.opensource.org
 |`copyfiles`|`2.1.0`||[https://github.com/calvinmetcalf/copyfiles](https://github.com/calvinmetcalf/copyfiles)|
 |`core-js`|`2.6.2`||[https://github.com/zloirock/core-js](https://github.com/zloirock/core-js)|
 |`core-js`|`2.6.3`||[https://github.com/zloirock/core-js](https://github.com/zloirock/core-js)|
-|`core-js`|`3.0.0-beta.10`||[https://github.com/zloirock/core-js](https://github.com/zloirock/core-js)|
+|`core-js`|`3.0.0-beta.11`||[https://github.com/zloirock/core-js](https://github.com/zloirock/core-js)|
 |`core-util-is`|`1.0.2`|Isaac Z. Schlueter|[https://github.com/isaacs/core-util-is](https://github.com/isaacs/core-util-is)|
 |`cors`|`2.8.5`|Troy Goode|[https://github.com/expressjs/cors](https://github.com/expressjs/cors)|
 |`cosmiconfig`|`5.0.7`|David Clark|[https://github.com/davidtheclark/cosmiconfig](https://github.com/davidtheclark/cosmiconfig)|
@@ -1010,7 +1010,7 @@ MIT License - [http://www.opensource.org/licenses/MIT](http://www.opensource.org
 |`log-symbols`|`2.2.0`|Sindre Sorhus|[https://github.com/sindresorhus/log-symbols](https://github.com/sindresorhus/log-symbols)|
 |`log-update`|`2.3.0`|Sindre Sorhus|[https://github.com/sindresorhus/log-update](https://github.com/sindresorhus/log-update)|
 |`logform`|`1.10.0`|Charlie Robbins|[https://github.com/winstonjs/logform](https://github.com/winstonjs/logform)|
-|`logform`|`2.1.0`|Charlie Robbins|[https://github.com/winstonjs/logform](https://github.com/winstonjs/logform)|
+|`logform`|`2.1.1`|Charlie Robbins|[https://github.com/winstonjs/logform](https://github.com/winstonjs/logform)|
 |`longest-streak`|`2.0.2`|Titus Wormer|[https://github.com/wooorm/longest-streak](https://github.com/wooorm/longest-streak)|
 |`lower-case-first`|`1.0.2`|Blake Embrey|[https://github.com/blakeembrey/lower-case-first](https://github.com/blakeembrey/lower-case-first)|
 |`lower-case`|`1.1.4`|Blake Embrey|[https://github.com/blakeembrey/lower-case](https://github.com/blakeembrey/lower-case)|
@@ -1301,7 +1301,7 @@ MIT License - [http://www.opensource.org/licenses/MIT](http://www.opensource.org
 |`trim`|`0.0.1`|TJ Holowaychuk||
 |`triple-beam`|`1.3.0`|Charlie Robbins|[https://github.com/winstonjs/triple-beam](https://github.com/winstonjs/triple-beam)|
 |`trough`|`1.0.3`|Titus Wormer|[https://github.com/wooorm/trough](https://github.com/wooorm/trough)|
-|`ts-essentials`|`1.0.2`|Krzysztof Kaczor|[https://github.com/krzkaczor/ts-essentials](https://github.com/krzkaczor/ts-essentials)|
+|`ts-essentials`|`1.0.4`|Krzysztof Kaczor|[https://github.com/krzkaczor/ts-essentials](https://github.com/krzkaczor/ts-essentials)|
 |`ts-log`|`2.1.3`|Stagnation Lab|[https://github.com/kallaspriit/ts-log](https://github.com/kallaspriit/ts-log)|
 |`ts-node`|`7.0.1`|Blake Embrey|[https://github.com/TypeStrong/ts-node](https://github.com/TypeStrong/ts-node)|
 |`tsutils`|`2.29.0`|Klaus Meinhardt|[https://github.com/ajafff/tsutils](https://github.com/ajafff/tsutils)|
