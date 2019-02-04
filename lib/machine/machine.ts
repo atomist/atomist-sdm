@@ -24,7 +24,6 @@ import {
     gitHubTeamVoter,
     GoalApprovalRequestVote,
     goals,
-    Immaterial,
     IsDeployEnabled,
     not,
     slackFooter,
@@ -88,6 +87,7 @@ import {
     FixGoals,
     KubernetesDeployGoals,
     LocalGoals,
+    MavenDockerReleaseGoals,
     SimplifiedKubernetesDeployGoals,
 } from "./goals";
 import { addHomebrewSupport } from "./homebrewSupport";
@@ -135,11 +135,15 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         // Maven
         whenPushSatisfies(IsMaven, not(MaterialChangeToJavaRepo))
             .itMeans("No Material Change")
-            .setGoals(Immaterial),
+            .setGoals(FixGoals),
 
         whenPushSatisfies(allSatisfied(IsMaven, MaterialChangeToJavaRepo))
             .itMeans("No Material Change")
             .setGoals(BuildGoals),
+
+        whenPushSatisfies(IsMaven, MaterialChangeToJavaRepo, HasDockerfile, ToDefaultBranch)
+            .itMeans("Maven Docker Release Build")
+            .setGoals(MavenDockerReleaseGoals),
 
         // Simplified deployment goal set for atomist-sdm, k8-automation; we are skipping
         // testing for these and deploying straight into their respective namespaces
@@ -148,15 +152,15 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             .itMeans("Simplified Deploy")
             .setGoals(SimplifiedKubernetesDeployGoals),
 
-        whenPushSatisfies(anySatisfied(IsNode, IsMaven), HasDockerfile, ToDefaultBranch, IsDeployEnabled)
+        whenPushSatisfies(anySatisfied(IsNode), HasDockerfile, ToDefaultBranch, IsDeployEnabled)
             .itMeans("Deploy")
             .setGoals(KubernetesDeployGoals),
 
-        whenPushSatisfies(anySatisfied(IsNode, IsMaven), HasDockerfile, ToDefaultBranch)
+        whenPushSatisfies(anySatisfied(IsNode), HasDockerfile, ToDefaultBranch)
             .itMeans("Docker Release Build")
             .setGoals(DockerReleaseGoals),
 
-        whenPushSatisfies(anySatisfied(IsNode, IsMaven), HasDockerfile)
+        whenPushSatisfies(anySatisfied(IsNode), HasDockerfile)
             .itMeans("Docker Build")
             .setGoals(DockerGoals),
 
