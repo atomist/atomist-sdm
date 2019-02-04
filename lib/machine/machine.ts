@@ -140,6 +140,10 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             .itMeans("No Material Change")
             .setGoals(Immaterial),
 
+        whenPushSatisfies(allSatisfied(IsMaven, MaterialChangeToJavaRepo))
+            .itMeans("No Material Change")
+            .setGoals(BuildGoals),
+
         // Simplified deployment goal set for atomist-sdm, k8-automation; we are skipping
         // testing for these and deploying straight into their respective namespaces
         whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, IsAtomistAutomationClient,
