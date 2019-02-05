@@ -72,18 +72,25 @@ import {
     autoCodeInspection,
     autofix,
     build,
+    demoProductionDeploy,
     dockerBuild,
-    productionDeployment,
-    productionDeploymentWithApproval,
+    globalProductionDeploy,
+    globalStagingDeploy,
+    productionDeploy,
+    productionDeployWithApproval,
     publish,
     publishWithApproval,
     releaseDocs,
     releaseNpm,
     releaseVersion,
-    stagingDeployment,
+    stagingDeploy,
     version,
 } from "./goals";
-import { kubernetesDeploymentData } from "./k8Support";
+import {
+    kubernetesDeployRegistrationDemo,
+    kubernetesDeployRegistrationGlobal,
+    kubernetesDeployRegistrationProd,
+} from "./k8sSupport";
 import {
     DocsReleasePreparations,
     executeReleaseDocs,
@@ -184,6 +191,13 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         .withProjectListener(NpmVersionProjectListener)
         .withProjectListener(NpmCompileProjectListener);
 
+    stagingDeploy.with(kubernetesDeployRegistrationProd);
+    productionDeploy.with(kubernetesDeployRegistrationProd);
+    productionDeployWithApproval.with(kubernetesDeployRegistrationProd);
+    globalStagingDeploy.with(kubernetesDeployRegistrationGlobal);
+    globalProductionDeploy.with(kubernetesDeployRegistrationGlobal);
+    demoProductionDeploy.with(kubernetesDeployRegistrationDemo);
+
     releaseNpm.with({
         ...NodeDefaultOptions,
         name: "npm-release",
@@ -204,10 +218,6 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         name: "npm-release-version",
         goalExecutor: executeReleaseVersion(NodeProjectIdentifier),
     });
-
-    stagingDeployment.withDeployment(kubernetesDeploymentData(sdm));
-    productionDeployment.withDeployment(kubernetesDeploymentData(sdm));
-    productionDeploymentWithApproval.withDeployment(kubernetesDeploymentData(sdm));
 
     sdm.addFirstPushListener(tagRepo(AutomationClientTagger));
 
