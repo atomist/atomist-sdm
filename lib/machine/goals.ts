@@ -33,7 +33,7 @@ import {
 import { Build } from "@atomist/sdm-pack-build";
 import { Changelog } from "@atomist/sdm-pack-changelog/lib/goal/Changelog";
 import { DockerBuild } from "@atomist/sdm-pack-docker";
-import { KubernetesDeploy } from "@atomist/sdm-pack-k8/lib/support/KubernetesDeploy";
+import { KubernetesDeploy } from "@atomist/sdm-pack-k8s";
 
 export const autoCodeInspection = new AutoCodeInspection();
 export const pushImpact = new PushImpact();
@@ -44,9 +44,13 @@ export const tag = new Tag();
 export const dockerBuild = new DockerBuild();
 export const fingerprint = new Fingerprint();
 
-export const stagingDeployment = new KubernetesDeploy({ environment: "testing", approval: true });
-export const productionDeployment = new KubernetesDeploy({ environment: "production" });
-export const productionDeploymentWithApproval = new KubernetesDeploy({ environment: "production", approval: true });
+export const stagingDeploy = new KubernetesDeploy({ environment: "testing", approval: true });
+export const productionDeploy = new KubernetesDeploy({ environment: "production" });
+export const productionDeployWithApproval = new KubernetesDeploy({ environment: "production", approval: true });
+export const globalStagingDeploy = new KubernetesDeploy({ environment: "testing", approval: true });
+export const globalProductionDeploy = new KubernetesDeploy({ environment: "production" });
+export const demoProductionDeploy = new KubernetesDeploy({ environment: "production" });
+
 export const releaseChangelog = new Changelog();
 
 export const publish = new GoalWithFulfillment({
@@ -181,16 +185,34 @@ export const DockerReleaseGoals = goals("Docker Build with Release")
 // Docker build and testing and production kubernetes deploy
 export const KubernetesDeployGoals = goals("Deploy")
     .plan(DockerGoals)
-    .plan(stagingDeployment).after(dockerBuild)
-    .plan(productionDeployment).after(stagingDeployment, autoCodeInspection)
-    .plan(releaseNpm, releaseDocker, releaseDocs, releaseVersion).after(productionDeployment)
+    .plan(stagingDeploy).after(dockerBuild)
+    .plan(productionDeploy).after(stagingDeploy, autoCodeInspection)
+    .plan(releaseNpm, releaseDocker, releaseDocs, releaseVersion).after(productionDeploy)
     .plan(releaseChangelog).after(releaseVersion)
     .plan(releaseTag).after(releaseNpm, releaseDocker);
 
 // Docker build and testing and production kubernetes deploy
 export const SimplifiedKubernetesDeployGoals = goals("Simplified Deploy")
     .plan(DockerGoals)
-    .plan(productionDeploymentWithApproval).after(dockerBuild, autoCodeInspection)
-    .plan(releaseNpm, releaseDocker, releaseDocs, releaseVersion).after(productionDeploymentWithApproval)
+    .plan(productionDeployWithApproval).after(dockerBuild, autoCodeInspection)
+    .plan(releaseNpm, releaseDocker, releaseDocs, releaseVersion).after(productionDeployWithApproval)
+    .plan(releaseChangelog).after(releaseVersion)
+    .plan(releaseTag).after(releaseNpm, releaseDocker);
+
+// Docker build and testing and production kubernetes deploy to global cluster
+export const GlobalKubernetesDeployGoals = goals("Deploy")
+    .plan(DockerGoals)
+    .plan(globalStagingDeploy).after(dockerBuild)
+    .plan(globalProductionDeploy).after(globalStagingDeploy, autoCodeInspection)
+    .plan(releaseNpm, releaseDocker, releaseDocs, releaseVersion).after(globalProductionDeploy)
+    .plan(releaseChangelog).after(releaseVersion)
+    .plan(releaseTag).after(releaseNpm, releaseDocker);
+
+// Docker build and testing and multiple production kubernetes deploys
+export const MultiKubernetesDeployGoals = goals("Multiple Deploy")
+    .plan(DockerGoals)
+    .plan(productionDeployWithApproval).after(dockerBuild, autoCodeInspection)
+    .plan(demoProductionDeploy, globalProductionDeploy).after(productionDeployWithApproval)
+    .plan(releaseNpm, releaseDocker, releaseDocs, releaseVersion).after(productionDeployWithApproval)
     .plan(releaseChangelog).after(releaseVersion)
     .plan(releaseTag).after(releaseNpm, releaseDocker);
