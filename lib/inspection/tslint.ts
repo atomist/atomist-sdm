@@ -1,5 +1,5 @@
 /*
- * Copyright © 2018 Atomist, Inc.
+ * Copyright © 2019 Atomist, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -141,11 +141,6 @@ export const RunTslintOnProject: CodeInspection<ProjectReview, NoParameters> = a
         "--force",
     ];
     try {
-        const env = { ...process.env, NODE_ENV: "development" };
-        const npmCiResult = await execPromise("npm", ["ci"], { cwd, env });
-        if (npmCiResult.stderr) {
-            logger.debug(`NPM ci standard error from ${p.name}: ${npmCiResult.stderr}`);
-        }
         const tslintResult = await execPromise(tslintExe, tslintArgs, { cwd });
         if (tslintResult.stderr) {
             logger.debug(`TSLint standard error from ${p.name}: ${tslintResult.stderr}`);
