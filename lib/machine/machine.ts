@@ -86,8 +86,10 @@ import {
     DockerGoals,
     DockerReleaseGoals,
     FixGoals,
+    GlobalKubernetesDeployGoals,
     KubernetesDeployGoals,
     LocalGoals,
+    MultiKubernetesDeployGoals,
     SimplifiedKubernetesDeployGoals,
 } from "./goals";
 import { addHomebrewSupport } from "./homebrewSupport";
@@ -100,9 +102,9 @@ const AtomistHQWorkspace = "T095SFFBK";
 
 export function machine(configuration: SoftwareDeliveryMachineConfiguration): SoftwareDeliveryMachine {
     const sdm = createSoftwareDeliveryMachine({
-            name: "Atomist Software Delivery Machine",
-            configuration,
-        },
+        name: "Atomist Software Delivery Machine",
+        configuration,
+    },
 
         whenPushSatisfies(isOrgNamed("atomist-playground"))
             .setGoals(goals("No Goals")),
@@ -140,9 +142,21 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         // Simplified deployment goal set for atomist-sdm, k8-automation; we are skipping
         // testing for these and deploying straight into their respective namespaces
         whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, IsAtomistAutomationClient,
-            isNamed("k8-automation", "atomist-sdm", "docs-sdm", "manifesto-sdm"))
+            isNamed("atomist-sdm", "docs-sdm", "manifesto-sdm"))
             .itMeans("Simplified Deploy")
             .setGoals(SimplifiedKubernetesDeployGoals),
+
+        // Deploy assets to "global" Kubernetes cluster
+        whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, IsAtomistAutomationClient,
+            isNamed("global-sdm"))
+            .itMeans("Global Deploy")
+            .setGoals(GlobalKubernetesDeployGoals),
+
+        // Deploy k8s-sdm to all the clusters
+        whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, IsAtomistAutomationClient,
+            isNamed("k8s-sdm"))
+            .itMeans("Multi Cluster Deploy")
+            .setGoals(MultiKubernetesDeployGoals),
 
         whenPushSatisfies(anySatisfied(IsNode, IsMaven), HasDockerfile, ToDefaultBranch, IsDeployEnabled)
             .itMeans("Deploy")
@@ -222,8 +236,8 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
 
         const msgId = guid();
         const msg = slackQuestionMessage("Goal Approval", `Goal ${italic(gi.goal.url ? url(gi.goal.url, gi.goal.name) : gi.goal.name)} on ${
-                codeLine(gi.goal.sha.slice(0, 7))} of ${
-                bold(`${gi.goal.repo.owner}/${gi.goal.repo.name}/${gi.goal.branch}`)} requires your confirmation to approve`,
+            codeLine(gi.goal.sha.slice(0, 7))} of ${
+            bold(`${gi.goal.repo.owner}/${gi.goal.repo.name}/${gi.goal.branch}`)} requires your confirmation to approve`,
             {
                 actions: [buttonForCommand(
                     { text: "Approve" },
@@ -234,14 +248,14 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
                         goalState: gi.goal.state,
                         msgId,
                     }), buttonForCommand(
-                    { text: "Cancel" },
-                    "CancelApproveSdmGoalCommand",
-                    {
-                        goalSetId: gi.goal.goalSetId,
-                        goalUniqueName: gi.goal.uniqueName,
-                        goalState: gi.goal.state,
-                        msgId,
-                    })],
+                        { text: "Cancel" },
+                        "CancelApproveSdmGoalCommand",
+                        {
+                            goalSetId: gi.goal.goalSetId,
+                            goalUniqueName: gi.goal.uniqueName,
+                            goalState: gi.goal.state,
+                            msgId,
+                        })],
                 footer: `${slackFooter()} | ${gi.goal.goalSetId.slice(0, 7)} | ${channel(gi.goal.approval.channelId)}`,
             });
         await gi.context.messageClient.addressUsers(msg, gi.goal.approval.userId, { id: msgId });
