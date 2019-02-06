@@ -166,7 +166,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
             ...sdm.configuration.sdm.docker.t095sffbk as DockerOptions,
             push: true,
             builder: "docker",
-            builderArgs: ["--build-args", `NPMRC=${(sdm.configuration.sdm.npm as NpmOptions).npmrc}`],
+            builderArgs: ["--build-arg", `NPMRC=${(sdm.configuration.sdm.npm as NpmOptions).npmrc}`],
         },
         pushTest: allSatisfied(IsNode, HasDockerfile, isOrgNamed("atomisthq"), isNamed("global-sdm")),
     }).with({
