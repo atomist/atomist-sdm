@@ -17,6 +17,8 @@
 import {
     allSatisfied,
     ApproveGoalIfErrorComments,
+    GoalProjectListenerEvent,
+    GoalProjectListenerRegistration,
     LogSuppressor,
     not,
     SoftwareDeliveryMachine,
@@ -28,6 +30,7 @@ import {
 } from "@atomist/sdm-pack-docker";
 import { singleIssuePerCategoryManaging } from "@atomist/sdm-pack-issue";
 import {
+    configureNpmRc,
     executePublish,
     IsNode,
     nodeBuilder,
@@ -114,6 +117,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         .with(TypeScriptImports)
         .with(RenameTestFix)
         .with(AddThirdPartyLicense)
+        .withProjectListener(npmRcProjectListener(sdm.configuration.sdm.npm as NpmOptions))
         .withProjectListener(NodeModulesProjectListener);
 
     build.with({
@@ -122,6 +126,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         builder: nodeBuilder({ command: "npm", args: ["run", "compile"] }, { command: "npm", args: ["test"] }),
         pushTest: NodeDefaultOptions.pushTest,
     })
+        .withProjectListener(npmRcProjectListener(sdm.configuration.sdm.npm as NpmOptions))
         .withProjectListener(NodeModulesProjectListener);
 
     autoCodeInspection.with(RunTslint)
@@ -136,6 +141,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
             sdm.configuration.sdm.npm as NpmOptions,
         ),
     })
+        .withProjectListener(npmRcProjectListener(sdm.configuration.sdm.npm as NpmOptions))
         .withProjectListener(NodeModulesProjectListener)
         .withProjectListener(NpmVersionProjectListener)
         .withProjectListener(NpmCompileProjectListener);
@@ -148,6 +154,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
             sdm.configuration.sdm.npm as NpmOptions,
         ),
     })
+        .withProjectListener(npmRcProjectListener(sdm.configuration.sdm.npm as NpmOptions))
         .withProjectListener(NodeModulesProjectListener)
         .withProjectListener(NpmVersionProjectListener)
         .withProjectListener(NpmCompileProjectListener);
@@ -171,6 +178,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         },
         pushTest: allSatisfied(IsNode, HasDockerfile, not(allSatisfied(isOrgNamed("atomisthq"), isNamed("global-sdm")))),
     })
+        .withProjectListener(npmRcProjectListener(sdm.configuration.sdm.npm as NpmOptions))
         .withProjectListener(NodeModulesProjectListener)
         .withProjectListener(NpmVersionProjectListener)
         .withProjectListener(NpmCompileProjectListener);
@@ -216,4 +224,15 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         .addCodeTransformCommand(RenameTest);
 
     return sdm;
+}
+
+function npmRcProjectListener(options: NpmOptions): GoalProjectListenerRegistration {
+    return {
+        name: "npm configure",
+        events: [GoalProjectListenerEvent.before],
+        pushTest: IsNode,
+        listener: async p => {
+            await configureNpmRc(options, p);
+        },
+    };
 }
