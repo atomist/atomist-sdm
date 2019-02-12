@@ -171,10 +171,12 @@ export const DockerGoals = goals("Docker Build")
 // Build including docker build
 export const MavenDockerReleaseGoals = goals("Docker Build with Release")
     .plan(LocalGoals)
+    .plan(BuildGoals)
     .plan(dockerBuild).after(build)
     .plan(tag).after(dockerBuild)
-    .plan(releaseDocker, releaseVersion).after(publishWithApproval, autoCodeInspection)
-    .plan(releaseChangelog).after(releaseVersion)
+    .plan(stagingDeployment).after(dockerBuild)
+    .plan(productionDeployment).after(stagingDeployment, autoCodeInspection)
+    .plan(releaseDocker).after(autoCodeInspection)
     .plan(releaseTag).after(releaseDocker);
 
 // Build including docker build
