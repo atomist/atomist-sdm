@@ -115,8 +115,8 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             .setGoals(goals("No Goals")),
 
         whenPushSatisfies(not(IsNode))
-            .itMeans("Non Node repository")
-            .setGoals(goals("No Goals")),
+             .itMeans("Non Node repository")
+             .setGoals(goals("No Goals")),
 
         whenPushSatisfies(IsReleaseCommit)
             .itMeans("Release commit")
@@ -140,8 +140,8 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             .itMeans("No Material Change")
             .setGoals(FixGoals),
 
-        whenPushSatisfies(allSatisfied(IsMaven, MaterialChangeToJavaRepo))
-            .itMeans("No Material Change")
+        whenPushSatisfies(IsMaven, MaterialChangeToJavaRepo, not(ToDefaultBranch))
+            .itMeans("Build Java")
             .setGoals(BuildGoals),
 
         whenPushSatisfies(IsMaven, MaterialChangeToJavaRepo, HasDockerfile, ToDefaultBranch)
