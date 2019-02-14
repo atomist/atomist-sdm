@@ -75,9 +75,6 @@ export async function kubernetesApplicationData(
         replicas,
         ...ingress,
     };
-    if (name === "global-sdm") {
-        baseApp.imagePullSecret = "global-sdm-imagepullsecret";
-    }
     return (name === "k8s-sdm") ? addK8sSecret(baseApp, goal, goalEvent.fulfillment.name) : baseApp;
 }
 
