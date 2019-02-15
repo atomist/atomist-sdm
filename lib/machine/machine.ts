@@ -83,6 +83,7 @@ import {
     BuildGoals,
     BuildReleaseAndHomebrewGoals,
     BuildReleaseGoals,
+    DemoKubernetesDeployGoals,
     DockerGoals,
     DockerReleaseGoals,
     FixGoals,
@@ -157,6 +158,12 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             isNamed("k8s-sdm"))
             .itMeans("Multi Cluster Deploy")
             .setGoals(MultiKubernetesDeployGoals),
+
+        // Deploy demo-sdm to demo cluster
+        whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, IsAtomistAutomationClient,
+            isNamed("demo-sdm"))
+            .itMeans("Demo Cluster Deploy")
+            .setGoals(DemoKubernetesDeployGoals),
 
         whenPushSatisfies(anySatisfied(IsNode, IsMaven), HasDockerfile, ToDefaultBranch, IsDeployEnabled)
             .itMeans("Deploy")

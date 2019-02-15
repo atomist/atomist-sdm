@@ -199,6 +199,11 @@ export const SimplifiedKubernetesDeployGoals = goals("Simplified Deploy")
     .plan(releaseChangelog).after(releaseVersion)
     .plan(releaseTag).after(releaseNpm, releaseDocker);
 
+// Docker build and testing and demo kubernetes deploy, no release
+export const DemoKubernetesDeployGoals = goals("Demo Deploy")
+    .plan(DockerGoals)
+    .plan(demoProductionDeploy).after(dockerBuild, autoCodeInspection);
+
 // Docker build and testing and production kubernetes deploy to global cluster
 export const GlobalKubernetesDeployGoals = goals("Global Deploy")
     .plan(DockerGoals)
