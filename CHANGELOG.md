@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased](https://github.com/atomist/atomist-sdm/compare/1.0.2...HEAD)
 
+### Added
+
+-   Java build support. [#102](https://github.com/atomist/atomist-sdm/issues/102)
+
 ### Changed
 
 -   Update to use sdm-pack-k8s. [#99](https://github.com/atomist/atomist-sdm/issues/99)
