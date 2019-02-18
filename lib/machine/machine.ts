@@ -115,10 +115,6 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             .itMeans("Manifesto repository")
             .setGoals(goals("No Goals")),
 
-        whenPushSatisfies(not(IsNode))
-             .itMeans("Non Node repository")
-             .setGoals(goals("No Goals")),
-
         whenPushSatisfies(IsReleaseCommit)
             .itMeans("Release commit")
             .setGoals(goals("No Goals")),
