@@ -87,6 +87,7 @@ import {
     FixGoals,
     KubernetesDeployGoals,
     LocalGoals,
+    MavenBuildGoals,
     MavenDockerReleaseGoals,
     SimplifiedKubernetesDeployGoals,
 } from "./goals";
@@ -139,7 +140,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
 
         whenPushSatisfies(IsMaven, MaterialChangeToJavaRepo, not(ToDefaultBranch))
             .itMeans("Build Java")
-            .setGoals(BuildGoals),
+            .setGoals(MavenBuildGoals),
 
         whenPushSatisfies(IsMaven, MaterialChangeToJavaRepo, HasDockerfile, ToDefaultBranch)
             .itMeans("Maven Docker Release Build")

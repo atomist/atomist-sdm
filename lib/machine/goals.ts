@@ -168,6 +168,10 @@ export const DockerGoals = goals("Docker Build")
     .plan(BuildGoals)
     .plan(dockerBuild).after(build);
 
+export const MavenBuildGoals = goals("Build")
+    .plan(LocalGoals)
+    .plan(tag).after(build);
+
 // Build including docker build
 export const MavenDockerReleaseGoals = goals("Docker Build with Release")
     .plan(LocalGoals)
