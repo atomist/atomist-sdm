@@ -24,7 +24,6 @@ import {
     gitHubTeamVoter,
     GoalApprovalRequestVote,
     goals,
-    Immaterial,
     IsDeployEnabled,
     not,
     slackFooter,
@@ -90,6 +89,8 @@ import {
     GlobalKubernetesDeployGoals,
     KubernetesDeployGoals,
     LocalGoals,
+    MavenBuildGoals,
+    MavenDockerReleaseGoals,
     MultiKubernetesDeployGoals,
     SimplifiedKubernetesDeployGoals,
 } from "./goals";
@@ -114,10 +115,6 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             .itMeans("Manifesto repository")
             .setGoals(goals("No Goals")),
 
-        whenPushSatisfies(not(IsNode))
-            .itMeans("Non Node repository")
-            .setGoals(goals("No Goals")),
-
         whenPushSatisfies(IsReleaseCommit)
             .itMeans("Release commit")
             .setGoals(goals("No Goals")),
@@ -138,7 +135,15 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         // Maven
         whenPushSatisfies(IsMaven, not(MaterialChangeToJavaRepo))
             .itMeans("No Material Change")
-            .setGoals(Immaterial),
+            .setGoals(FixGoals),
+
+        whenPushSatisfies(IsMaven, MaterialChangeToJavaRepo, not(ToDefaultBranch))
+            .itMeans("Build Java")
+            .setGoals(MavenBuildGoals),
+
+        whenPushSatisfies(IsMaven, MaterialChangeToJavaRepo, HasDockerfile, ToDefaultBranch)
+            .itMeans("Maven Docker Release Build")
+            .setGoals(MavenDockerReleaseGoals),
 
         // Simplified deployment goal set for atomist-sdm, k8-automation; we are skipping
         // testing for these and deploying straight into their respective namespaces
@@ -165,15 +170,15 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             .itMeans("Demo Cluster Deploy")
             .setGoals(DemoKubernetesDeployGoals),
 
-        whenPushSatisfies(anySatisfied(IsNode, IsMaven), HasDockerfile, ToDefaultBranch, IsDeployEnabled)
+        whenPushSatisfies(anySatisfied(IsNode), HasDockerfile, ToDefaultBranch, IsDeployEnabled)
             .itMeans("Deploy")
             .setGoals(KubernetesDeployGoals),
 
-        whenPushSatisfies(anySatisfied(IsNode, IsMaven), HasDockerfile, ToDefaultBranch)
+        whenPushSatisfies(anySatisfied(IsNode), HasDockerfile, ToDefaultBranch)
             .itMeans("Docker Release Build")
             .setGoals(DockerReleaseGoals),
 
-        whenPushSatisfies(anySatisfied(IsNode, IsMaven), HasDockerfile)
+        whenPushSatisfies(anySatisfied(IsNode), HasDockerfile)
             .itMeans("Docker Build")
             .setGoals(DockerGoals),
 
