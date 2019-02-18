@@ -35,7 +35,7 @@ RUN curl -sL https://deb.nodesource.com/setup_11.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=gcr.io/kaniko-project/executor:v0.8.0 /kaniko /kaniko
+COPY --from=gcr.io/kaniko-project/executor:v0.9.0 /kaniko /kaniko
 
 ENTRYPOINT ["dumb-init", "node", "--trace-warnings", "--expose_gc", "--optimize_for_size", "--always_compact", "--max_old_space_size=384"]
 
