@@ -182,8 +182,8 @@ export const MavenDockerReleaseGoals = goals("Docker Build with Release")
     .plan(BuildGoals)
     .plan(dockerBuild).after(build)
     .plan(tag).after(dockerBuild)
-    .plan(stagingDeployment).after(dockerBuild)
-    .plan(productionDeployment).after(stagingDeployment, autoCodeInspection)
+    .plan(stagingDeploy).after(dockerBuild)
+    .plan(productionDeploy).after(stagingDeploy, autoCodeInspection)
     .plan(releaseDocker).after(autoCodeInspection)
     .plan(releaseTag).after(releaseDocker);
 
