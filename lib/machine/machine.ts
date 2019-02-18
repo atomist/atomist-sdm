@@ -89,8 +89,9 @@ import {
     GlobalKubernetesDeployGoals,
     KubernetesDeployGoals,
     LocalGoals,
-    MultiKubernetesDeployGoals,
+    MavenBuildGoals,
     MavenDockerReleaseGoals,
+    MultiKubernetesDeployGoals,
     SimplifiedKubernetesDeployGoals,
 } from "./goals";
 import { addHomebrewSupport } from "./homebrewSupport";
@@ -142,7 +143,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
 
         whenPushSatisfies(IsMaven, MaterialChangeToJavaRepo, not(ToDefaultBranch))
             .itMeans("Build Java")
-            .setGoals(BuildGoals),
+            .setGoals(MavenBuildGoals),
 
         whenPushSatisfies(IsMaven, MaterialChangeToJavaRepo, HasDockerfile, ToDefaultBranch)
             .itMeans("Maven Docker Release Build")
