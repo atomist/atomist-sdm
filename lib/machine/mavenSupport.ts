@@ -72,11 +72,12 @@ export function addMavenSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryM
     dockerBuild.with({
             ...MavenDefaultOptions,
             name: "mvn-docker-build",
-            // preparations: [MavenVersionPreparation, mavenCompilePreparationWithArgs(
-            //    ["skipTests", "skip.npm", "skip.webpack"],
-            // )],
             imageNameCreator: DefaultDockerImageNameCreator,
-            options: sdm.configuration.sdm.docker.hub as DockerOptions,
+            options: {
+                ...sdm.configuration.sdm.docker.hub as DockerOptions,
+                push: true,
+                builder: "docker",
+            },
         })
         .withProjectListener(MvnVersion)
         .withProjectListener(MvnPackage);
