@@ -47,6 +47,7 @@ import { IsMaven } from "@atomist/sdm-pack-spring";
 import { AddAtomistTypeScriptHeader } from "../autofix/addAtomistHeader";
 import { TypeScriptImports } from "../autofix/imports/importsFix";
 import { AddThirdPartyLicense } from "../autofix/license/thirdPartyLicense";
+import { PackageLockFix } from "../autofix/npm/PackageLockFix";
 import {
     RenameTest,
     RenameTestFix,
@@ -122,6 +123,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
     autofix.with(AddAtomistTypeScriptHeader)
         .with(tslintFix)
         .with(TypeScriptImports)
+        .with(PackageLockFix)
         .with(RenameTestFix)
         .with(AddThirdPartyLicense)
         .withProjectListener(npmRcProjectListener(sdm.configuration.sdm.npm as NpmOptions))
