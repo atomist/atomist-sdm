@@ -16,6 +16,7 @@
 
 import {
     allSatisfied,
+    anySatisfied,
     LogSuppressor,
     not,
     SoftwareDeliveryMachine,
@@ -25,6 +26,7 @@ import {
     HasDockerfile,
 } from "@atomist/sdm-pack-docker";
 import { IsNode } from "@atomist/sdm-pack-node";
+import { IsMaven } from "@atomist/sdm-pack-spring";
 import {
     isNamed,
     isOrgNamed,
@@ -51,7 +53,7 @@ export function addDockerSupport(sdm: SoftwareDeliveryMachine): SoftwareDelivery
         name: "docker-release",
         goalExecutor: executeReleaseDocker(
             sdm.configuration.sdm.docker.hub as DockerOptions),
-        pushTest: allSatisfied(IsNode, HasDockerfile, not(allSatisfied(isOrgNamed("atomisthq"), isNamed("global-sdm")))),
+        pushTest: allSatisfied(anySatisfied(IsNode, IsMaven), HasDockerfile, not(allSatisfied(isOrgNamed("atomisthq"), isNamed("global-sdm")))),
         logInterpreter: LogSuppressor,
     });
 
