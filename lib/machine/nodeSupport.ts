@@ -130,12 +130,12 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
             }
             return v;
         },
-        pushTest: allSatisfied(IsNode, HasDockerfile, isOrgNamed("atomisthq"), isNamed("global-sdm")),
+        pushTest: allSatisfied(IsNode, isOrgNamed("atomisthq"), isNamed("global-sdm")),
     }).with({
         ...NodeDefaultOptions,
         name: "npm-versioner",
         versioner: NodeProjectVersioner,
-        pushTest: allSatisfied(IsNode, HasDockerfile, not(allSatisfied(isOrgNamed("atomisthq"), isNamed("global-sdm")))),
+        pushTest: allSatisfied(IsNode, not(allSatisfied(isOrgNamed("atomisthq"), isNamed("global-sdm")))),
     });
 
     autofix.with(AddAtomistTypeScriptHeader)
