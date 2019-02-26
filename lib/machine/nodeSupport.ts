@@ -122,13 +122,13 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
             if (branch === sdmGoal.push.repo.defaultBranch) {
                 sdmGoal.branch = "global";
             }
-            let version: string;
+            let v: string;
             try {
-                version = await NodeProjectVersioner(sdmGoal, p, log);
+                v = await NodeProjectVersioner(sdmGoal, p, log);
             } finally {
                 sdmGoal.branch = branch;
             }
-            return version;
+            return v;
         },
         pushTest: allSatisfied(IsNode, HasDockerfile, isOrgNamed("atomisthq"), isNamed("global-sdm")),
     }).with({
