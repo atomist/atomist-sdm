@@ -116,8 +116,26 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
 
     version.with({
         ...NodeDefaultOptions,
+        name: "npm-versioner-global-sdm",
+        versioner: async (sdmGoal, p, log) => {
+            const branch = sdmGoal.branch;
+            if (branch === sdmGoal.push.repo.defaultBranch) {
+                sdmGoal.branch = "global";
+            }
+            let version: string;
+            try {
+                version = await NodeProjectVersioner(sdmGoal, p, log);
+            } finally {
+                sdmGoal.branch = branch;
+            }
+            return version;
+        },
+        pushTest: allSatisfied(IsNode, HasDockerfile, isOrgNamed("atomisthq"), isNamed("global-sdm")),
+    }).with({
+        ...NodeDefaultOptions,
         name: "npm-versioner",
         versioner: NodeProjectVersioner,
+        pushTest: allSatisfied(IsNode, HasDockerfile, not(allSatisfied(isOrgNamed("atomisthq"), isNamed("global-sdm")))),
     });
 
     autofix.with(AddAtomistTypeScriptHeader)
@@ -177,7 +195,6 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
             ...sdm.configuration.sdm.docker.t095sffbk as DockerOptions,
             push: true,
             builder: "docker",
-            builderArgs: ["--build-arg", `NPMRC=${(sdm.configuration.sdm.npm as NpmOptions).npmrc}`],
         },
         pushTest: allSatisfied(IsNode, HasDockerfile, isOrgNamed("atomisthq"), isNamed("global-sdm")),
     }).with({
