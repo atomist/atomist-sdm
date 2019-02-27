@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-import { Configuration } from "@atomist/automation-client";
 import { configureLogzio } from "@atomist/automation-client-ext-logzio";
 import { configureRaven } from "@atomist/automation-client-ext-raven";
 import {
-    AdditionalSdmConfiguration,
-    SdmCacheConfiguration,
+    CacheConfiguration,
+    SoftwareDeliveryMachineConfiguration,
 } from "@atomist/sdm";
 import {
     ConfigureOptions,
     configureSdm,
 } from "@atomist/sdm-core";
-import { SdmPackK8sConfiguration } from "@atomist/sdm-pack-k8s";
+import { K8sConfiguration } from "@atomist/sdm-pack-k8s";
 import { machine } from "./lib/machine/machine";
 
 const machineOptions: ConfigureOptions = {
@@ -39,10 +38,8 @@ const machineOptions: ConfigureOptions = {
     ],
 };
 
-export const configuration: Configuration
-    & AdditionalSdmConfiguration<SdmPackK8sConfiguration>
-    & AdditionalSdmConfiguration<SdmCacheConfiguration>
-    //  & AdditionalSdmConfiguration<SdmPackNodeConfiguration>
+export const configuration: SoftwareDeliveryMachineConfiguration<K8sConfiguration & CacheConfiguration>
+    //  & NodeConfiguration
     = {
     postProcessors: [
         configureLogzio,
@@ -57,11 +54,9 @@ export const configuration: Configuration
                 },
             },
         },
-        k8: {
-            environment: "test",
+        k8s: {
         },
         cache: {
-            carrot: false,
             enabled: true,
             path: "/opt/data",
         },
