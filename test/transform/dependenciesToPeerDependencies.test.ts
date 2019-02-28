@@ -26,7 +26,7 @@ describe("dependenciesToPeerDependenciesTransform", () => {
 
     it("should rewrite single dependency regex", async () => {
         const pj = {
-            "dependencies": {
+            dependencies: {
                 "@atomist/automation-client": "1.3.0-master.20190221221959",
                 "@atomist/microgrammar": "1.1.0-master.20190205190919",
                 "@atomist/sdm": "1.3.0-master.20190226090409",
@@ -57,7 +57,7 @@ describe("dependenciesToPeerDependenciesTransform", () => {
         };
 
         const expectedPj = {
-            "dependencies": {
+            dependencies: {
                 "@atomist/microgrammar": "1.1.0-master.20190205190919",
                 "@kubernetes/client-node": "^0.8.1",
                 "@types/git-url-parse": "^9.0.0",

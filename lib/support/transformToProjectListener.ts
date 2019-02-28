@@ -49,13 +49,13 @@ export function transformToProjectListener(transform: CodeTransform,
                 if (isTransformResult(result)) {
                     return {
                         code: result.success === true ? 0 : 1,
-                    }
+                    };
                 }
             } catch (e) {
                 return {
                     code: 1,
                     message: e.message,
-                }
+                };
             }
             return Success;
         },

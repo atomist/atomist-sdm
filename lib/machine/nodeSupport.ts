@@ -150,7 +150,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         .with(RenameTestFix)
         .with(AddThirdPartyLicenseAutofix)
         .withProjectListener(npmRcProjectListener(sdm.configuration.sdm.npm as NpmOptions))
-        .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }))
+        .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }));
 
     build.with({
         ...NodeDefaultOptions,
@@ -159,7 +159,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         pushTest: NodeDefaultOptions.pushTest,
     })
         .withProjectListener(npmRcProjectListener(sdm.configuration.sdm.npm as NpmOptions))
-        .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }))
+        .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }));
 
     autoCodeInspection.with(RunTslint)
         .withProjectListener(npmRcProjectListener(sdm.configuration.sdm.npm as NpmOptions))
