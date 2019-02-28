@@ -28,7 +28,13 @@ export function dependenciesToPeerDependenciesTransform(...toRewrite: RegExp[]):
         const pjFile = await p.getFile("package.json");
         const pj = JSON.parse(await pjFile.getContent());
 
+        // Make sure we can reuse the regexp
         toRewrite.forEach(r => r.global === true);
+
+        // Initialize the peerDependencies section if it doesn't exist
+        if (!pj.peerDependencies) {
+            pj.peerDependencies = {};
+        }
 
         _.forEach(pj.dependencies || {}, (version, name) => {
             if (toRewrite.some(r => r.test(name))) {
