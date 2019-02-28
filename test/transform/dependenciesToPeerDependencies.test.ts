@@ -71,6 +71,18 @@ describe("dependenciesToPeerDependenciesTransform", () => {
                 "ts-essentials": "^1.0.2",
                 "yamljs": "^0.3.0",
             },
+            devDependencies: {
+                "@atomist/automation-client": "1.3.0-master.20190221221959",
+                "@atomist/sdm": "1.3.0-master.20190226090409",
+                "@atomist/sdm-core": "1.3.0-master.20190227112318",
+                "@atomist/sdm-pack-analysis": "0.1.0-master.20190213071419",
+                "@atomist/sdm-pack-build": "1.0.4-master.20190110123121",
+                "@atomist/sdm-pack-docker": "1.1.0-master.20190213113315",
+                "@atomist/sdm-pack-fingerprints": "2.0.0-updates.20190208003156",
+                "@atomist/sdm-pack-issue": "1.1.1-master.20190120184619",
+                "@atomist/sdm-pack-k8s": "1.3.6-master.20190226122520",
+                "@atomist/sdm-pack-node": "1.0.3-master.20190227144724",
+            },
             peerDependencies: {
                 "@atomist/automation-client": ">=1.3.0",
                 "@atomist/sdm": ">=1.3.0",
