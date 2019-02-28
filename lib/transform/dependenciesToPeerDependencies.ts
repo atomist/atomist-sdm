@@ -31,15 +31,19 @@ export function dependenciesToPeerDependenciesTransform(...toRewrite: RegExp[]):
         // Make sure we can reuse the regexp
         toRewrite.forEach(r => r.global === true);
 
-        // Initialize the peerDependencies section if it doesn't exist
+        // Initialize the additional dependencies section if they don't exist
         if (!pj.peerDependencies) {
             pj.peerDependencies = {};
+        }
+        if (!pj.devDependencies) {
+            pj.devDependencies = {};
         }
 
         _.forEach(pj.dependencies || {}, (version, name) => {
             if (toRewrite.some(r => r.test(name))) {
                 const semVersion = `>=${semver.major(version)}.${semver.minor(version)}.0`;
                 pj.peerDependencies[name] = semVersion;
+                pj.devDependencies[name] = version;
                 delete pj.dependencies[name];
             }
         });
