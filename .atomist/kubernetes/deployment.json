@@ -2,7 +2,6 @@
   "spec": {
     "template": {
       "spec": {
-        "serviceAccountName": "sdm-serviceaccount",
         "containers": [
           {
             "env": [
@@ -87,6 +86,7 @@
             ]
           }
         ],
+        "serviceAccountName": "atomist-sdm",
         "volumes": [
           {
             "name": "docker-sock",
