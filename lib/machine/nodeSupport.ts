@@ -194,6 +194,11 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         ),
     })
         .withProjectListener(npmRcProjectListener(sdm.configuration.sdm.npm as NpmOptions))
+        .withProjectListener(transformToProjectListener(
+            dependenciesToPeerDependenciesTransform(
+                /@atomist\/sdm.*/, /@atomist\/automation-client.*/),
+            "package.json rewrite",
+            allSatisfied(IsNode, isOrgNamed("atomist"), isNamed("uhura"))))
         .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }))
         .withProjectListener(NpmVersionProjectListener)
         .withProjectListener(NpmCompileProjectListener);
