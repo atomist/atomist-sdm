@@ -25,6 +25,7 @@ import {
     configureSdm,
 } from "@atomist/sdm-core";
 import { K8sConfiguration } from "@atomist/sdm-pack-k8s";
+import { NodeConfiguration } from "@atomist/sdm-pack-node/lib/nodeSupport";
 import { machine } from "./lib/machine/machine";
 
 const machineOptions: ConfigureOptions = {
@@ -38,9 +39,9 @@ const machineOptions: ConfigureOptions = {
     ],
 };
 
-export const configuration: SoftwareDeliveryMachineConfiguration<K8sConfiguration & CacheConfiguration>
-    //  & NodeConfiguration
-    = {
+export const configuration: SoftwareDeliveryMachineConfiguration<K8sConfiguration
+    & CacheConfiguration
+    & NodeConfiguration> = {
     postProcessors: [
         configureLogzio,
         configureRaven,
