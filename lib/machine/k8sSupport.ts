@@ -75,11 +75,6 @@ export async function kubernetesApplicationData(
         replicas,
         ...ingress,
     };
-    if (name === "global-sdm") {
-        const roleName = `${name}-${ns}`;
-        _.set(baseApp, "roleSpec.metadata.name", roleName);
-        _.set(baseApp, "roleBindingSpec.metadata.name", roleName);
-    }
     return (name === "k8s-sdm") ? addK8sSecret(baseApp, goal, goalEvent.fulfillment.name) : baseApp;
 }
 
