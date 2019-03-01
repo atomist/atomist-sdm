@@ -209,6 +209,37 @@ describe("k8sSupport", () => {
             assert.deepStrictEqual(d, e);
         });
 
+        it("should set role name for global-sdm", async () => {
+            const a: KubernetesApplication = {} as any;
+            const p: GitProject = InMemoryProject.of() as any;
+            const g: KubernetesDeploy = {} as any;
+            const v: SdmGoalEvent = {
+                environment: "2-prod",
+                repo: {
+                    name: "global-sdm",
+                },
+            } as any;
+            const d = await kubernetesApplicationData(a, p, g, v);
+            assert(d);
+            const e = {
+                name: "global-sdm",
+                port: 2866,
+                ns: "sdm",
+                replicas: 3,
+                roleSpec: {
+                    metadata: {
+                        name: "global-sdm-sdm",
+                    },
+                },
+                roleBindingSpec: {
+                    metadata: {
+                        name: "global-sdm-sdm",
+                    },
+                },
+            };
+            assert.deepStrictEqual(d, e);
+        });
+
         it("should add secret to k8s-sdm deploy", async () => {
             const a: KubernetesApplication = {} as any;
             const p: GitProject = InMemoryProject.of() as any;
