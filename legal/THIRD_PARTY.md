@@ -11,9 +11,9 @@ This page details all runtime OSS dependencies of `@atomist/atomist-sdm`.
 | License | Count |
 |---------|-------|
 |[AFLv2.1](#aflv21)|1|
-|[Apache-2.0](#apache-20)|48|
+|[Apache-2.0](#apache-20)|47|
 |[Artistic-2.0](#artistic-20)|4|
-|[BSD-2-Clause](#bsd-2-clause)|26|
+|[BSD-2-Clause](#bsd-2-clause)|25|
 |[BSD-3-Clause](#bsd-3-clause)|42|
 |[BSD](#bsd)|9|
 |[CC-BY-3.0](#cc-by-30)|4|
@@ -26,8 +26,8 @@ This page details all runtime OSS dependencies of `@atomist/atomist-sdm`.
 |[Custom: https://flowtype.org/](#custom-httpsflowtypeorg)|1|
 |[Custom: https://github.com/graphql/graphql-language-service](#custom-httpsgithubcomgraphqlgraphql-language-service)|2|
 |[GPL-3.0](#gpl-30)|6|
-|[ISC](#isc)|135|
-|[MIT](#mit)|1001|
+|[ISC](#isc)|137|
+|[MIT](#mit)|1004|
 |[UNKNOWN](#unknown)|2|
 |[Unlicense](#unlicense)|3|
 |[WTFPL](#wtfpl)|4|
@@ -46,8 +46,8 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 |`@atomist/automation-client-ext-dashboard`|`1.0.2-master.20190107121940`|Atomist|[https://github.com/atomist/automation-client-ext-dashboard](https://github.com/atomist/automation-client-ext-dashboard)|
 |`@atomist/automation-client-ext-logzio`|`1.0.2-master.20181213233859`|Atomist|[https://github.com/atomist/automation-client-ext-logzio](https://github.com/atomist/automation-client-ext-logzio)|
 |`@atomist/automation-client-ext-raven`|`1.0.2-master.20181213200324`|Atomist|[https://github.com/atomist/automation-client-ext-raven](https://github.com/atomist/automation-client-ext-raven)|
-|`@atomist/sdm-core`|`1.3.0-master.20190213143939`|Atomist|[https://github.com/atomist/sdm-core](https://github.com/atomist/sdm-core)|
-|`@atomist/sdm-pack-analysis`|`0.1.0-master.20190213071419`|Atomist|[https://github.com/atomist/sdm-pack-analysis](https://github.com/atomist/sdm-pack-analysis)|
+|`@atomist/sdm-core`|`1.3.0-master.20190301203019`|Atomist|[https://github.com/atomist/sdm-core](https://github.com/atomist/sdm-core)|
+|`@atomist/sdm-pack-analysis`|`0.1.0-master.20190303112340`|Atomist|[https://github.com/atomist/sdm-pack-analysis](https://github.com/atomist/sdm-pack-analysis)|
 |`@atomist/sdm-pack-build`|`1.0.4-master.20190219145928`|Atomist|[https://github.com/atomist/sdm-pack-build](https://github.com/atomist/sdm-pack-build)|
 |`@atomist/sdm-pack-build`|`1.0.4-master.20190219150622`|Atomist|[https://github.com/atomist/sdm-pack-build](https://github.com/atomist/sdm-pack-build)|
 |`@atomist/sdm-pack-changelog`|`1.0.2-master.20181217165351`|Atomist|[https://github.com/atomist/sdm-pack-changelog](https://github.com/atomist/sdm-pack-changelog)|
@@ -55,13 +55,12 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 |`@atomist/sdm-pack-fingerprints`|`2.0.0-updates.20190208003156`|Atomist|[https://github.com/atomist/sdm-pack-fingerprints](https://github.com/atomist/sdm-pack-fingerprints)|
 |`@atomist/sdm-pack-issue`|`1.1.1-master.20190120184619`|Atomist|[https://github.com/atomist/sdm-pack-issue](https://github.com/atomist/sdm-pack-issue)|
 |`@atomist/sdm-pack-k8s`|`1.3.5`|Atomist|[https://github.com/atomist/sdm-pack-k8s](https://github.com/atomist/sdm-pack-k8s)|
-|`@atomist/sdm-pack-node`|`1.0.3-master.20190227144724`|Atomist|[https://github.com/atomist/sdm-pack-node](https://github.com/atomist/sdm-pack-node)|
+|`@atomist/sdm-pack-node`|`1.0.3-master.20190303103845`|Atomist|[https://github.com/atomist/sdm-pack-node](https://github.com/atomist/sdm-pack-node)|
 |`@atomist/sdm-pack-spring`|`1.1.1-master.20190219152834`|Atomist|[https://github.com/atomist/sdm-pack-spring](https://github.com/atomist/sdm-pack-spring)|
-|`@atomist/sdm`|`1.3.0-master.20190213170255`|Atomist|[https://github.com/atomist/sdm](https://github.com/atomist/sdm)|
+|`@atomist/sdm`|`1.3.0-master.20190301225910`|Atomist|[https://github.com/atomist/sdm](https://github.com/atomist/sdm)|
 |`@atomist/slack-messages`|`1.0.1-master.20180830190736`|Atomist|[https://github.com/atomist/slack-messages](https://github.com/atomist/slack-messages)|
 |`@atomist/slack-messages`|`1.1.0`|Atomist|[https://github.com/atomist/slack-messages](https://github.com/atomist/slack-messages)|
 |`@atomist/slack-messages`|`1.1.0-master.20181115202354`|Atomist|[https://github.com/atomist/slack-messages](https://github.com/atomist/slack-messages)|
-|`@kubernetes/client-node`|`0.7.2`|Kubernetes Authors|[https://github.com/kubernetes-client/javascript](https://github.com/kubernetes-client/javascript)|
 |`@kubernetes/client-node`|`0.8.1`|Kubernetes Authors|[https://github.com/kubernetes-client/javascript](https://github.com/kubernetes-client/javascript)|
 |`JSONStream`|`1.3.5`|Dominic Tarr|[https://github.com/dominictarr/JSONStream](https://github.com/dominictarr/JSONStream)|
 |`aws-sign2`|`0.7.0`|Mikeal Rogers|[https://github.com/mikeal/aws-sign](https://github.com/mikeal/aws-sign)|
@@ -100,7 +99,7 @@ Artistic License 2.0 - [http://www.perlfoundation.org/artistic_license_2_0](http
 |`bin-links`|`1.1.2`|Mike Sherov|[https://github.com/npm/bin-links](https://github.com/npm/bin-links)|
 |`gentle-fs`|`2.0.1`|Mike Sherov|[https://github.com/npm/gentle-fs](https://github.com/npm/gentle-fs)|
 |`npm-lifecycle`|`2.1.0`|Mike Sherov|[https://github.com/npm/lifecycle](https://github.com/npm/lifecycle)|
-|`npm`|`6.7.0`|Isaac Z. Schlueter|[https://github.com/npm/cli](https://github.com/npm/cli)|
+|`npm`|`6.8.0`|Isaac Z. Schlueter|[https://github.com/npm/cli](https://github.com/npm/cli)|
 
 #### BSD
 
@@ -134,7 +133,6 @@ BSD 2-Clause "Simplified" License - [http://www.opensource.org/licenses/BSD-2-Cl
 |`http-cache-semantics`|`3.8.1`|Kornel Lesiński|[https://github.com/pornel/http-cache-semantics](https://github.com/pornel/http-cache-semantics)|
 |`is-cidr`|`3.0.0`|silverwind|[https://github.com/silverwind/is-cidr](https://github.com/silverwind/is-cidr)|
 |`mississippi`|`3.0.0`|max ogden|[https://github.com/maxogden/mississippi](https://github.com/maxogden/mississippi)|
-|`normalize-package-data`|`2.4.0`|Meryn Stol|[https://github.com/npm/normalize-package-data](https://github.com/npm/normalize-package-data)|
 |`normalize-package-data`|`2.5.0`|Meryn Stol|[https://github.com/npm/normalize-package-data](https://github.com/npm/normalize-package-data)|
 |`npm-install-checks`|`3.0.0`|Robert Kowalski|[https://github.com/npm/npm-install-checks](https://github.com/npm/npm-install-checks)|
 |`npm-user-validate`|`1.0.0`|Robert Kowalski|[https://github.com/npm/npm-user-validate](https://github.com/npm/npm-user-validate)|
@@ -267,7 +265,7 @@ GNU General Public License v3.0 only - [http://www.gnu.org/licenses/gpl-3.0-stan
 |`@atomist/automation-client`|`1.3.0-master.20190219082917`|Atomist|[https://github.com/atomist/automation-client](https://github.com/atomist/automation-client)|
 |`@atomist/microgrammar`|`1.0.1-master.20181109093737`|Atomist|[https://github.com/atomist/microgrammar](https://github.com/atomist/microgrammar)|
 |`@atomist/microgrammar`|`1.0.4`|Atomist|[https://github.com/atomist/microgrammar](https://github.com/atomist/microgrammar)|
-|`@atomist/microgrammar`|`1.1.0-master.20190208183142`|Atomist|[https://github.com/atomist/microgrammar](https://github.com/atomist/microgrammar)|
+|`@atomist/microgrammar`|`1.1.0-master.20190220161254`|Atomist|[https://github.com/atomist/microgrammar](https://github.com/atomist/microgrammar)|
 |`@atomist/tree-path`|`1.0.2`|Atomist|[https://github.com/atomist/tree-path](https://github.com/atomist/tree-path)|
 
 #### ISC
@@ -350,14 +348,15 @@ ISC License - [https://www.isc.org/downloads/software-support-policy/isc-license
 |`nopt`|`4.0.1`|Isaac Z. Schlueter|[https://github.com/npm/nopt](https://github.com/npm/nopt)|
 |`npm-audit-report`|`1.3.2`|Adam Baldwin|[https://github.com/npm/npm-audit-report](https://github.com/npm/npm-audit-report)|
 |`npm-bundled`|`1.0.5`|Isaac Z. Schlueter|[https://github.com/npm/npm-bundled](https://github.com/npm/npm-bundled)|
+|`npm-bundled`|`1.0.6`|Isaac Z. Schlueter|[https://github.com/npm/npm-bundled](https://github.com/npm/npm-bundled)|
 |`npm-cache-filename`|`1.0.2`|Isaac Z. Schlueter|[https://github.com/npm/npm-cache-filename](https://github.com/npm/npm-cache-filename)|
 |`npm-logical-tree`|`1.2.1`|Kat Marchán|[https://github.com/npm/logical-tree](https://github.com/npm/logical-tree)|
 |`npm-package-arg`|`6.1.0`|Isaac Z. Schlueter|[https://github.com/npm/npm-package-arg](https://github.com/npm/npm-package-arg)|
 |`npm-packlist`|`1.1.12`|Isaac Z. Schlueter|[https://github.com/npm/npm-packlist](https://github.com/npm/npm-packlist)|
-|`npm-packlist`|`1.2.0`|Isaac Z. Schlueter|[https://github.com/npm/npm-packlist](https://github.com/npm/npm-packlist)|
+|`npm-packlist`|`1.3.0`|Isaac Z. Schlueter|[https://github.com/npm/npm-packlist](https://github.com/npm/npm-packlist)|
 |`npm-pick-manifest`|`2.2.3`|Kat Marchán|[https://github.com/zkat/npm-pick-manifest](https://github.com/zkat/npm-pick-manifest)|
 |`npm-profile`|`4.0.1`|Rebecca Turner|[https://github.com/npm/npm-profile](https://github.com/npm/npm-profile)|
-|`npm-registry-fetch`|`3.8.0`|Kat Marchán|[https://github.com/npm/registry-fetch](https://github.com/npm/registry-fetch)|
+|`npm-registry-fetch`|`3.9.0`|Kat Marchán|[https://github.com/npm/registry-fetch](https://github.com/npm/registry-fetch)|
 |`npmlog`|`4.1.2`|Isaac Z. Schlueter|[https://github.com/npm/npmlog](https://github.com/npm/npmlog)|
 |`once`|`1.4.0`|Isaac Z. Schlueter|[https://github.com/isaacs/once](https://github.com/isaacs/once)|
 |`osenv`|`0.1.5`|Isaac Z. Schlueter|[https://github.com/npm/osenv](https://github.com/npm/osenv)|
@@ -369,7 +368,7 @@ ISC License - [https://www.isc.org/downloads/software-support-policy/isc-license
 |`read-cmd-shim`|`1.0.1`|Rebecca Turner|[https://github.com/npm/read-cmd-shim](https://github.com/npm/read-cmd-shim)|
 |`read-installed`|`4.0.3`|Isaac Z. Schlueter|[https://github.com/isaacs/read-installed](https://github.com/isaacs/read-installed)|
 |`read-package-json`|`2.0.13`|Isaac Z. Schlueter|[https://github.com/npm/read-package-json](https://github.com/npm/read-package-json)|
-|`read-package-tree`|`5.2.1`|Isaac Z. Schlueter|[https://github.com/npm/read-package-tree](https://github.com/npm/read-package-tree)|
+|`read-package-tree`|`5.2.2`|Isaac Z. Schlueter|[https://github.com/npm/read-package-tree](https://github.com/npm/read-package-tree)|
 |`read`|`1.0.7`|Isaac Z. Schlueter|[https://github.com/isaacs/read](https://github.com/isaacs/read)|
 |`readdir-scoped-modules`|`1.0.2`|Isaac Z. Schlueter|[https://github.com/npm/readdir-scoped-modules](https://github.com/npm/readdir-scoped-modules)|
 |`remove-trailing-separator`|`1.1.0`|darsain|[https://github.com/darsain/remove-trailing-separator](https://github.com/darsain/remove-trailing-separator)|
@@ -388,6 +387,7 @@ ISC License - [https://www.isc.org/downloads/software-support-policy/isc-license
 |`slide`|`1.1.6`|Isaac Z. Schlueter|[https://github.com/isaacs/slide-flow-control](https://github.com/isaacs/slide-flow-control)|
 |`ssri`|`6.0.1`|Kat Marchán|[https://github.com/zkat/ssri](https://github.com/zkat/ssri)|
 |`stringify-package`|`1.0.0`|Kat Marchán|[https://github.com/npm/stringify-package](https://github.com/npm/stringify-package)|
+|`stringify-tree`|`1.0.2`|Jessica Kerr|[https://github.com/jessitron/stringify-tree](https://github.com/jessitron/stringify-tree)|
 |`tar`|`2.2.1`|Isaac Z. Schlueter|[https://github.com/isaacs/node-tar](https://github.com/isaacs/node-tar)|
 |`tar`|`4.4.6`|Isaac Z. Schlueter|[https://github.com/npm/node-tar](https://github.com/npm/node-tar)|
 |`tar`|`4.4.8`|Isaac Z. Schlueter|[https://github.com/npm/node-tar](https://github.com/npm/node-tar)|
@@ -450,7 +450,7 @@ MIT License - [http://www.opensource.org/licenses/MIT](http://www.opensource.org
 |`@types/caseless`|`0.12.1`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/connect`|`3.4.32`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/cors`|`2.8.4`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
-|`@types/cron`|`1.6.0`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
+|`@types/cron`|`1.6.1`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/cross-spawn`|`6.0.0`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/dateformat`|`1.0.2`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/dateformat`|`3.0.0`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
@@ -463,6 +463,7 @@ MIT License - [http://www.opensource.org/licenses/MIT](http://www.opensource.org
 |`@types/find-up`|`2.1.1`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/form-data`|`2.2.1`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/fs-extra`|`5.0.4`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
+|`@types/fs-extra`|`5.0.5`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/git-url-parse`|`9.0.0`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/glob`|`7.1.1`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/graphql`|`14.0.7`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
@@ -477,12 +478,14 @@ MIT License - [http://www.opensource.org/licenses/MIT](http://www.opensource.org
 |`@types/json-stringify-safe`|`5.0.0`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/jssha`|`2.0.0`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/lodash`|`4.14.120`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
+|`@types/lodash`|`4.14.121`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/long`|`4.0.0`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/marked`|`0.4.2`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/mime`|`2.0.1`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/minimatch`|`3.0.3`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/node`|`10.12.21`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/node`|`10.12.26`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
+|`@types/node`|`11.10.4`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/p-retry`|`2.0.0`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/package-json`|`4.0.1`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/passport-http-bearer`|`1.0.33`||[https://github.com/DefinitelyTyped/DefinitelyTyped.git](https://github.com/DefinitelyTyped/DefinitelyTyped.git)|
@@ -492,7 +495,7 @@ MIT License - [http://www.opensource.org/licenses/MIT](http://www.opensource.org
 |`@types/power-assert`|`1.5.0`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/prettier`|`1.13.2`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/promise-retry`|`1.1.3`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
-|`@types/proper-lockfile`|`3.0.0`||[https://github.com/DefinitelyTyped/DefinitelyTyped.git](https://github.com/DefinitelyTyped/DefinitelyTyped.git)|
+|`@types/proper-lockfile`|`3.0.1`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/range-parser`|`1.2.3`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/request`|`2.48.1`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/retry`|`0.10.2`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
@@ -513,7 +516,7 @@ MIT License - [http://www.opensource.org/licenses/MIT](http://www.opensource.org
 |`@types/serialize-error`|`2.1.0`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/serve-static`|`1.13.2`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/shelljs`|`0.8.2`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
-|`@types/sprintf-js`|`1.1.1`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
+|`@types/sprintf-js`|`1.1.2`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/stack-trace`|`0.0.29`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/strip-ansi`|`3.0.0`|Mohamed Hegazy|[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/through`|`0.0.29`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
@@ -930,7 +933,6 @@ MIT License - [http://www.opensource.org/licenses/MIT](http://www.opensource.org
 |`is-arrayish`|`0.3.2`|Qix|[https://github.com/qix-/node-is-arrayish](https://github.com/qix-/node-is-arrayish)|
 |`is-buffer`|`1.1.6`|Feross Aboukhadijeh|[https://github.com/feross/is-buffer](https://github.com/feross/is-buffer)|
 |`is-buffer`|`2.0.3`|Feross Aboukhadijeh|[https://github.com/feross/is-buffer](https://github.com/feross/is-buffer)|
-|`is-builtin-module`|`1.0.0`|Sindre Sorhus|[https://github.com/sindresorhus/is-builtin-module](https://github.com/sindresorhus/is-builtin-module)|
 |`is-callable`|`1.1.4`|Jordan Harband|[https://github.com/ljharb/is-callable](https://github.com/ljharb/is-callable)|
 |`is-ci`|`1.1.0`|Thomas Watson Steen|[https://github.com/watson/is-ci](https://github.com/watson/is-ci)|
 |`is-date-object`|`1.0.1`|Jordan Harband|[https://github.com/ljharb/is-date-object](https://github.com/ljharb/is-date-object)|
@@ -1023,6 +1025,7 @@ MIT License - [http://www.opensource.org/licenses/MIT](http://www.opensource.org
 |`lodash._root`|`3.0.1`|John-David Dalton|[https://github.com/lodash/lodash](https://github.com/lodash/lodash)|
 |`lodash.assign`|`4.2.0`|John-David Dalton|[https://github.com/lodash/lodash](https://github.com/lodash/lodash)|
 |`lodash.clonedeep`|`4.5.0`|John-David Dalton|[https://github.com/lodash/lodash](https://github.com/lodash/lodash)|
+|`lodash.flatten`|`4.4.0`|John-David Dalton|[https://github.com/lodash/lodash](https://github.com/lodash/lodash)|
 |`lodash.get`|`4.4.2`|John-David Dalton|[https://github.com/lodash/lodash](https://github.com/lodash/lodash)|
 |`lodash.restparam`|`3.6.1`|John-David Dalton|[https://github.com/lodash/lodash](https://github.com/lodash/lodash)|
 |`lodash.set`|`4.3.2`|John-David Dalton|[https://github.com/lodash/lodash](https://github.com/lodash/lodash)|
@@ -1130,7 +1133,7 @@ MIT License - [http://www.opensource.org/licenses/MIT](http://www.opensource.org
 |`p-try`|`1.0.0`|Sindre Sorhus|[https://github.com/sindresorhus/p-try](https://github.com/sindresorhus/p-try)|
 |`p-try`|`2.0.0`|Sindre Sorhus|[https://github.com/sindresorhus/p-try](https://github.com/sindresorhus/p-try)|
 |`package-json`|`4.0.1`|Sindre Sorhus|[https://github.com/sindresorhus/package-json](https://github.com/sindresorhus/package-json)|
-|`pacote`|`9.4.0`|Kat Marchán|[https://github.com/zkat/pacote](https://github.com/zkat/pacote)|
+|`pacote`|`9.4.1`|Kat Marchán|[https://github.com/zkat/pacote](https://github.com/zkat/pacote)|
 |`parallel-transform`|`1.1.0`|Mathias Buus Madsen|[https://github.com/mafintosh/parallel-transform](https://github.com/mafintosh/parallel-transform)|
 |`param-case`|`2.1.1`|Blake Embrey|[https://github.com/blakeembrey/param-case](https://github.com/blakeembrey/param-case)|
 |`parents`|`1.0.1`|James Halliday|[https://github.com/substack/node-parents](https://github.com/substack/node-parents)|
