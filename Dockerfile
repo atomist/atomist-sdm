@@ -1,7 +1,7 @@
 FROM atomist/sdm-base:0.0.1
 
 RUN apt-get update && apt-get install -y \
-        openjdk-8-jdk-headless \
+        openjdk-8-jdk-headless maven \
     && rm -rf /var/lib/apt/lists/*
 
 ENV LEIN_ROOT true
