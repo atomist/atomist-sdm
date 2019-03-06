@@ -1,5 +1,5 @@
 /*
- * Copyright © 2018 Atomist, Inc.
+ * Copyright © 2019 Atomist, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,11 +72,12 @@ export function addMavenSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryM
     dockerBuild.with({
             ...MavenDefaultOptions,
             name: "mvn-docker-build",
-            // preparations: [MavenVersionPreparation, mavenCompilePreparationWithArgs(
-            //    ["skipTests", "skip.npm", "skip.webpack"],
-            // )],
             imageNameCreator: DefaultDockerImageNameCreator,
-            options: sdm.configuration.sdm.docker.hub as DockerOptions,
+            options: {
+                ...sdm.configuration.sdm.docker.hub as DockerOptions,
+                push: true,
+                builder: "docker",
+            },
         })
         .withProjectListener(MvnVersion)
         .withProjectListener(MvnPackage);

@@ -38,7 +38,7 @@ export const kubernetesDeployRegistrationProd = {
     applicationData: kubernetesApplicationData,
 };
 export const kubernetesDeployRegistrationGlobal = {
-    name: "@atomist/k8s-sdm_gke-global-sdm",
+    name: "@atomist/k8s-sdm_gke-customer-global",
     applicationData: kubernetesApplicationData,
 };
 export const kubernetesDeployRegistrationDemo = {

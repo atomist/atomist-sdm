@@ -2,7 +2,6 @@
   "spec": {
     "template": {
       "spec": {
-        "serviceAccountName": "sdm-serviceaccount",
         "containers": [
           {
             "env": [
@@ -32,17 +31,8 @@
                 }
               },
               {
-                "name": "ATOMIST_CONFIG",
-                "valueFrom": {
-                  "secretKeyRef": {
-                    "name": "atm-sdm",
-                    "key": "config"
-                  }
-                }
-              },
-              {
                 "name": "ATOMIST_CONFIG_PATH",
-                "value": "/opt/atm/atomist-config.json"
+                "value": "/opt/atm/client.config.json"
               }
             ],
             "livenessProbe": {
@@ -85,7 +75,7 @@
                 "mountPath": "/var/run/docker.sock"
               },
               {
-                "name": "automation",
+                "name": "atomist-sdm",
                 "mountPath": "/opt/atm",
                 "readOnly": true
               },
@@ -96,6 +86,7 @@
             ]
           }
         ],
+        "serviceAccountName": "atomist-sdm",
         "volumes": [
           {
             "name": "docker-sock",
@@ -104,9 +95,9 @@
             }
           },
           {
-            "name": "automation",
+            "name": "atomist-sdm",
             "secret": {
-              "secretName": "automation"
+              "secretName": "atomist-sdm"
             }
           },
           {
