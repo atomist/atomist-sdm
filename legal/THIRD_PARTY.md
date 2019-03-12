@@ -57,7 +57,7 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 |`@atomist/sdm-pack-k8s`|`1.3.5`|Atomist|[https://github.com/atomist/sdm-pack-k8s](https://github.com/atomist/sdm-pack-k8s)|
 |`@atomist/sdm-pack-node`|`1.0.3-master.20190303103845`|Atomist|[https://github.com/atomist/sdm-pack-node](https://github.com/atomist/sdm-pack-node)|
 |`@atomist/sdm-pack-spring`|`1.1.1-master.20190219152834`|Atomist|[https://github.com/atomist/sdm-pack-spring](https://github.com/atomist/sdm-pack-spring)|
-|`@atomist/sdm`|`1.3.0-master.20190301225910`|Atomist|[https://github.com/atomist/sdm](https://github.com/atomist/sdm)|
+|`@atomist/sdm`|`1.3.0-master.20190312121102`|Atomist|[https://github.com/atomist/sdm](https://github.com/atomist/sdm)|
 |`@atomist/slack-messages`|`1.0.1-master.20180830190736`|Atomist|[https://github.com/atomist/slack-messages](https://github.com/atomist/slack-messages)|
 |`@atomist/slack-messages`|`1.1.0`|Atomist|[https://github.com/atomist/slack-messages](https://github.com/atomist/slack-messages)|
 |`@atomist/slack-messages`|`1.1.0-master.20181115202354`|Atomist|[https://github.com/atomist/slack-messages](https://github.com/atomist/slack-messages)|
@@ -478,14 +478,14 @@ MIT License - [http://www.opensource.org/licenses/MIT](http://www.opensource.org
 |`@types/json-stringify-safe`|`5.0.0`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/jssha`|`2.0.0`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/lodash`|`4.14.120`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
-|`@types/lodash`|`4.14.121`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
+|`@types/lodash`|`4.14.123`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/long`|`4.0.0`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/marked`|`0.4.2`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/mime`|`2.0.1`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/minimatch`|`3.0.3`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/node`|`10.12.21`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/node`|`10.12.26`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
-|`@types/node`|`11.10.4`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
+|`@types/node`|`11.11.1`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/p-retry`|`2.0.0`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/package-json`|`4.0.1`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/passport-http-bearer`|`1.0.33`||[https://github.com/DefinitelyTyped/DefinitelyTyped.git](https://github.com/DefinitelyTyped/DefinitelyTyped.git)|
@@ -718,7 +718,7 @@ MIT License - [http://www.opensource.org/licenses/MIT](http://www.opensource.org
 |`cosmiconfig`|`5.1.0`|David Clark|[https://github.com/davidtheclark/cosmiconfig](https://github.com/davidtheclark/cosmiconfig)|
 |`crc`|`3.4.4`|Alex Gorbatchev|[https://github.com/alexgorbatchev/node-crc](https://github.com/alexgorbatchev/node-crc)|
 |`create-error-class`|`3.0.2`|Vsevolod Strukchinsky|[https://github.com/floatdrop/create-error-class](https://github.com/floatdrop/create-error-class)|
-|`cron`|`1.6.0`|Nick Campbell|[https://github.com/kelektiv/node-cron](https://github.com/kelektiv/node-cron)|
+|`cron`|`1.7.0`|Nick Campbell|[https://github.com/kelektiv/node-cron](https://github.com/kelektiv/node-cron)|
 |`cross-fetch`|`2.2.2`|Leonardo Quixada|[https://github.com/lquixada/cross-fetch](https://github.com/lquixada/cross-fetch)|
 |`cross-spawn`|`4.0.2`|IndigoUnited|[https://github.com/IndigoUnited/node-cross-spawn](https://github.com/IndigoUnited/node-cross-spawn)|
 |`cross-spawn`|`5.1.0`|IndigoUnited|[https://github.com/IndigoUnited/node-cross-spawn](https://github.com/IndigoUnited/node-cross-spawn)|
