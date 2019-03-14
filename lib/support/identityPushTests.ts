@@ -32,6 +32,19 @@ export function isNamed(...names: string[]): PushTest {
     });
 }
 
+export function nameMatches(...regexps: RegExp[]): PushTest {
+    const res = regexps.map(r => r.toString()).join(", ");
+    return pushTest(`Project name matches one of these regular expressions '${res}'`, async pci => {
+        if (regexps.some(r => r.test(pci.project.name))) {
+            logger.info("True: Project %s (in repo %s) matches a regular expression, one of %s", pci.project.name, pci.id.repo, res);
+            return true;
+        } else {
+            logger.info("False: Project %s (in repo %s) does not match any regular expression, none of %s", pci.project.name, pci.id.repo, res);
+            return false;
+        }
+    });
+}
+
 export function isOrgNamed(...names: string[]): PushTest {
     return pushTest(`Org name is one of these '${names.join(", ")}'`, async pci => {
         if (names.includes(pci.push.repo.owner)) {

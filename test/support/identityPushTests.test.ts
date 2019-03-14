@@ -15,16 +15,85 @@
  */
 
 import * as assert from "assert";
-import { isNamed } from "../../lib/support/identityPushTests";
+import {
+    isNamed,
+    nameMatches,
+} from "../../lib/support/identityPushTests";
 
-describe("isNamed push test", () => {
+describe("identityPushTests", () => {
 
-    it("Names itself uniquely for unique input", () => {
+    describe("isNamed push test", () => {
 
-        const pt1 = isNamed("Yes", "No");
+        it("Names itself uniquely for unique input", () => {
+            const pt1 = isNamed("Yes", "No");
+            const pt2 = isNamed("No");
+            assert(pt1.name !== pt2.name, `${pt1.name} = ${pt2.name}`);
+        });
 
-        const pt2 = isNamed("No");
-
-        assert(pt1.name !== pt2.name, `${pt1.name} = ${pt2.name}`);
     });
+
+    describe("nameMatches", () => {
+
+        it("should match", () => {
+            const pt = nameMatches(/sdm/);
+            const pli: any = {
+                id: {
+                    repo: {
+                        name: "seed-sdm",
+                    },
+                },
+                project: {
+                    name: "seed-sdm",
+                },
+            };
+            assert(pt.mapping(pli));
+        });
+
+        it("should not match", () => {
+            const pt = nameMatches(/sdm/);
+            const pli: any = {
+                id: {
+                    repo: {
+                        name: "koa-react-universal",
+                    },
+                },
+                project: {
+                    name: "koa-react-universal",
+                },
+            };
+            assert(pt.mapping(pli));
+        });
+
+        it("should match one", () => {
+            const pt = nameMatches(/jimmy/, /mack/, /sdm/, /vandellas/);
+            const pli: any = {
+                id: {
+                    repo: {
+                        name: "empty-sdm",
+                    },
+                },
+                project: {
+                    name: "empty-sdm",
+                },
+            };
+            assert(pt.mapping(pli));
+        });
+
+        it("should not match any", () => {
+            const pt = nameMatches(/jimmy/, /mack/, /sdm/, /vandellas/);
+            const pli: any = {
+                id: {
+                    repo: {
+                        name: "koa-react-universal",
+                    },
+                },
+                project: {
+                    name: "koa-react-universal",
+                },
+            };
+            assert(pt.mapping(pli));
+        });
+
+    });
+
 });
