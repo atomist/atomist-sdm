@@ -1,5 +1,5 @@
 /*
- * Copyright © 2018 Atomist, Inc.
+ * Copyright © 2019 Atomist, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,19 @@ export function isNamed(...names: string[]): PushTest {
             return true;
         } else {
             logger.info("False: Project %s (in repo %s) is not in my list of names, which is %s", pci.project.name, pci.id.repo, names);
+            return false;
+        }
+    });
+}
+
+export function nameMatches(...regexps: RegExp[]): PushTest {
+    const res = regexps.map(r => r.toString()).join(", ");
+    return pushTest(`Project name matches one of these regular expressions '${res}'`, async pci => {
+        if (regexps.some(r => r.test(pci.project.name))) {
+            logger.info("True: Project %s (in repo %s) matches a regular expression, one of %s", pci.project.name, pci.id.repo, res);
+            return true;
+        } else {
+            logger.info("False: Project %s (in repo %s) does not match any regular expression, none of %s", pci.project.name, pci.id.repo, res);
             return false;
         }
     });

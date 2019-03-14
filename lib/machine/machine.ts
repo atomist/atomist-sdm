@@ -73,6 +73,7 @@ import {
     isNamed,
     isOrgNamed,
     isTeam,
+    nameMatches,
 } from "../support/identityPushTests";
 import { MaterialChangeToNodeRepo } from "../support/materialChangeToNodeRepo";
 import { addDockerSupport } from "./dockerSupport";
@@ -109,6 +110,10 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
     },
 
         whenPushSatisfies(isOrgNamed("atomist-playground"))
+            .setGoals(goals("No Goals")),
+
+        whenPushSatisfies(allSatisfied(isOrgNamed("atomist-seeds"), not(nameMatches(/sdm/))))
+            .itMeans("Non-Atomist seed")
             .setGoals(goals("No Goals")),
 
         whenPushSatisfies(allSatisfied(isOrgNamed("sdd-manifesto"), isNamed("manifesto", "manifesto-app")))
