@@ -263,4 +263,3 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
 
     return sdm;
 }
-
