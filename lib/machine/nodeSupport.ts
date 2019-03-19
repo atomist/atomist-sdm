@@ -34,13 +34,13 @@ import {
     nodeBuilder,
     NodeProjectIdentifier,
     NodeProjectVersioner,
+    NpmAuditAutofix,
     NpmCompileProjectListener,
     NpmOptions,
     NpmProgressReporter,
     NpmVersionProjectListener,
     PackageLockUrlRewriteAutofix,
     TslintAutofix,
-    NpmAuditAutofix,
 } from "@atomist/sdm-pack-node";
 import {
     CacheScope,
