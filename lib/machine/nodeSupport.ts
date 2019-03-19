@@ -40,6 +40,7 @@ import {
     NpmVersionProjectListener,
     PackageLockUrlRewriteAutofix,
     TslintAutofix,
+    NpmAuditAutofix,
 } from "@atomist/sdm-pack-node";
 import {
     CacheScope,
@@ -141,6 +142,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
     });
 
     autofix.with(AddAtomistTypeScriptHeader)
+        .with(NpmAuditAutofix)
         .with(TslintAutofix)
         .with(TypeScriptImports)
         .with(PackageLockUrlRewriteAutofix)
