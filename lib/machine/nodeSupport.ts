@@ -34,7 +34,6 @@ import {
     nodeBuilder,
     NodeProjectIdentifier,
     NodeProjectVersioner,
-    NpmAuditAutofix,
     NpmCompileProjectListener,
     NpmOptions,
     NpmProgressReporter,
@@ -142,7 +141,6 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
     });
 
     autofix.with(AddAtomistTypeScriptHeader)
-        .with(NpmAuditAutofix)
         .with(TslintAutofix)
         .with(TypeScriptImports)
         .with(PackageLockUrlRewriteAutofix)
