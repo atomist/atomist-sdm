@@ -34,8 +34,6 @@ import {
     nodeBuilder,
     NodeProjectIdentifier,
     NodeProjectVersioner,
-    NpmAuditAutofix,
-    NpmAuditInspection,
     NpmCompileProjectListener,
     NpmOptions,
     NpmProgressReporter,
@@ -44,10 +42,12 @@ import {
     TslintAutofix,
     TslintInspection,
 } from "@atomist/sdm-pack-node";
+import { npmAuditAutofix } from "@atomist/sdm-pack-node/lib/autofix/npmAuditAutofix";
 import {
     CacheScope,
     npmInstallProjectListener,
 } from "@atomist/sdm-pack-node/lib/build/npmBuilder";
+import { npmAuditInspection } from "@atomist/sdm-pack-node/lib/inspection/npmAudit";
 import { IsMaven } from "@atomist/sdm-pack-spring";
 import { AddAtomistTypeScriptHeader } from "../autofix/addAtomistHeader";
 import { TypeScriptImports } from "../autofix/imports/importsFix";
@@ -140,12 +140,12 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
     });
 
     autofix.with(AddAtomistTypeScriptHeader)
-        .with(NpmAuditAutofix)
         .with(TslintAutofix)
         .with(TypeScriptImports)
         .with(PackageLockUrlRewriteAutofix)
         .with(RenameTestFix)
         .with(AddThirdPartyLicenseAutofix)
+        .with(npmAuditAutofix())
         .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }));
 
     build.with({
@@ -157,7 +157,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }));
 
     autoCodeInspection.with(TslintInspection)
-        .with(NpmAuditInspection)
+        .with(npmAuditInspection())
         .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }))
         .withListener(singleIssuePerCategoryManaging(sdm.configuration.name, true, () => true))
         .withListener(ApproveGoalIfErrorComments);
