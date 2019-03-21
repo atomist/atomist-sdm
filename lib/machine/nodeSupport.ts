@@ -34,12 +34,14 @@ import {
     nodeBuilder,
     NodeProjectIdentifier,
     NodeProjectVersioner,
+    NpmAuditInspection,
     NpmCompileProjectListener,
     NpmOptions,
     NpmProgressReporter,
     NpmVersionProjectListener,
     PackageLockUrlRewriteAutofix,
     TslintAutofix,
+    TslintInspection,
 } from "@atomist/sdm-pack-node";
 import {
     CacheScope,
@@ -54,10 +56,6 @@ import {
 } from "../autofix/test/testNamingFix";
 import { UpdateSupportFilesTransform } from "../autofix/updateSupportFiles";
 import { deleteDistTagOnBranchDeletion } from "../event/deleteDistTagOnBranchDeletion";
-import {
-    RunTslint,
-    tsLintReviewCategory,
-} from "../inspection/tslint";
 import {
     isNamed,
     isOrgNamed,
@@ -156,9 +154,10 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
     })
         .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }));
 
-    autoCodeInspection.with(RunTslint)
+    autoCodeInspection.with(TslintInspection)
+        .with(NpmAuditInspection)
         .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }))
-        .withListener(singleIssuePerCategoryManaging(tsLintReviewCategory, true, () => true))
+        .withListener(singleIssuePerCategoryManaging(sdm.configuration.name, true, () => true))
         .withListener(ApproveGoalIfErrorComments);
 
     publish.with({

@@ -235,7 +235,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             labelIssuesOnDeployment: true,
             closeCodeInspectionIssuesOnBranchDeletion: {
                 enabled: true,
-                source: "tslint",
+                source: sdm.configuration.name,
             },
         }),
     );
