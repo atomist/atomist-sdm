@@ -34,6 +34,7 @@ import {
     nodeBuilder,
     NodeProjectIdentifier,
     NodeProjectVersioner,
+    npmAuditInspection,
     NpmCompileProjectListener,
     NpmOptions,
     NpmProgressReporter,
@@ -42,12 +43,10 @@ import {
     TslintAutofix,
     TslintInspection,
 } from "@atomist/sdm-pack-node";
-import { npmAuditAutofix } from "@atomist/sdm-pack-node/lib/autofix/npmAuditAutofix";
 import {
     CacheScope,
     npmInstallProjectListener,
 } from "@atomist/sdm-pack-node/lib/build/npmBuilder";
-import { npmAuditInspection } from "@atomist/sdm-pack-node/lib/inspection/npmAudit";
 import { IsMaven } from "@atomist/sdm-pack-spring";
 import { AddAtomistTypeScriptHeader } from "../autofix/addAtomistHeader";
 import { TypeScriptImports } from "../autofix/imports/importsFix";
