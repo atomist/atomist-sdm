@@ -145,7 +145,6 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         .with(PackageLockUrlRewriteAutofix)
         .with(RenameTestFix)
         .with(AddThirdPartyLicenseAutofix)
-        .with(npmAuditAutofix())
         .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }));
 
     build.with({
