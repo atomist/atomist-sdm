@@ -179,6 +179,14 @@ describe("k8sSupport", () => {
                 ns: "testing",
                 replicas: 1,
                 host: "pusher.atomist.services",
+                ingressSpec: {
+                    metadata: {
+                        annotations: {
+                            "kubernetes.io/ingress.class": "nginx",
+                            "nginx.ingress.kubernetes.io/client-body-buffer-size": "1m",
+                        },
+                    },
+                },
                 path: "/",
                 tlsSecret: "star-atomist-services",
             };
@@ -203,6 +211,14 @@ describe("k8sSupport", () => {
                 ns: "production",
                 replicas: 3,
                 host: "intercom.atomist.com",
+                ingressSpec: {
+                    metadata: {
+                        annotations: {
+                            "kubernetes.io/ingress.class": "nginx",
+                            "nginx.ingress.kubernetes.io/client-body-buffer-size": "1m",
+                        },
+                    },
+                },
                 path: "/",
                 tlsSecret: "star-atomist-com",
             };
@@ -283,7 +299,7 @@ describe("k8sSupport", () => {
                                     {
                                         name: "k8s-sdm",
                                         secret: {
-                                            defaultMode: 256,
+                                            defaultMode: 288,
                                             secretName: "k8s-sdm",
                                         },
                                     },
@@ -325,6 +341,14 @@ describe("k8sSupport", () => {
             const e = {
                 name: r,
                 host: "pusher.atomist.com",
+                ingressSpec: {
+                    metadata: {
+                        annotations: {
+                            "kubernetes.io/ingress.class": "nginx",
+                            "nginx.ingress.kubernetes.io/client-body-buffer-size": "1m",
+                        },
+                    },
+                },
                 path: "/",
                 tlsSecret: "star-atomist-com",
             };
@@ -356,6 +380,14 @@ describe("k8sSupport", () => {
             const i = ingressFromGoal(r, n);
             const e = {
                 host: "intercom.atomist.services",
+                ingressSpec: {
+                    metadata: {
+                        annotations: {
+                            "kubernetes.io/ingress.class": "nginx",
+                            "nginx.ingress.kubernetes.io/client-body-buffer-size": "1m",
+                        },
+                    },
+                },
                 path: "/",
                 tlsSecret: "star-atomist-services",
             };
@@ -368,6 +400,14 @@ describe("k8sSupport", () => {
             const i = ingressFromGoal(r, n);
             const e = {
                 host: "intercom.atomist.com",
+                ingressSpec: {
+                    metadata: {
+                        annotations: {
+                            "kubernetes.io/ingress.class": "nginx",
+                            "nginx.ingress.kubernetes.io/client-body-buffer-size": "1m",
+                        },
+                    },
+                },
                 path: "/",
                 tlsSecret: "star-atomist-com",
             };
@@ -380,6 +420,14 @@ describe("k8sSupport", () => {
             const i = ingressFromGoal(r, n);
             const e = {
                 host: "badge.atomist.services",
+                ingressSpec: {
+                    metadata: {
+                        annotations: {
+                            "kubernetes.io/ingress.class": "nginx",
+                            "nginx.ingress.kubernetes.io/client-body-buffer-size": "1m",
+                        },
+                    },
+                },
                 path: "/",
                 tlsSecret: "star-atomist-services",
             };
@@ -392,6 +440,14 @@ describe("k8sSupport", () => {
             const i = ingressFromGoal(r, n);
             const e = {
                 host: "badge.atomist.com",
+                ingressSpec: {
+                    metadata: {
+                        annotations: {
+                            "kubernetes.io/ingress.class": "nginx",
+                            "nginx.ingress.kubernetes.io/client-body-buffer-size": "1m",
+                        },
+                    },
+                },
                 path: "/",
                 tlsSecret: "star-atomist-com",
             };
@@ -458,7 +514,7 @@ describe("k8sSupport", () => {
                                     {
                                         name: "k8s-sdm",
                                         secret: {
-                                            defaultMode: 256,
+                                            defaultMode: 288,
                                             secretName: "k8s-sdm",
                                         },
                                     },
@@ -614,7 +670,7 @@ describe("k8sSupport", () => {
                                     {
                                         name: "k8s-sdm",
                                         secret: {
-                                            defaultMode: 256,
+                                            defaultMode: 288,
                                             secretName: "k8s-sdm",
                                         },
                                     },
