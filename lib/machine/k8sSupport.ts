@@ -103,12 +103,6 @@ function namespaceFromGoal(goalEvent: SdmGoalEvent): string {
     return "default";
 }
 
-export interface Ingress {
-    host: string;
-    path: string;
-    tlsSecret?: string;
-}
-
 /**
  * Determine if this deploy requires an ingress, returning it if is
  * does.
@@ -117,9 +111,17 @@ export interface Ingress {
  * @param ns Kubernetes namespace where app will be deployed.
  * @return Object with ingress-related properties of KubernetesApplication populated or `undefined`.
  */
-export function ingressFromGoal(repo: string, ns: string): Ingress | undefined {
+export function ingressFromGoal(repo: string, ns: string): Partial<KubernetesApplication> | undefined {
     let host: string;
     let path: string;
+    const ingressSpec = {
+        metadata: {
+            annotations: {
+                "kubernetes.io/ingress.class": "nginx",
+                "nginx.ingress.kubernetes.io/client-body-buffer-size": "1m",
+            },
+        },
+    };
     const tail = (ns === "production") ? "com" : "services";
     if (repo === "card-automation") {
         host = "pusher";
@@ -138,6 +140,7 @@ export function ingressFromGoal(repo: string, ns: string): Ingress | undefined {
     }
     return {
         host: `${host}.atomist.${tail}`,
+        ingressSpec,
         path,
         tlsSecret: `star-atomist-${tail}`,
     };
@@ -195,7 +198,7 @@ export function addK8sSecret(app: KubernetesApplication, goal: KubernetesDeploy,
     const secretVolume = {
         name: secretApp.name,
         secret: {
-            defaultMode: 256,
+            defaultMode: 288,
             secretName: secretApp.name,
         },
     };
