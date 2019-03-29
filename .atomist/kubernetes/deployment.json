@@ -6,7 +6,15 @@
           {
             "env": [
               {
-                "name": "ATOMIST_DEPLOYMENT_NAMESPACE",
+                "name": "ATOMIST_CONFIG_PATH",
+                "value": "/opt/atm/client.config.json"
+              },
+              {
+                "name": "ATOMIST_GOAL_LAUNCHER",
+                "value": "kubernetes"
+              },
+              {
+                "name": "ATOMIST_POD_NAMESPACE",
                 "valueFrom": {
                   "fieldRef": {
                     "fieldPath": "metadata.namespace"
@@ -18,46 +26,38 @@
                 "value": "1"
               },
               {
-                "name": "ATOMIST_GOAL_LAUNCHER",
-                "value": "kubernetes"
-              },
-              {
                 "name": "GITHUB_TOKEN",
                 "valueFrom": {
                   "secretKeyRef": {
-                    "name": "atomist",
-                    "key": "token"
+                    "key": "token",
+                    "name": "atomist"
                   }
                 }
-              },
-              {
-                "name": "ATOMIST_CONFIG_PATH",
-                "value": "/opt/atm/client.config.json"
               }
             ],
             "livenessProbe": {
+              "failureThreshold": 3,
               "httpGet": {
                 "path": "/health",
                 "port": "http",
                 "scheme": "HTTP"
               },
               "initialDelaySeconds": 20,
-              "timeoutSeconds": 3,
               "periodSeconds": 20,
               "successThreshold": 1,
-              "failureThreshold": 3
+              "timeoutSeconds": 3
             },
             "readinessProbe": {
+              "failureThreshold": 3,
               "httpGet": {
                 "path": "/health",
                 "port": "http",
                 "scheme": "HTTP"
               },
               "initialDelaySeconds": 20,
-              "timeoutSeconds": 3,
               "periodSeconds": 20,
               "successThreshold": 1,
-              "failureThreshold": 3
+              "timeoutSeconds": 3
             },
             "resources": {
               "limits": {
@@ -71,28 +71,29 @@
             },
             "volumeMounts": [
               {
-                "name": "docker-sock",
-                "mountPath": "/var/run/docker.sock"
+                "mountPath": "/var/run/docker.sock",
+                "name": "docker-sock"
               },
               {
-                "name": "atomist-sdm",
                 "mountPath": "/opt/atm",
+                "name": "atomist-sdm",
                 "readOnly": true
               },
               {
-                "name": "data",
-                "mountPath": "/opt/data"
+                "mountPath": "/opt/data",
+                "name": "data"
               }
             ]
           }
         ],
         "serviceAccountName": "atomist-sdm",
+        "terminationGracePeriodSeconds": 180,
         "volumes": [
           {
-            "name": "docker-sock",
             "hostPath": {
               "path": "/var/run/docker.sock"
-            }
+            },
+            "name": "docker-sock"
           },
           {
             "name": "atomist-sdm",
@@ -101,14 +102,13 @@
             }
           },
           {
-            "name": "data",
             "hostPath": {
               "path": "/mnt/disks/ssd0/data/atomist-sdm",
               "type": "DirectoryOrCreate"
-            }
+            },
+            "name": "data"
           }
-        ],
-        "terminationGracePeriodSeconds": 180
+        ]
       }
     }
   }
