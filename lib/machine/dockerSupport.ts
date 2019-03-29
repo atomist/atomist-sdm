@@ -17,12 +17,10 @@
 import {
     allSatisfied,
     anySatisfied,
-    formatDate,
     LogSuppressor,
     not,
     SoftwareDeliveryMachine,
 } from "@atomist/sdm";
-import { ProjectIdentifier } from "@atomist/sdm-core";
 import {
     DockerOptions,
     HasDockerfile,
@@ -37,12 +35,15 @@ import {
     dockerBuild,
     releaseDocker,
     releaseVersion,
-    version,
 } from "./goals";
 import {
     executeReleaseDocker,
     executeReleaseVersion,
 } from "./release";
+import {
+    fileProjectIdentifier,
+    fileReleaseVersionCommand,
+} from "./version";
 
 /**
  * Add Docker implementations of goals to SDM.
@@ -53,25 +54,6 @@ import {
 export function addDockerSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMachine {
 
     const simpleDockerPushTest = allSatisfied(HasDockerfile, not(IsNode), not(IsMaven), isOrgNamed("atomist"));
-
-    version.with({
-        name: "file-versioner",
-        versioner: async (sdmGoal, p, log) => {
-            const baseVersion: string = (await fileProjectIdentifier(p)).version;
-            log.write(`Using base version '${baseVersion}'`);
-            const branch = sdmGoal.branch;
-            const branchSuffix = (branch === sdmGoal.push.repo.defaultBranch) ? "" :
-                "branch-" + branch.replace(/[_/]/g, "-") + ".";
-            log.write(`Commit is on branch '${branch}', using '${branchSuffix}'`);
-            const ts = formatDate();
-            log.write(`Current timestamp is '${ts}'`);
-            const prereleaseVersion = `${baseVersion}-${branchSuffix}${ts}`;
-            log.write(`Calculated pre-release version '${prereleaseVersion}'`);
-            return prereleaseVersion;
-        },
-        logInterpreter: LogSuppressor,
-        pushTest: simpleDockerPushTest,
-    });
 
     dockerBuild.with({
         name: "simple-docker-build",
@@ -106,19 +88,10 @@ export function addDockerSupport(sdm: SoftwareDeliveryMachine): SoftwareDelivery
 
     releaseVersion.with({
         name: "file-release-version",
-        goalExecutor: executeReleaseVersion(fileProjectIdentifier,
-            // tslint:disable-next-line:no-invalid-template-strings
-            { command: "bash", args: ["-c", 'if [[ -f VERSION ]];then v=$(<VERSION);p=${v##*.};echo "${v%.*}.$((++p))" >VERSION;fi'] }),
+        goalExecutor: executeReleaseVersion(fileProjectIdentifier, fileReleaseVersionCommand),
         logInterpreter: LogSuppressor,
         pushTest: simpleDockerPushTest,
     });
 
     return sdm;
 }
-
-const fileProjectIdentifier: ProjectIdentifier = async p => {
-    const versionFile = await p.getFile("VERSION");
-    const versionContents = (versionFile) ? await versionFile.getContent() : "0.0.0";
-    const v = versionContents.trim();
-    return { name: p.name, version: v };
-};
