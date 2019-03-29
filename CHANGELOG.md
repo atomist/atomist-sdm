@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 -   Update to use sdm-pack-k8s. [#99](https://github.com/atomist/atomist-sdm/issues/99)
 -   Only build our seeds. [#104](https://github.com/atomist/atomist-sdm/issues/104)
+-   Update docker build and k8s deployment. [#112](https://github.com/atomist/atomist-sdm/issues/112)
 
 ## [1.0.2](https://github.com/atomist/atomist-sdm/compare/0.3.4...1.0.2) - 2019-02-06
 
