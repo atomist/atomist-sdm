@@ -1,6 +1,9 @@
 # @atomist/atomist-sdm
 
-![atomist sdm goals](http://badge.atomist.com/T29E48P34/atomist/atomist-sdm/cae23976-e51c-4e19-b9cd-f7c445c53712) [![npm version](https://badge.fury.io/js/%40atomist%2Fatomist-sdm.svg)](https://badge.fury.io/js/%40atomist%2Fatomist-sdm)
+![atomist sdm goals](http://badge.atomist.com/T29E48P34/atomist/atomist-sdm/cae23976-e51c-4e19-b9cd-f7c445c53712)
+[![npm package](https://img.shields.io/npm/v/@atomist/atomist-sdm.svg)](https://www.npmjs.com/package/@atomist/atomist-sdm)
+[![docker pulls](https://img.shields.io/docker/pulls/atomist/atomist-sdm.svg)](https://hub.docker.com/r/atomist/atomist-sdm)
+[![release](https://img.shields.io/github/tag/atomist/atomist-sdm.svg)](https://github.com/atomist/atomist-sdm/releases/latest)
 
 Instance of an Atomist Software Delivery Machine that can be used to
 automate delivery of Atomist automation-client projects, like SDMs.
