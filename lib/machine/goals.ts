@@ -41,6 +41,7 @@ export const version = new Version();
 export const autofix = new Autofix();
 export const build = new Build();
 export const tag = new Tag();
+export const tagWithApproval = new Tag({ approval: true });
 export const dockerBuild = new DockerBuild();
 export const fingerprint = new Fingerprint();
 
@@ -195,6 +196,14 @@ export const DockerReleaseGoals = goals("Docker Build with Release")
     .plan(releaseNpm, releaseDocker, releaseDocs, releaseVersion).after(publishWithApproval, autoCodeInspection)
     .plan(releaseChangelog).after(releaseVersion)
     .plan(releaseTag, releaseHomebrew).after(releaseNpm, releaseDocker);
+
+export const SimpleDockerReleaseGoals = goals("Simple Docker Build with Release")
+    .plan(version)
+    .plan(dockerBuild).after(version)
+    .plan(tagWithApproval).after(dockerBuild)
+    .plan(releaseDocker, releaseVersion).after(tagWithApproval)
+    .plan(releaseChangelog).after(releaseVersion)
+    .plan(releaseTag).after(releaseDocker);
 
 // Docker build and testing and production kubernetes deploy
 export const KubernetesDeployGoals = goals("Deploy")
