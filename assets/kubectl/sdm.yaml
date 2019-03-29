@@ -1,0 +1,160 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: atomist
+    app.kubernetes.io/name: atomist-sdm
+    app.kubernetes.io/part-of: atomist-sdm
+  name: sdm
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: atomist
+    app.kubernetes.io/name: atomist-sdm
+    app.kubernetes.io/part-of: atomist-sdm
+    atomist.com/workspaceId: T29E48P34
+  name: atomist-sdm
+  namespace: sdm
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: atomist
+    app.kubernetes.io/name: atomist-sdm
+    app.kubernetes.io/part-of: atomist-sdm
+    atomist.com/workspaceId: T29E48P34
+  name: atomist-sdm
+  namespace: sdm
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: atomist
+    app.kubernetes.io/name: atomist-sdm
+    app.kubernetes.io/part-of: atomist-sdm
+    atomist.com/workspaceId: T29E48P34
+  name: atomist-sdm
+  namespace: sdm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: atomist-sdm
+subjects:
+  - kind: ServiceAccount
+    name: atomist-sdm
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: atomist
+    app.kubernetes.io/name: atomist-sdm
+    app.kubernetes.io/part-of: atomist-sdm
+    atomist.com/workspaceId: T29E48P34
+  name: atomist-sdm
+  namespace: sdm
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: atomist-sdm
+      atomist.com/workspaceId: T29E48P34
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        atomist.com/k8vent: '{"webhooks":["https://webhook.atomist.com/atomist/kube/teams/T29E48P34"]}'
+      labels:
+        app.kubernetes.io/managed-by: atomist
+        app.kubernetes.io/name: atomist-sdm
+        app.kubernetes.io/part-of: atomist-sdm
+        app.kubernetes.io/version: "1"
+        atomist.com/workspaceId: T29E48P34
+    spec:
+      containers:
+        - env:
+            - name: ATOMIST_CONFIG_PATH
+              value: /opt/atm/client.config.json
+            - name: ATOMIST_GOAL_SCHEDULER
+              value: kubernetes
+            - name: ATOMIST_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: FORCE_COLOR
+              value: "1"
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  key: token
+                  name: atomist
+          image: atomist/atomist-sdm:1.0.5-master.20190325205918
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 20
+            successThreshold: 1
+            timeoutSeconds: 3
+          name: atomist-sdm
+          ports:
+            - containerPort: 2866
+              name: http
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 20
+            successThreshold: 1
+            timeoutSeconds: 3
+          resources:
+            limits:
+              cpu: 2000m
+              memory: 3000Mi
+            requests:
+              cpu: 500m
+              memory: 1000Mi
+          volumeMounts:
+            - mountPath: /var/run/docker.sock
+              name: docker-sock
+            - mountPath: /opt/atm
+              name: atomist-sdm
+              readOnly: true
+            - mountPath: /opt/data
+              name: data
+      serviceAccountName: atomist-sdm
+      terminationGracePeriodSeconds: 180
+      volumes:
+        - hostPath:
+            path: /var/run/docker.sock
+          name: docker-sock
+        - name: atomist-sdm
+          secret:
+            defaultMode: 288
+            secretName: atomist-sdm
+        - hostPath:
+            path: /mnt/disks/ssd0/data/atomist-sdm
+            type: DirectoryOrCreate
+          name: data
