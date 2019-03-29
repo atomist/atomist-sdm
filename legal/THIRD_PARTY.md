@@ -28,7 +28,7 @@ This page details all runtime OSS dependencies of `@atomist/atomist-sdm`.
 |[GPL-3.0](#gpl-30)|8|
 |[ISC](#isc)|141|
 |[MIT AND BSD-3-Clause](#mit-and-bsd-3-clause)|1|
-|[MIT](#mit)|1093|
+|[MIT](#mit)|1094|
 |[UNKNOWN](#unknown)|2|
 |[Unlicense](#unlicense)|3|
 |[WTFPL](#wtfpl)|4|
@@ -58,7 +58,7 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 |`@atomist/sdm-pack-k8s`|`1.4.1`|Atomist|[https://github.com/atomist/sdm-pack-k8s](https://github.com/atomist/sdm-pack-k8s)|
 |`@atomist/sdm-pack-node`|`1.0.4-master.20190321220053`|Atomist|[https://github.com/atomist/sdm-pack-node](https://github.com/atomist/sdm-pack-node)|
 |`@atomist/sdm-pack-spring`|`1.1.1-try-optional-deps.20190306142708`|Atomist|[https://github.com/atomist/sdm-pack-spring](https://github.com/atomist/sdm-pack-spring)|
-|`@atomist/sdm`|`1.3.0-master.20190312121102`|Atomist|[https://github.com/atomist/sdm](https://github.com/atomist/sdm)|
+|`@atomist/sdm`|`1.3.1-master.20190329134249`|Atomist|[https://github.com/atomist/sdm](https://github.com/atomist/sdm)|
 |`@atomist/slack-messages`|`1.0.1-master.20180830190736`|Atomist|[https://github.com/atomist/slack-messages](https://github.com/atomist/slack-messages)|
 |`@atomist/slack-messages`|`1.1.0`|Atomist|[https://github.com/atomist/slack-messages](https://github.com/atomist/slack-messages)|
 |`@atomist/slack-messages`|`1.1.0-master.20181115202354`|Atomist|[https://github.com/atomist/slack-messages](https://github.com/atomist/slack-messages)|
@@ -464,7 +464,7 @@ MIT License - [http://www.opensource.org/licenses/MIT](http://www.opensource.org
 |`@types/caseless`|`0.12.2`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/connect`|`3.4.32`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/cors`|`2.8.4`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
-|`@types/cron`|`1.6.1`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
+|`@types/cron`|`1.7.0`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/cross-spawn`|`6.0.0`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/dateformat`|`1.0.2`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/dateformat`|`3.0.0`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
@@ -496,6 +496,7 @@ MIT License - [http://www.opensource.org/licenses/MIT](http://www.opensource.org
 |`@types/minimatch`|`3.0.3`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/node`|`10.14.1`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/node`|`11.11.3`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
+|`@types/node`|`11.12.1`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/p-retry`|`2.0.0`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/package-json`|`4.0.1`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/passport-http-bearer`|`1.0.33`||[https://github.com/DefinitelyTyped/DefinitelyTyped.git](https://github.com/DefinitelyTyped/DefinitelyTyped.git)|
