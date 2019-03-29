@@ -17,10 +17,12 @@
 import {
     allSatisfied,
     anySatisfied,
+    formatDate,
     LogSuppressor,
     not,
     SoftwareDeliveryMachine,
 } from "@atomist/sdm";
+import { ProjectIdentifier } from "@atomist/sdm-core";
 import {
     DockerOptions,
     HasDockerfile,
@@ -31,8 +33,16 @@ import {
     isNamed,
     isOrgNamed,
 } from "../support/identityPushTests";
-import { releaseDocker } from "./goals";
-import { executeReleaseDocker } from "./release";
+import {
+    dockerBuild,
+    releaseDocker,
+    releaseVersion,
+    version,
+} from "./goals";
+import {
+    executeReleaseDocker,
+    executeReleaseVersion,
+} from "./release";
 
 /**
  * Add Docker implementations of goals to SDM.
@@ -42,20 +52,73 @@ import { executeReleaseDocker } from "./release";
  */
 export function addDockerSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMachine {
 
+    const simpleDockerPushTest = allSatisfied(HasDockerfile, not(IsNode), not(IsMaven), isOrgNamed("atomist"));
+
+    version.with({
+        name: "file-versioner",
+        versioner: async (sdmGoal, p, log) => {
+            const baseVersion: string = (await fileProjectIdentifier(p)).version;
+            log.write(`Using base version '${baseVersion}'`);
+            const branch = sdmGoal.branch;
+            const branchSuffix = (branch === sdmGoal.push.repo.defaultBranch) ? "" :
+                "branch-" + branch.replace(/[_/]/g, "-") + ".";
+            log.write(`Commit is on branch '${branch}', using '${branchSuffix}'`);
+            const ts = formatDate();
+            log.write(`Current timestamp is '${ts}'`);
+            const prereleaseVersion = `${baseVersion}-${branchSuffix}${ts}`;
+            log.write(`Calculated pre-release version '${prereleaseVersion}'`);
+            return prereleaseVersion;
+        },
+        logInterpreter: LogSuppressor,
+        pushTest: simpleDockerPushTest,
+    });
+
+    dockerBuild.with({
+        name: "simple-docker-build",
+        options: {
+            ...sdm.configuration.sdm.docker.hub as DockerOptions,
+            push: true,
+            builder: "docker",
+        },
+        logInterpreter: LogSuppressor,
+        pushTest: simpleDockerPushTest,
+    });
+
     releaseDocker
         .with({
             name: "docker-release-global-sdm",
-            goalExecutor: executeReleaseDocker(
-                sdm.configuration.sdm.docker.t095sffbk as DockerOptions),
+            goalExecutor: executeReleaseDocker(sdm.configuration.sdm.docker.t095sffbk as DockerOptions),
             pushTest: allSatisfied(IsNode, HasDockerfile, allSatisfied(isOrgNamed("atomisthq"), isNamed("global-sdm"))),
             logInterpreter: LogSuppressor,
-        }).with({
-        name: "docker-release",
-        goalExecutor: executeReleaseDocker(
-            sdm.configuration.sdm.docker.hub as DockerOptions),
-        pushTest: allSatisfied(anySatisfied(IsNode, IsMaven), HasDockerfile, not(allSatisfied(isOrgNamed("atomisthq"), isNamed("global-sdm")))),
+        })
+        .with({
+            name: "docker-release",
+            goalExecutor: executeReleaseDocker(sdm.configuration.sdm.docker.hub as DockerOptions),
+            pushTest: allSatisfied(anySatisfied(IsNode, IsMaven), HasDockerfile, not(allSatisfied(isOrgNamed("atomisthq"), isNamed("global-sdm")))),
+            logInterpreter: LogSuppressor,
+        })
+        .with({
+            name: "simple-docker-release",
+            goalExecutor: executeReleaseDocker(sdm.configuration.sdm.docker.hub as DockerOptions),
+            pushTest: simpleDockerPushTest,
+            logInterpreter: LogSuppressor,
+        });
+
+    releaseVersion.with({
+        name: "file-release-version",
+        goalExecutor: executeReleaseVersion(fileProjectIdentifier,
+            // tslint:disable-next-line:no-invalid-template-strings
+            { command: "bash", args: ["-c", 'if [[ -f VERSION ]];then v=$(<VERSION);p=${v##*.};echo "${v%.*}.$((++p))" >VERSION;fi'] }),
         logInterpreter: LogSuppressor,
+        pushTest: simpleDockerPushTest,
     });
 
     return sdm;
 }
+
+const fileProjectIdentifier: ProjectIdentifier = async p => {
+    const versionFile = await p.getFile("VERSION");
+    const versionContents = (versionFile) ? await versionFile.getContent() : "0.0.0";
+    const v = versionContents.trim();
+    return { name: p.name, version: v };
+};
