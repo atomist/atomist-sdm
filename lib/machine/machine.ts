@@ -42,7 +42,10 @@ import {
     goalState,
     IsInLocalMode,
 } from "@atomist/sdm-core";
-import { buildAwareCodeTransforms } from "@atomist/sdm-pack-build";
+import {
+    Build,
+    buildAwareCodeTransforms,
+} from "@atomist/sdm-pack-build";
 import { changelogSupport } from "@atomist/sdm-pack-changelog/lib/changelog";
 import { HasDockerfile } from "@atomist/sdm-pack-docker";
 import { issueSupport } from "@atomist/sdm-pack-issue";
@@ -50,6 +53,7 @@ import {
     IsAtomistAutomationClient,
     IsNode,
 } from "@atomist/sdm-pack-node";
+import { PublishToS3 } from "@atomist/sdm-pack-s3";
 import {
     IsMaven,
     MaterialChangeToJavaRepo,
@@ -79,6 +83,7 @@ import { MaterialChangeToNodeRepo } from "../support/materialChangeToNodeRepo";
 import { addDockerSupport } from "./dockerSupport";
 import { addGithubSupport } from "./githubSupport";
 import {
+    autoCodeInspection,
     build,
     BuildGoals,
     BuildReleaseAndHomebrewGoals,
@@ -93,18 +98,109 @@ import {
     MavenBuildGoals,
     MavenDockerReleaseGoals,
     MultiKubernetesDeployGoals,
+    releaseChangelog,
+    releaseTag,
+    releaseVersion,
     SimpleDockerReleaseGoals,
     SimplifiedKubernetesDeployGoals,
+    tag,
+    version,
 } from "./goals";
 import { addHomebrewSupport } from "./homebrewSupport";
 import { addMavenSupport } from "./mavenSupport";
 import { addNodeSupport } from "./nodeSupport";
 import { IsReleaseCommit } from "./release";
 import { addTeamPolicies } from "./teamPolicies";
+import { addFileVersionerSupport } from "./version";
+import {
+    htmltestInspection,
+    IsJekyllProject,
+    JekyllBuildAfterCheckout,
+    webBuilder,
+    WebNpmBuildAfterCheckout,
+} from "./webSupport";
 
 const AtomistHQWorkspace = "T095SFFBK";
 
 export function machine(configuration: SoftwareDeliveryMachineConfiguration): SoftwareDeliveryMachine {
+
+    const publishS3Images = new PublishToS3({
+        uniqueName: "publish s3-images to s3",
+        bucketName: "images-atomist",
+        region: "us-east-1",
+        filesToPublish: ["images/**/*"],
+        pathTranslation: filepath => filepath.replace("images/", ""),
+        pathToIndex: "images/index.html",
+    });
+    const S3ImagesGoals = goals("Image Publish").plan(publishS3Images);
+
+    const buildWeb = new Build()
+        .with({
+            name: "web-npm-build",
+            builder: webBuilder("public"),
+            pushTest: IsNode,
+        })
+        .with({
+            name: "web-jekyll-build",
+            builder: webBuilder("_site"),
+            pushTest: IsJekyllProject,
+        });
+    const WebBuildGoals = goals("Web Build")
+        .plan(version)
+        .plan(buildWeb).after(version)
+        .plan(tag).after(buildWeb);
+
+    const publishWebAppToStaging = new PublishToS3({
+        uniqueName: "publish web-app to staging s3 bucket",
+        bucketName: "app-staging.atomist.services",
+        region: "us-east-1",
+        filesToPublish: ["public/**/*"],
+        pathTranslation: filepath => filepath.replace("public/", ""),
+        pathToIndex: "public/index.html",
+        approvalRequired: true,
+    }).withProjectListener(WebNpmBuildAfterCheckout);
+    const publishWebAppToProduction = new PublishToS3({
+        uniqueName: "publish web-app to production s3 bucket",
+        bucketName: "app.atomist.com",
+        region: "us-east-1",
+        filesToPublish: ["public/**/*"],
+        pathTranslation: filepath => filepath.replace("public/", ""),
+        pathToIndex: "public/index.html",
+    }).withProjectListener(WebNpmBuildAfterCheckout);
+    const WebAppGoals = goals("Web App Build with Release")
+        .plan(WebBuildGoals)
+        .plan(publishWebAppToStaging).after(buildWeb)
+        .plan(publishWebAppToProduction).after(publishWebAppToStaging)
+        .plan(releaseVersion).after(publishWebAppToProduction)
+        .plan(releaseChangelog).after(releaseVersion)
+        .plan(releaseTag).after(releaseChangelog);
+
+    autoCodeInspection.with(htmltestInspection("_site"));
+    const publishWebSiteToStaging = new PublishToS3({
+        uniqueName: "publish web-site to staging s3 bucket",
+        bucketName: "www-staging.atomist.services",
+        region: "us-east-1",
+        filesToPublish: ["_site/**/*"],
+        pathTranslation: filepath => filepath.replace("_site/", ""),
+        pathToIndex: "_site/index.html",
+        approvalRequired: true,
+    }).withProjectListener(JekyllBuildAfterCheckout);
+    const publishWebSiteToProduction = new PublishToS3({
+        uniqueName: "publish web-site to production s3 bucket",
+        bucketName: "atomist.com",
+        region: "us-east-1",
+        filesToPublish: ["_site/**/*"],
+        pathTranslation: filepath => filepath.replace("_site/", ""),
+        pathToIndex: "_site/index.html",
+    }).withProjectListener(JekyllBuildAfterCheckout);
+    const WebSiteGoals = goals("Web Site Build with Release")
+        .plan(WebBuildGoals)
+        .plan(publishWebSiteToStaging, autoCodeInspection).after(buildWeb)
+        .plan(publishWebSiteToProduction).after(publishWebSiteToStaging)
+        .plan(releaseVersion).after(publishWebSiteToProduction)
+        .plan(releaseChangelog).after(releaseVersion)
+        .plan(releaseTag).after(releaseChangelog);
+
     const sdm = createSoftwareDeliveryMachine({
         name: "Atomist Software Delivery Machine",
         configuration,
@@ -128,6 +224,18 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         whenPushSatisfies(IsNode, IsInLocalMode)
             .itMeans("Node repository in local mode")
             .setGoals(LocalGoals),
+
+        whenPushSatisfies(allSatisfied(isOrgNamed("atomisthq"), isNamed("s3-images")))
+            .itMeans("Images Site")
+            .setGoals(S3ImagesGoals),
+
+        whenPushSatisfies(allSatisfied(isOrgNamed("atomisthq"), isNamed("web-app")))
+            .itMeans("Web App")
+            .setGoals(WebAppGoals),
+
+        whenPushSatisfies(allSatisfied(isOrgNamed("atomisthq"), isNamed("web-site")))
+            .itMeans("Web Site")
+            .setGoals(WebSiteGoals),
 
         whenPushSatisfies(not(isSdmEnabled(configuration.name)), isTeam(AtomistHQWorkspace))
             .itMeans("Disabled repository in atomisthq workspace")
@@ -220,6 +328,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
     addNodeSupport(sdm);
     addHomebrewSupport(sdm);
     addTeamPolicies(sdm);
+    addFileVersionerSupport(sdm);
 
     sdm.addExtensionPacks(
         goalScheduling(),
