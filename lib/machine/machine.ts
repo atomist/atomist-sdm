@@ -93,6 +93,7 @@ import {
     MavenBuildGoals,
     MavenDockerReleaseGoals,
     MultiKubernetesDeployGoals,
+    SimpleDockerReleaseGoals,
     SimplifiedKubernetesDeployGoals,
 } from "./goals";
 import { addHomebrewSupport } from "./homebrewSupport";
@@ -186,6 +187,10 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         whenPushSatisfies(anySatisfied(IsNode), HasDockerfile)
             .itMeans("Docker Build")
             .setGoals(DockerGoals),
+
+        whenPushSatisfies(HasDockerfile, isOrgNamed("atomist"))
+            .itMeans("Simple Docker Release Build")
+            .setGoals(SimpleDockerReleaseGoals),
 
         whenPushSatisfies(IsNode, not(HasDockerfile), ToDefaultBranch)
             .itMeans("Release Build")
