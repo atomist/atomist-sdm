@@ -39,11 +39,12 @@ export function dependenciesToPeerDependenciesTransform(...toRewrite: RegExp[]):
             pj.devDependencies = {};
         }
 
-        _.forEach(pj.dependencies || {}, (version, name) => {
+        _.forEach(pj.dependencies || {}, (v, name) => {
             if (toRewrite.some(r => r.test(name))) {
+                const version = v.replace(/\^/g, "");
                 const semVersion = `>=${semver.major(version)}.${semver.minor(version)}.0`;
                 pj.peerDependencies[name] = semVersion;
-                pj.devDependencies[name] = version;
+                pj.devDependencies[name] = v;
                 delete pj.dependencies[name];
             }
         });

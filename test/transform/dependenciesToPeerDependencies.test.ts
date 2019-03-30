@@ -27,7 +27,7 @@ describe("dependenciesToPeerDependenciesTransform", () => {
     it("should rewrite single dependency regex", async () => {
         const pj = {
             dependencies: {
-                "@atomist/automation-client": "1.3.0-master.20190221221959",
+                "@atomist/automation-client": "^1.3.0",
                 "@atomist/microgrammar": "1.1.0-master.20190205190919",
                 "@atomist/sdm": "1.3.0-master.20190226090409",
                 "@atomist/sdm-core": "1.3.0-master.20190227112318",
@@ -72,7 +72,7 @@ describe("dependenciesToPeerDependenciesTransform", () => {
                 "yamljs": "^0.3.0",
             },
             devDependencies: {
-                "@atomist/automation-client": "1.3.0-master.20190221221959",
+                "@atomist/automation-client": "^1.3.0",
                 "@atomist/sdm": "1.3.0-master.20190226090409",
                 "@atomist/sdm-core": "1.3.0-master.20190227112318",
                 "@atomist/sdm-pack-analysis": "0.1.0-master.20190213071419",
