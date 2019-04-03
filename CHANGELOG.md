@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 -   Java build support. [#102](https://github.com/atomist/atomist-sdm/issues/102)
 -   Add nginx.ingress annotations to ingressSpec. [#107](https://github.com/atomist/atomist-sdm/issues/107)
 -   Add simple Docker build. [#109](https://github.com/atomist/atomist-sdm/issues/109)
+-   Add support for building static web sites. [#115](https://github.com/atomist/atomist-sdm/issues/115)
 
 ### Changed
 
