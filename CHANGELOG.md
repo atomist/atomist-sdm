@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 -   Add zlib1g-dev to Docker image. [2ea6ab2](https://github.com/atomist/atomist-sdm/commit/2ea6ab23950145d7b6978fbaae328b953171d85d)
+-   Always run `npm ci` with dev. [7becf74](https://github.com/atomist/atomist-sdm/commit/7becf74d3f36050ab23c2e5e8e26baa0c37e969e)
 
 ## [1.1.0](https://github.com/atomist/atomist-sdm/compare/1.0.2...1.1.0) - 2019-04-03
 
