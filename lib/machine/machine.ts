@@ -84,6 +84,7 @@ import { addDockerSupport } from "./dockerSupport";
 import { addGithubSupport } from "./githubSupport";
 import {
     autoCodeInspection,
+    autofix,
     build,
     BuildGoals,
     BuildReleaseAndHomebrewGoals,
@@ -146,9 +147,12 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             pushTest: IsJekyllProject,
         });
     const WebBuildGoals = goals("Web Build")
-        .plan(version)
+        .plan(autofix)
+        .plan(version).after(autofix)
         .plan(buildWeb).after(version)
         .plan(tag).after(buildWeb);
+
+    autoCodeInspection.with(htmltestInspection("_site"));
 
     const publishWebAppToStaging = new PublishToS3({
         uniqueName: "publish web-app to staging s3 bucket",
@@ -169,13 +173,12 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
     }).withProjectListener(WebNpmBuildAfterCheckout);
     const WebAppGoals = goals("Web App Build with Release")
         .plan(WebBuildGoals)
-        .plan(publishWebAppToStaging).after(buildWeb)
+        .plan(publishWebAppToStaging, autoCodeInspection).after(buildWeb)
         .plan(publishWebAppToProduction).after(publishWebAppToStaging)
         .plan(releaseVersion).after(publishWebAppToProduction)
         .plan(releaseChangelog).after(releaseVersion)
         .plan(releaseTag).after(releaseChangelog);
 
-    autoCodeInspection.with(htmltestInspection("_site"));
     const publishWebSiteToStaging = new PublishToS3({
         uniqueName: "publish web-site to staging s3 bucket",
         bucketName: "www-staging.atomist.services",
