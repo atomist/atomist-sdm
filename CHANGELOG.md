@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased](https://github.com/atomist/atomist-sdm/compare/1.1.1...HEAD)
 
+### Added
+
+-   Add autofix and code inspection to web goals. [cbb16fa](https://github.com/atomist/atomist-sdm/commit/cbb16facfff9244c16a1f5194be4ad1dc11fb6d3)
+
 ## [1.1.1](https://github.com/atomist/atomist-sdm/compare/1.1.0...1.1.1) - 2019-04-03
 
 ### Fixed
