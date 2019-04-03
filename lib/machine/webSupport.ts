@@ -53,7 +53,7 @@ export const IsJekyllProject: PushTest = {
 };
 
 const webNpmCommands: SpawnLogCommand[] = [
-    { command: "npm", args: ["ci"] },
+    { command: "npm", args: ["ci"], options: { env: { ...process.env, NODE_ENV: "development" }, log: undefined } },
     { command: "npm", args: ["run", "compile"] },
 ];
 
