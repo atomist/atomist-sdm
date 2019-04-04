@@ -26,10 +26,12 @@ import {
     goals,
     IsDeployEnabled,
     not,
+    ProductionEnvironment,
     slackFooter,
     slackQuestionMessage,
     SoftwareDeliveryMachine,
     SoftwareDeliveryMachineConfiguration,
+    StagingEnvironment,
     ToDefaultBranch,
     whenPushSatisfies,
 } from "@atomist/sdm";
@@ -155,6 +157,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
     autoCodeInspection.with(htmltestInspection("_site"));
 
     const publishWebAppToStaging = new PublishToS3({
+        environment: StagingEnvironment,
         uniqueName: "publish web-app to staging s3 bucket",
         bucketName: "app-staging.atomist.services",
         region: "us-east-1",
@@ -164,6 +167,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         approvalRequired: true,
     }).withProjectListener(WebNpmBuildAfterCheckout);
     const publishWebAppToProduction = new PublishToS3({
+        environment: ProductionEnvironment,
         uniqueName: "publish web-app to production s3 bucket",
         bucketName: "app.atomist.com",
         region: "us-east-1",
@@ -180,6 +184,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         .plan(releaseTag).after(releaseChangelog);
 
     const publishWebSiteToStaging = new PublishToS3({
+        environment: StagingEnvironment,
         uniqueName: "publish web-site to staging s3 bucket",
         bucketName: "www-staging.atomist.services",
         region: "us-east-1",
@@ -189,6 +194,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         approvalRequired: true,
     }).withProjectListener(JekyllBuildAfterCheckout);
     const publishWebSiteToProduction = new PublishToS3({
+        environment: ProductionEnvironment,
         uniqueName: "publish web-site to production s3 bucket",
         bucketName: "atomist.com",
         region: "us-east-1",
