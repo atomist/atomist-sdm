@@ -19,7 +19,6 @@ import {
     guid,
 } from "@atomist/automation-client";
 import {
-    allSatisfied,
     anySatisfied,
     gitHubTeamVoter,
     GoalApprovalRequestVote,
@@ -179,9 +178,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         .plan(WebBuildGoals)
         .plan(publishWebAppToStaging).after(buildWeb)
         .plan(publishWebAppToProduction).after(publishWebAppToStaging)
-        .plan(releaseVersion).after(publishWebAppToProduction)
-        .plan(releaseChangelog).after(releaseVersion)
-        .plan(releaseTag).after(releaseChangelog);
+        .plan(releaseTag, releaseVersion).after(publishWebAppToProduction);
 
     const publishWebSiteToStaging = new PublishToS3({
         environment: StagingEnvironment,
@@ -206,9 +203,8 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         .plan(WebBuildGoals)
         .plan(publishWebSiteToStaging, autoCodeInspection).after(buildWeb)
         .plan(publishWebSiteToProduction).after(publishWebSiteToStaging)
-        .plan(releaseVersion).after(publishWebSiteToProduction)
-        .plan(releaseChangelog).after(releaseVersion)
-        .plan(releaseTag).after(releaseChangelog);
+        .plan(releaseTag, releaseVersion).after(publishWebSiteToProduction)
+        .plan(releaseChangelog).after(releaseVersion);
 
     const sdm = createSoftwareDeliveryMachine({
         name: "Atomist Software Delivery Machine",
@@ -218,11 +214,11 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         whenPushSatisfies(isOrgNamed("atomist-playground"))
             .setGoals(goals("No Goals")),
 
-        whenPushSatisfies(allSatisfied(isOrgNamed("atomist-seeds"), not(nameMatches(/sdm/))))
+        whenPushSatisfies(isOrgNamed("atomist-seeds"), not(nameMatches(/sdm/)))
             .itMeans("Non-Atomist seed")
             .setGoals(goals("No Goals")),
 
-        whenPushSatisfies(allSatisfied(isOrgNamed("sdd-manifesto"), isNamed("manifesto", "manifesto-app")))
+        whenPushSatisfies(isOrgNamed("sdd-manifesto"), isNamed("manifesto", "manifesto-app"))
             .itMeans("Manifesto repository")
             .setGoals(goals("No Goals")),
 
@@ -234,24 +230,25 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             .itMeans("Node repository in local mode")
             .setGoals(LocalGoals),
 
-        whenPushSatisfies(allSatisfied(isOrgNamed("atomisthq"), isNamed("s3-images")))
-            .itMeans("Images Site")
+        whenPushSatisfies(isOrgNamed("atomisthq"), isNamed("s3-images"), ToDefaultBranch)
+            .itMeans("Images Site Deploy")
             .setGoals(S3ImagesGoals),
-
-        whenPushSatisfies(allSatisfied(isOrgNamed("atomisthq"), isNamed("web-app")))
-            .itMeans("Web App")
+        whenPushSatisfies(isOrgNamed("atomisthq"), isNamed("web-app"), ToDefaultBranch)
+            .itMeans("Web App Deploy")
             .setGoals(WebAppGoals),
-
-        whenPushSatisfies(allSatisfied(isOrgNamed("atomisthq"), isNamed("web-site")))
-            .itMeans("Web Site")
+        whenPushSatisfies(isOrgNamed("atomisthq"), isNamed("web-site"), ToDefaultBranch)
+            .itMeans("Web Site Deploy")
             .setGoals(WebSiteGoals),
+        whenPushSatisfies(isOrgNamed("atomisthq"), isNamed("web-app", "web-app"))
+            .itMeans("Web Build")
+            .setGoals(WebBuildGoals),
 
         whenPushSatisfies(not(isSdmEnabled(configuration.name)), isTeam(AtomistHQWorkspace))
             .itMeans("Disabled repository in atomisthq workspace")
             .setGoals(goals("No Goals")),
 
         // Node
-        whenPushSatisfies(allSatisfied(IsNode, not(IsMaven)), not(MaterialChangeToNodeRepo))
+        whenPushSatisfies(IsNode, not(IsMaven), not(MaterialChangeToNodeRepo))
             .itMeans("No Material Change")
             .setGoals(FixGoals),
 
