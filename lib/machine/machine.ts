@@ -133,6 +133,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         filesToPublish: ["images/**/*"],
         pathTranslation: filepath => filepath.replace("images/", ""),
         pathToIndex: "images/",
+        sync: true,
     });
     const S3ImagesGoals = goals("Image Publish").plan(publishS3Images);
 
@@ -163,6 +164,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         filesToPublish: ["public/**/*"],
         pathTranslation: filepath => filepath.replace("public/", ""),
         pathToIndex: "public/",
+        sync: true,
     }).withProjectListener(WebNpmBuildAfterCheckout);
     const publishWebAppToProduction = new PublishToS3({
         environment: ProductionEnvironment,
@@ -172,6 +174,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         filesToPublish: ["public/**/*"],
         pathTranslation: filepath => filepath.replace("public/", ""),
         pathToIndex: "public/",
+        sync: true,
         preApprovalRequired: true,
     }).withProjectListener(WebNpmBuildAfterCheckout);
     const WebAppGoals = goals("Web App Build with Release")
@@ -188,6 +191,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         filesToPublish: ["_site/**/*"],
         pathTranslation: filepath => filepath.replace("_site/", ""),
         pathToIndex: "_site/",
+        sync: true,
     }).withProjectListener(JekyllBuildAfterCheckout);
     const publishWebSiteToProduction = new PublishToS3({
         environment: ProductionEnvironment,
@@ -197,6 +201,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         filesToPublish: ["_site/**/*"],
         pathTranslation: filepath => filepath.replace("_site/", ""),
         pathToIndex: "_site/",
+        sync: true,
         preApprovalRequired: true,
     }).withProjectListener(JekyllBuildAfterCheckout);
     const WebSiteGoals = goals("Web Site Build with Release")
