@@ -375,8 +375,14 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
                 };
             }
         }
+        if (!gi.goal.approval) {
+            return {
+                vote: GoalApprovalRequestVote.Granted,
+            };
+        }
 
         const msgId = guid();
+        const channelLink = (gi.goal.approval.channelId) ? ` | ${channel(gi.goal.approval.channelId)}` : "";
         const msg = slackQuestionMessage("Goal Approval", `Goal ${italic(gi.goal.url ? url(gi.goal.url, gi.goal.name) : gi.goal.name)} on ${
             codeLine(gi.goal.sha.slice(0, 7))} of ${
             bold(`${gi.goal.repo.owner}/${gi.goal.repo.name}/${gi.goal.branch}`)} requires your confirmation to approve`,
@@ -398,7 +404,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
                             goalState: gi.goal.state,
                             msgId,
                         })],
-                footer: `${slackFooter()} | ${gi.goal.goalSetId.slice(0, 7)} | ${channel(gi.goal.approval.channelId)}`,
+                footer: `${slackFooter()} | ${gi.goal.goalSetId.slice(0, 7)}${channelLink}`,
             });
         await gi.context.messageClient.addressUsers(msg, gi.goal.approval.userId, { id: msgId });
         return {
