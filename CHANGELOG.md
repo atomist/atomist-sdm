@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 -   Clean up goals for web repos and others. [#116](https://github.com/atomist/atomist-sdm/issues/116)
+-   Use PublishToS3 sync option. [0ad71f2](https://github.com/atomist/atomist-sdm/commit/0ad71f2821d8f40eafd416951fe64d159a8b93b0)
 
 ### Fixed
 
