@@ -34,7 +34,7 @@
     "@atomist/sdm-pack-changelog": "^1.0.2",
     "@atomist/sdm-pack-docker": "^1.1.0",
     "@atomist/sdm-pack-fingerprints": "^2.0.2",
-    "@atomist/sdm-pack-issue": "1.2.0",
+    "@atomist/sdm-pack-issue": "1.2.1-master.20190404122828",
     "@atomist/sdm-pack-k8s": "^1.4.1",
     "@atomist/sdm-pack-node": "^1.0.4-master.20190328145741",
     "@atomist/sdm-pack-s3": "0.1.0-master.20190319050251",
