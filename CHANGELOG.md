@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 -   Add autofix and code inspection to web site goals. [cbb16fa](https://github.com/atomist/atomist-sdm/commit/cbb16facfff9244c16a1f5194be4ad1dc11fb6d3)
 -   Add autofix to web app goals. [cbb16fa](https://github.com/atomist/atomist-sdm/commit/cbb16facfff9244c16a1f5194be4ad1dc11fb6d3) [b2e576f](https://github.com/atomist/atomist-sdm/commit/b2e576f11b0620835c892fae7fd8f5b8b1b81028)
 
+### Changed
+
+-   Clean up goals for web repos and others. [#116](https://github.com/atomist/atomist-sdm/issues/116)
+
 ### Fixed
 
 -   Fix for s3 deploy goals. [fc5fe57](https://github.com/atomist/atomist-sdm/commit/fc5fe572fe9aab5225496bcbec5138b6fe76d9f6)
