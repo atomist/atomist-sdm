@@ -173,7 +173,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
     }).withProjectListener(WebNpmBuildAfterCheckout);
     const WebAppGoals = goals("Web App Build with Release")
         .plan(WebBuildGoals)
-        .plan(publishWebAppToStaging, autoCodeInspection).after(buildWeb)
+        .plan(publishWebAppToStaging).after(buildWeb)
         .plan(publishWebAppToProduction).after(publishWebAppToStaging)
         .plan(releaseVersion).after(publishWebAppToProduction)
         .plan(releaseChangelog).after(releaseVersion)
