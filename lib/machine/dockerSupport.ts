@@ -34,16 +34,8 @@ import {
 import {
     dockerBuild,
     releaseDocker,
-    releaseVersion,
 } from "./goals";
-import {
-    executeReleaseDocker,
-    executeReleaseVersion,
-} from "./release";
-import {
-    fileProjectIdentifier,
-    fileReleaseVersionCommand,
-} from "./version";
+import { executeReleaseDocker } from "./release";
 
 /**
  * Add Docker implementations of goals to SDM.
@@ -85,13 +77,6 @@ export function addDockerSupport(sdm: SoftwareDeliveryMachine): SoftwareDelivery
             pushTest: simpleDockerPushTest,
             logInterpreter: LogSuppressor,
         });
-
-    releaseVersion.with({
-        name: "file-release-version",
-        goalExecutor: executeReleaseVersion(fileProjectIdentifier, fileReleaseVersionCommand),
-        logInterpreter: LogSuppressor,
-        pushTest: simpleDockerPushTest,
-    });
 
     return sdm;
 }

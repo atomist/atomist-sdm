@@ -27,7 +27,11 @@ import {
     ProjectIdentifier,
     ProjectVersionerRegistration,
 } from "@atomist/sdm-core";
-import { version } from "./goals";
+import {
+    releaseVersion,
+    version,
+} from "./goals";
+import { executeReleaseVersion } from "./release";
 
 /**
  * Version projects based on the value in the file `VERSION`.
@@ -79,5 +83,11 @@ export const fileProjectIdentifier: ProjectIdentifier = async p => {
 
 export function addFileVersionerSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMachine {
     version.with(FileVersionerRegistration);
+    releaseVersion.with({
+        name: "file-release-version",
+        goalExecutor: executeReleaseVersion(fileProjectIdentifier, fileReleaseVersionCommand),
+        logInterpreter: LogSuppressor,
+        pushTest: HasFileVersion,
+    });
     return sdm;
 }

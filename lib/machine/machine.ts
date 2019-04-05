@@ -100,7 +100,6 @@ import {
     MavenBuildGoals,
     MavenDockerReleaseGoals,
     MultiKubernetesDeployGoals,
-    releaseChangelog,
     releaseTag,
     releaseVersion,
     SimpleDockerReleaseGoals,
@@ -208,8 +207,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         .plan(WebBuildGoals)
         .plan(publishWebSiteToStaging, autoCodeInspection).after(buildWeb)
         .plan(publishWebSiteToProduction).after(publishWebSiteToStaging)
-        .plan(releaseTag, releaseVersion).after(publishWebSiteToProduction)
-        .plan(releaseChangelog).after(releaseVersion);
+        .plan(releaseTag, releaseVersion).after(publishWebSiteToProduction);
 
     const sdm = createSoftwareDeliveryMachine({
         name: "Atomist Software Delivery Machine",
