@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 -   Fix for s3 deploy goals. [fc5fe57](https://github.com/atomist/atomist-sdm/commit/fc5fe572fe9aab5225496bcbec5138b6fe76d9f6)
+-   Correct release version logic. [d993baf](https://github.com/atomist/atomist-sdm/commit/d993baff9943b0da9c1ec8a922188890771a3dfd)
 
 ## [1.1.1](https://github.com/atomist/atomist-sdm/compare/1.1.0...1.1.1) - 2019-04-03
 
