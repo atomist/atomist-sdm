@@ -46,8 +46,8 @@ import * as crypto from "crypto";
 import * as fs from "fs-extra";
 import * as path from "path";
 import { releaseHomebrew } from "./goals";
+import { downloadNpmPackage } from "./nodeSupport";
 import {
-    downloadNpmPackage,
     releaseOrPreRelease,
     rwlcVersion,
 } from "./release";

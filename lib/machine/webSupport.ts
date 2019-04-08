@@ -35,7 +35,7 @@ import {
     GoalProjectListenerEvent,
     GoalProjectListenerRegistration,
     LogSuppressor,
-    PushTest,
+    pushTest,
     spawnLog,
     SpawnLogCommand,
     SpawnLogOptions,
@@ -47,10 +47,7 @@ import {
 import * as fs from "fs-extra";
 import * as path from "path";
 
-export const IsJekyllProject: PushTest = {
-    name: "IsJekyllProject",
-    mapping: inv => inv.project.hasFile("_config.yml"),
-};
+export const IsJekyllProject = pushTest("IsJekyllProject", inv => inv.project.hasFile("_config.yml"));
 
 const webNpmCommands: SpawnLogCommand[] = [
     { command: "npm", args: ["ci"], options: { env: { ...process.env, NODE_ENV: "development" }, log: undefined } },

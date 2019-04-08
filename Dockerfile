@@ -4,6 +4,7 @@ RUN apt-get update && apt-get install -y \
         openjdk-8-jdk-headless maven \
         bundler \
         zlib1g-dev \
+        golang-go \
     && rm -rf /var/lib/apt/lists/*
 
 ENV LEIN_ROOT true

@@ -75,13 +75,13 @@ export const publishWithApproval = new GoalWithFulfillment({
     approvalRequired: true,
 }, build, dockerBuild);
 
-export const releaseNpm = new GoalWithFulfillment({
-    uniqueName: "release-npm",
+export const release = new GoalWithFulfillment({
+    uniqueName: "release",
     environment: ProductionEnvironment,
-    displayName: "release NPM package",
-    workingDescription: "Releasing NPM package",
-    completedDescription: "Released NPM package",
-    failedDescription: "Release NPM package failure",
+    displayName: "release",
+    workingDescription: "Releasing",
+    completedDescription: "Released",
+    failedDescription: "Release failed",
     isolated: true,
 });
 
@@ -160,13 +160,13 @@ export const BuildReleaseGoals = goals("Build with Release")
     .plan(LocalGoals)
     .plan(tag).after(build)
     .plan(publishWithApproval).after(build)
-    .plan(releaseNpm, releaseDocs, releaseVersion).after(publishWithApproval, autoCodeInspection)
+    .plan(release, releaseDocs, releaseVersion).after(publishWithApproval, autoCodeInspection)
     .plan(releaseChangelog).after(releaseVersion)
-    .plan(releaseTag).after(releaseNpm);
+    .plan(releaseTag).after(release);
 
 export const BuildReleaseAndHomebrewGoals = goals("Build with Release, Homebrew")
     .plan(BuildReleaseGoals)
-    .plan(releaseHomebrew).after(releaseNpm);
+    .plan(releaseHomebrew).after(release);
 
 // Build including docker build
 export const DockerGoals = goals("Docker Build")
@@ -193,9 +193,9 @@ export const DockerReleaseGoals = goals("Docker Build with Release")
     .plan(dockerBuild).after(build)
     .plan(tag).after(dockerBuild)
     .plan(publishWithApproval).after(build, dockerBuild)
-    .plan(releaseNpm, releaseDocker, releaseDocs, releaseVersion).after(publishWithApproval, autoCodeInspection)
+    .plan(release, releaseDocker, releaseDocs, releaseVersion).after(publishWithApproval, autoCodeInspection)
     .plan(releaseChangelog).after(releaseVersion)
-    .plan(releaseTag, releaseHomebrew).after(releaseNpm, releaseDocker);
+    .plan(releaseTag, releaseHomebrew).after(release, releaseDocker);
 
 export const SimpleDockerReleaseGoals = goals("Simple Docker Build with Release")
     .plan(version)
@@ -210,17 +210,17 @@ export const KubernetesDeployGoals = goals("Deploy")
     .plan(DockerGoals)
     .plan(stagingDeploy).after(dockerBuild)
     .plan(productionDeploy).after(stagingDeploy, autoCodeInspection)
-    .plan(releaseNpm, releaseDocker, releaseDocs, releaseVersion).after(productionDeploy)
+    .plan(release, releaseDocker, releaseDocs, releaseVersion).after(productionDeploy)
     .plan(releaseChangelog).after(releaseVersion)
-    .plan(releaseTag).after(releaseNpm, releaseDocker);
+    .plan(releaseTag).after(release, releaseDocker);
 
 // Docker build and testing and production kubernetes deploy
 export const SimplifiedKubernetesDeployGoals = goals("Simplified Deploy")
     .plan(DockerGoals)
     .plan(productionDeployWithApproval).after(dockerBuild, autoCodeInspection)
-    .plan(releaseNpm, releaseDocker, releaseDocs, releaseVersion).after(productionDeployWithApproval)
+    .plan(release, releaseDocker, releaseDocs, releaseVersion).after(productionDeployWithApproval)
     .plan(releaseChangelog).after(releaseVersion)
-    .plan(releaseTag).after(releaseNpm, releaseDocker);
+    .plan(releaseTag).after(release, releaseDocker);
 
 // Docker build and testing and demo kubernetes deploy, no release
 export const DemoKubernetesDeployGoals = goals("Demo Deploy")
@@ -232,15 +232,17 @@ export const GlobalKubernetesDeployGoals = goals("Global Deploy")
     .plan(DockerGoals)
     .plan(globalStagingDeploy).after(dockerBuild)
     .plan(globalProductionDeploy).after(globalStagingDeploy, autoCodeInspection)
-    .plan(releaseNpm, releaseDocker, releaseDocs, releaseVersion).after(globalProductionDeploy)
+    .plan(release, releaseDocker, releaseDocs, releaseVersion).after(globalProductionDeploy)
     .plan(releaseChangelog).after(releaseVersion)
-    .plan(releaseTag).after(releaseNpm, releaseDocker);
+    .plan(releaseTag).after(release, releaseDocker);
 
 // Docker build and testing and multiple production kubernetes deploys
 export const MultiKubernetesDeployGoals = goals("Multiple Deploy")
     .plan(DockerGoals)
     .plan(productionDeployWithApproval).after(dockerBuild, autoCodeInspection)
     .plan(demoProductionDeploy, globalProductionDeploy).after(productionDeployWithApproval)
-    .plan(releaseNpm, releaseDocker, releaseDocs, releaseVersion).after(productionDeployWithApproval)
+    .plan(release, releaseDocker, releaseDocs, releaseVersion).after(productionDeployWithApproval)
     .plan(releaseChangelog).after(releaseVersion)
-    .plan(releaseTag).after(releaseNpm, releaseDocker);
+    .plan(releaseTag).after(release, releaseDocker);
+
+export const noOpGoalExecutor = () => Promise.resolve({ code: 0, message: "Nothing to do" });
