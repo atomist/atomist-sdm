@@ -18,10 +18,10 @@
 
 import {
     configurationValue,
-    guid,
     GitCommandGitProject,
     GitHubRepoRef,
     GitProject,
+    guid,
     logger,
     NodeFsLocalProject,
     RemoteRepoRef,
