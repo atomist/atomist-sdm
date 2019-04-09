@@ -18,6 +18,7 @@
 
 import {
     configurationValue,
+    guid,
     GitCommandGitProject,
     GitHubRepoRef,
     GitProject,
@@ -56,7 +57,6 @@ import * as fs from "fs-extra";
 import * as _ from "lodash";
 import * as path from "path";
 import * as semver from "semver";
-import * as uuid from "uuid/v4";
 
 async function loglog(log: ProgressLog, msg: string): Promise<void> {
     logger.debug(msg);
@@ -274,7 +274,7 @@ export async function downloadNpmPackage(p: GitProject, gi: GoalInvocation, vers
         name: pj.name,
         version: pkgVersion,
     });
-    const tmpDir = path.join((process.env.TMPDIR || "/tmp"), `${p.name}-${uuid()}`);
+    const tmpDir = path.join((process.env.TMPDIR || "/tmp"), `${p.name}-${guid()}`);
     const tgz = path.join(tmpDir, "package.tgz");
 
     const cmds: SpawnWatchCommand[] = [
