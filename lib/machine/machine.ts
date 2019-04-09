@@ -133,6 +133,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         pathTranslation: filepath => filepath.replace("images/", ""),
         pathToIndex: "images/",
         sync: true,
+        isolated: true,
     });
     const S3ImagesGoals = goals("Image Publish").plan(publishS3Images);
 
@@ -164,6 +165,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         pathTranslation: filepath => filepath.replace("public/", ""),
         pathToIndex: "public/",
         sync: true,
+        isolated: true,
     }).withProjectListener(WebNpmBuildAfterCheckout);
     const publishWebAppToProduction = new PublishToS3({
         environment: ProductionEnvironment,
@@ -174,6 +176,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         pathTranslation: filepath => filepath.replace("public/", ""),
         pathToIndex: "public/",
         sync: true,
+        isolated: true,
         preApprovalRequired: true,
     }).withProjectListener(WebNpmBuildAfterCheckout);
     const WebAppGoals = goals("Web App Build with Release")
@@ -188,9 +191,11 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         bucketName: "www-staging.atomist.services",
         region: "us-east-1",
         filesToPublish: ["_site/**/*"],
+        paramsExt: ".s3params",
         pathTranslation: filepath => filepath.replace("_site/", ""),
         pathToIndex: "_site/",
         sync: true,
+        isolated: true,
     }).withProjectListener(JekyllBuildAfterCheckout);
     const publishWebSiteToProduction = new PublishToS3({
         environment: ProductionEnvironment,
@@ -198,9 +203,11 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         bucketName: "atomist.com",
         region: "us-east-1",
         filesToPublish: ["_site/**/*"],
+        paramsExt: ".s3params",
         pathTranslation: filepath => filepath.replace("_site/", ""),
         pathToIndex: "_site/",
         sync: true,
+        isolated: true,
         preApprovalRequired: true,
     }).withProjectListener(JekyllBuildAfterCheckout);
     const WebSiteGoals = goals("Web Site Build with Release")
