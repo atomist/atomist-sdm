@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased](https://github.com/atomist/atomist-sdm/compare/1.2.0...HEAD)
 
+### Added
+
+-   Add Go support. [#122](https://github.com/atomist/atomist-sdm/issues/122)
+
 ## [1.2.0](https://github.com/atomist/atomist-sdm/compare/1.1.1...1.2.0) - 2019-04-05
 
 ### Added
