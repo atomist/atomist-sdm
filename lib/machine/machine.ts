@@ -39,10 +39,11 @@ import {
     createSoftwareDeliveryMachine,
     DisableDeploy,
     EnableDeploy,
-    gitHubGoalStatus,
-    goalScheduling,
-    goalState,
+    gitHubGoalStatusSupport,
+    goalStateSupport,
     IsInLocalMode,
+    k8sGoalSchedulingSupport,
+    notificationSupport,
 } from "@atomist/sdm-core";
 import {
     Build,
@@ -373,7 +374,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
     addGoSupport(sdm);
 
     sdm.addExtensionPacks(
-        goalScheduling(),
+        k8sGoalSchedulingSupport(),
         changelogSupport(),
         BadgeSupport,
         buildAwareCodeTransforms({
@@ -385,8 +386,9 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
                 },
             },
         }),
-        goalState(),
-        gitHubGoalStatus(),
+        goalStateSupport(),
+        gitHubGoalStatusSupport(),
+        notificationSupport(),
         issueSupport({
             labelIssuesOnDeployment: true,
             closeCodeInspectionIssuesOnBranchDeletion: {
