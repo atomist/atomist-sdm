@@ -17,6 +17,8 @@
 import {
     allSatisfied,
     anySatisfied,
+    ExecuteGoal,
+    GoalInvocation,
     LogSuppressor,
     not,
     SoftwareDeliveryMachine,
@@ -28,6 +30,11 @@ import {
 import { IsNode } from "@atomist/sdm-pack-node";
 import { IsMaven } from "@atomist/sdm-pack-spring";
 import {
+    executeLoggers,
+    spawnExecuteLogger,
+    SpawnWatchCommand,
+} from "../support/executeLogger";
+import {
     isNamed,
     isOrgNamed,
 } from "../support/identityPushTests";
@@ -35,7 +42,12 @@ import {
     dockerBuild,
     releaseDocker,
 } from "./goals";
-import { executeReleaseDocker } from "./release";
+import { IsGoMakeDocker } from "./goSupport";
+import {
+    ProjectRegistryInfo,
+    releaseOrPreRelease,
+    rwlcVersion,
+} from "./release";
 
 /**
  * Add Docker implementations of goals to SDM.
@@ -68,7 +80,10 @@ export function addDockerSupport(sdm: SoftwareDeliveryMachine): SoftwareDelivery
         .with({
             name: "docker-release",
             goalExecutor: executeReleaseDocker(sdm.configuration.sdm.docker.hub as DockerOptions),
-            pushTest: allSatisfied(anySatisfied(IsNode, IsMaven), HasDockerfile, not(allSatisfied(isOrgNamed("atomisthq"), isNamed("global-sdm")))),
+            pushTest: anySatisfied(
+                allSatisfied(anySatisfied(IsNode, IsMaven), HasDockerfile, not(allSatisfied(isOrgNamed("atomisthq"), isNamed("global-sdm")))),
+                IsGoMakeDocker,
+            ),
             logInterpreter: LogSuppressor,
         })
         .with({
@@ -79,4 +94,62 @@ export function addDockerSupport(sdm: SoftwareDeliveryMachine): SoftwareDelivery
         });
 
     return sdm;
+}
+
+function dockerImage(p: ProjectRegistryInfo): string {
+    return `${p.registry}/${p.name}:${p.version}`;
+}
+
+/**
+ * Pull, tag, and push docker image.
+ */
+function executeReleaseDocker(options?: DockerOptions): ExecuteGoal {
+    return async (gi: GoalInvocation) => {
+        if (!options.registry) {
+            throw new Error(`No registry defined in Docker options`);
+        }
+        const version = await rwlcVersion(gi);
+        const image = dockerImage({
+            registry: options.registry,
+            name: gi.goalEvent.repo.name,
+            version,
+        });
+
+        const loginArgs = [];
+        if (/[^A-Za-z0-9]/.test(options.registry)) {
+            loginArgs.push(options.registry);
+        }
+
+        const loginCmds: SpawnWatchCommand[] = [
+            {
+                cmd: {
+                    command: "docker",
+                    args: ["login", "--username", options.user, "--password", options.password, ...loginArgs],
+                },
+            },
+            {
+                cmd: { command: "docker", args: ["pull", image] },
+            },
+        ];
+        let els = loginCmds.map(spawnExecuteLogger);
+        const result = await executeLoggers(els, gi.progressLog);
+        if (result.code !== 0) {
+            return result;
+        }
+
+        const versionRelease = releaseOrPreRelease(version, gi);
+        const tag = dockerImage({
+            registry: options.registry,
+            name: gi.goalEvent.repo.name,
+            version: versionRelease,
+        });
+
+        const cmds: SpawnWatchCommand[] = [
+            { cmd: { command: "docker", args: ["tag", image, tag] } },
+            { cmd: { command: "docker", args: ["push", tag] } },
+            { cmd: { command: "docker", args: ["rmi", tag] } },
+        ];
+        els = cmds.map(spawnExecuteLogger);
+        return executeLoggers(els, gi.progressLog);
+    };
 }

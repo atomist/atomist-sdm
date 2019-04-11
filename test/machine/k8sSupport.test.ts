@@ -49,7 +49,7 @@ describe("k8sSupport", () => {
             const d = await kubernetesApplicationData(a, p, g, v);
             const e = {
                 name: "rocknroll",
-                port: 2866,
+                port: undefined,
                 ns: "default",
                 replicas: 1,
             };
@@ -91,7 +91,7 @@ describe("k8sSupport", () => {
             assert(d);
             const e = {
                 name: "rocknroll",
-                port: 2866,
+                port: undefined,
                 ns: "testing",
                 replicas: 1,
             };
@@ -112,7 +112,7 @@ describe("k8sSupport", () => {
             assert(d);
             const e = {
                 name: "rocknroll",
-                port: 2866,
+                port: undefined,
                 ns: "production",
                 replicas: 3,
             };
@@ -121,7 +121,9 @@ describe("k8sSupport", () => {
 
         it("should detect atomist-sdm", async () => {
             const a: KubernetesApplication = {} as any;
-            const p: GitProject = InMemoryProject.of() as any;
+            const p: GitProject = InMemoryProject.of(
+                { path: "package.json", content: '{"dependencies":{"@atomist/automation-client":"*"}}' },
+            ) as any;
             const g: KubernetesDeploy = {} as any;
             const v: SdmGoalEvent = {
                 environment: "2-prod",
@@ -142,7 +144,9 @@ describe("k8sSupport", () => {
 
         it("should detect atomist-internal-sdm", async () => {
             const a: KubernetesApplication = {} as any;
-            const p: GitProject = InMemoryProject.of() as any;
+            const p: GitProject = InMemoryProject.of(
+                { path: "package.json", content: '{"dependencies":{"@atomist/automation-client":"*"}}' },
+            ) as any;
             const g: KubernetesDeploy = {} as any;
             const v: SdmGoalEvent = {
                 environment: "1-staging",
@@ -163,7 +167,9 @@ describe("k8sSupport", () => {
 
         it("should provide an ingress", async () => {
             const a: KubernetesApplication = {} as any;
-            const p: GitProject = InMemoryProject.of() as any;
+            const p: GitProject = InMemoryProject.of(
+                { path: "package.json", content: '{"dependencies":{"@atomist/automation-client":"*"}}' },
+            ) as any;
             const g: KubernetesDeploy = {} as any;
             const v: SdmGoalEvent = {
                 environment: "1-staging",
@@ -195,7 +201,9 @@ describe("k8sSupport", () => {
 
         it("should provide a production ingress", async () => {
             const a: KubernetesApplication = {} as any;
-            const p: GitProject = InMemoryProject.of() as any;
+            const p: GitProject = InMemoryProject.of(
+                { path: "package.json", content: '{"dependencies":{"@atomist/automation-client":"*"}}' },
+            ) as any;
             const g: KubernetesDeploy = {} as any;
             const v: SdmGoalEvent = {
                 environment: "2-prod",
@@ -227,7 +235,9 @@ describe("k8sSupport", () => {
 
         it("should add secret to k8s-sdm deploy", async () => {
             const a: KubernetesApplication = {} as any;
-            const p: GitProject = InMemoryProject.of() as any;
+            const p: GitProject = InMemoryProject.of(
+                { path: "package.json", content: '{"dependencies":{"@atomist/automation-client":"*"}}' },
+            ) as any;
             const g: KubernetesDeploy = {
                 sdm: {
                     configuration: {

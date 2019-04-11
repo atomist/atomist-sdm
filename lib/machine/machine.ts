@@ -19,6 +19,7 @@ import {
     guid,
 } from "@atomist/automation-client";
 import {
+    allSatisfied,
     anySatisfied,
     gitHubTeamVoter,
     GoalApprovalRequestVote,
@@ -91,23 +92,38 @@ import {
     BuildReleaseAndHomebrewGoals,
     BuildReleaseGoals,
     DemoKubernetesDeployGoals,
+    demoProductionDeploy,
     DockerGoals,
     DockerReleaseGoals,
     FixGoals,
     GlobalKubernetesDeployGoals,
+    globalProductionDeploy,
+    globalStagingDeploy,
     KubernetesDeployGoals,
     LocalGoals,
     MavenBuildGoals,
     MavenDockerReleaseGoals,
     MultiKubernetesDeployGoals,
+    productionDeploy,
+    productionDeployWithApproval,
     releaseTag,
     releaseVersion,
     SimpleDockerReleaseGoals,
     SimplifiedKubernetesDeployGoals,
+    stagingDeploy,
     tag,
     version,
 } from "./goals";
+import {
+    addGoSupport,
+    IsGoMakeDocker,
+} from "./goSupport";
 import { addHomebrewSupport } from "./homebrewSupport";
+import {
+    kubernetesDeployRegistrationDemo,
+    kubernetesDeployRegistrationGlobal,
+    kubernetesDeployRegistrationProd,
+} from "./k8sSupport";
 import { addMavenSupport } from "./mavenSupport";
 import { addNodeSupport } from "./nodeSupport";
 import { IsReleaseCommit } from "./release";
@@ -124,6 +140,13 @@ import {
 const AtomistHQWorkspace = "T095SFFBK";
 
 export function machine(configuration: SoftwareDeliveryMachineConfiguration): SoftwareDeliveryMachine {
+
+    stagingDeploy.with(kubernetesDeployRegistrationProd);
+    productionDeploy.with(kubernetesDeployRegistrationProd);
+    productionDeployWithApproval.with(kubernetesDeployRegistrationProd);
+    globalStagingDeploy.with(kubernetesDeployRegistrationGlobal);
+    globalProductionDeploy.with(kubernetesDeployRegistrationGlobal);
+    demoProductionDeploy.with(kubernetesDeployRegistrationDemo);
 
     const publishS3Images = new PublishToS3({
         uniqueName: "publish s3-images to s3",
@@ -289,8 +312,10 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             .setGoals(GlobalKubernetesDeployGoals),
 
         // Deploy k8s-sdm to all the clusters
-        whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, IsAtomistAutomationClient,
-            isNamed("k8s-sdm"))
+        whenPushSatisfies(anySatisfied(
+            allSatisfied(IsNode, HasDockerfile, ToDefaultBranch, IsAtomistAutomationClient, isNamed("k8s-sdm")),
+            allSatisfied(IsGoMakeDocker, ToDefaultBranch, isNamed("k8vent")),
+        ))
             .itMeans("Multi Cluster Deploy")
             .setGoals(MultiKubernetesDeployGoals),
 
@@ -300,15 +325,15 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             .itMeans("Demo Cluster Deploy")
             .setGoals(DemoKubernetesDeployGoals),
 
-        whenPushSatisfies(anySatisfied(IsNode), HasDockerfile, ToDefaultBranch, IsDeployEnabled)
+        whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, IsDeployEnabled)
             .itMeans("Deploy")
             .setGoals(KubernetesDeployGoals),
 
-        whenPushSatisfies(anySatisfied(IsNode), HasDockerfile, ToDefaultBranch)
+        whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch)
             .itMeans("Docker Release Build")
             .setGoals(DockerReleaseGoals),
 
-        whenPushSatisfies(anySatisfied(IsNode), HasDockerfile)
+        whenPushSatisfies(IsNode, HasDockerfile)
             .itMeans("Docker Build")
             .setGoals(DockerGoals),
 
@@ -345,6 +370,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
     addHomebrewSupport(sdm);
     addTeamPolicies(sdm);
     addFileVersionerSupport(sdm);
+    addGoSupport(sdm);
 
     sdm.addExtensionPacks(
         goalScheduling(),

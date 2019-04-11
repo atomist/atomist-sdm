@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { GitProject } from "@atomist/automation-client";
+import { Project } from "@atomist/automation-client";
 import {
-    formatDate,
+    ExecuteGoalResult,
     LogSuppressor,
     ProgressLog,
     PushTest,
@@ -27,25 +27,23 @@ import {
     ProjectIdentifier,
     ProjectVersionerRegistration,
 } from "@atomist/sdm-core";
+import * as semver from "semver";
 import {
     releaseVersion,
     version,
 } from "./goals";
-import { executeReleaseVersion } from "./release";
+import {
+    addBranchPreRelease,
+    executeReleaseVersion,
+} from "./release";
 
 /**
  * Version projects based on the value in the file `VERSION`.
  */
-export async function fileVersioner(sdmGoal: SdmGoalEvent, p: GitProject, log: ProgressLog): Promise<string> {
+export async function fileVersioner(sdmGoal: SdmGoalEvent, p: Project, log: ProgressLog): Promise<string> {
     const baseVersion: string = (await fileProjectIdentifier(p)).version;
     log.write(`Using base version '${baseVersion}'`);
-    const branch = sdmGoal.branch;
-    const branchSuffix = (branch === sdmGoal.push.repo.defaultBranch) ? "" :
-        "branch-" + branch.replace(/[_/]/g, "-") + ".";
-    log.write(`Commit is on branch '${branch}', using '${branchSuffix}'`);
-    const ts = formatDate();
-    log.write(`Current timestamp is '${ts}'`);
-    const prereleaseVersion = `${baseVersion}-${branchSuffix}${ts}`;
+    const prereleaseVersion = addBranchPreRelease(baseVersion, sdmGoal);
     log.write(`Calculated pre-release version '${prereleaseVersion}'`);
     return prereleaseVersion;
 }
@@ -65,11 +63,31 @@ export const FileVersionerRegistration: ProjectVersionerRegistration = {
 /**
  * Command for incrementing the patch value in `VERSION`.
  */
-export const fileReleaseVersionCommand = {
-    command: "bash",
-    // tslint:disable-next-line:no-invalid-template-strings
-    args: ["-c", 'if [[ -f VERSION ]];then v=$(<VERSION);p=${v##*.};echo "${v%.*}.$((++p))" >VERSION;fi'],
-};
+export async function fileIncrementPatch(p: Project, log: ProgressLog): Promise<ExecuteGoalResult> {
+    const vPath = "VERSION";
+    const vFile = await p.getFile(vPath);
+    if (!vFile) {
+        const msg = `Project does not have '${vPath}' file`;
+        log.write(msg);
+        return { code: 1, message: msg };
+    }
+    const currentVersion = (await vFile.getContent()).trim();
+    if (!currentVersion) {
+        const msg = `Failed to extract version from '${vPath}' file`;
+        log.write(msg);
+        return { code: 1, message: msg };
+    }
+    const newVersion = semver.inc(currentVersion, "patch");
+    if (!newVersion || newVersion === currentVersion) {
+        const msg = `Failed to increment patch in version '${currentVersion}' from '${vPath}' file`;
+        log.write(msg);
+        return { code: 1, message: msg };
+    }
+    await vFile.setContent(newVersion + "\n");
+    const message = `Incremented patch level in '${vPath}' file: ${currentVersion} => ${newVersion}`;
+    log.write(message);
+    return { code: 0, message };
+}
 
 /**
  * Project identifier for projects storing the version in `VERSION`.
@@ -85,7 +103,7 @@ export function addFileVersionerSupport(sdm: SoftwareDeliveryMachine): SoftwareD
     version.with(FileVersionerRegistration);
     releaseVersion.with({
         name: "file-release-version",
-        goalExecutor: executeReleaseVersion(fileProjectIdentifier, fileReleaseVersionCommand),
+        goalExecutor: executeReleaseVersion(fileProjectIdentifier, fileIncrementPatch),
         logInterpreter: LogSuppressor,
         pushTest: HasFileVersion,
     });

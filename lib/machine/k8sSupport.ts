@@ -29,6 +29,7 @@ import {
     KubernetesApplication,
     KubernetesDeploy,
 } from "@atomist/sdm-pack-k8s";
+import { IsAtomistAutomationClient } from "@atomist/sdm-pack-node";
 import { IsMaven } from "@atomist/sdm-pack-spring";
 import * as stringify from "json-stringify-safe";
 import * as _ from "lodash";
@@ -59,7 +60,12 @@ export async function kubernetesApplicationData(
 
     const name = goalEvent.repo.name;
     const ns = namespaceFromGoal(goalEvent);
-    const port = (await IsMaven.predicate(p)) ? 8080 : 2866;
+    let port: number;
+    if (await IsMaven.predicate(p)) {
+        port = 8080;
+    } else if (await IsAtomistAutomationClient.predicate(p)) {
+        port = 2866;
+    }
     let replicas = 1;
     if (ns === "production") {
         replicas = 3;
@@ -94,6 +100,8 @@ function namespaceFromGoal(goalEvent: SdmGoalEvent): string {
         }
     } else if (/-sdm$/.test(name) && name !== "sample-sdm" && name !== "spring-sdm") {
         return "sdm";
+    } else if (name === "k8vent") {
+        return "k8vent";
     } else if (goalEvent.environment === StagingEnvironment.replace(/\/$/, "")) {
         return "testing";
     } else if (goalEvent.environment === ProductionEnvironment.replace(/\/$/, "")) {
