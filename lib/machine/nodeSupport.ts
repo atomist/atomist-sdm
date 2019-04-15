@@ -83,7 +83,10 @@ import {
     RenameTest,
     RenameTestFix,
 } from "../autofix/test/testNamingFix";
-import { UpdateSupportFilesTransform } from "../autofix/updateSupportFiles";
+import {
+    UpdateSupportFilesAutofix,
+    UpdateSupportFilesTransform,
+} from "../autofix/updateSupportFiles";
 import { deleteDistTagOnBranchDeletion } from "../event/deleteDistTagOnBranchDeletion";
 import {
     executeLoggers,
@@ -168,6 +171,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         .with(PackageLockUrlRewriteAutofix)
         .with(RenameTestFix)
         .with(AddThirdPartyLicenseAutofix)
+        .with(UpdateSupportFilesAutofix)
         .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }));
 
     build.with({

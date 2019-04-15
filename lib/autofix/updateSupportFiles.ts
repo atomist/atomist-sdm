@@ -55,7 +55,7 @@ export async function updateSupportFilesInProject(p: Project): Promise<Project> 
     return p;
 }
 
-export const UpdateSupportFilesFix: AutofixRegistration = {
+export const UpdateSupportFilesAutofix: AutofixRegistration = {
     name: "Update support files",
     pushTest: ToDefaultBranch,
     transform: updateSupportFilesInProject,
