@@ -154,6 +154,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         bucketName: "images-atomist",
         region: "us-east-1",
         filesToPublish: ["images/**/*"],
+        paramsExt: ".s3params",
         pathTranslation: filepath => filepath.replace("images/", ""),
         pathToIndex: "images/",
         sync: true,
