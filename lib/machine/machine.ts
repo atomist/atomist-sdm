@@ -39,7 +39,7 @@ import {
     createSoftwareDeliveryMachine,
     DisableDeploy,
     EnableDeploy,
-    gitHubGoalStatusSupport,
+    githubGoalStatusSupport,
     goalStateSupport,
     IsInLocalMode,
     k8sGoalSchedulingSupport,
@@ -388,7 +388,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             },
         }),
         goalStateSupport(),
-        gitHubGoalStatusSupport(),
+        githubGoalStatusSupport(),
         notificationSupport(),
         issueSupport({
             labelIssuesOnDeployment: true,
