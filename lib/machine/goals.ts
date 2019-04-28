@@ -232,7 +232,7 @@ export const GlobalKubernetesDeployGoals = goals("Global Deploy")
     .plan(DockerGoals)
     .plan(globalStagingDeploy).after(dockerBuild)
     .plan(globalProductionDeploy).after(globalStagingDeploy, autoCodeInspection)
-    .plan(release, releaseDocker, releaseDocs, releaseVersion).after(globalProductionDeploy)
+    .plan(releaseDocker, releaseDocs, releaseVersion).after(globalProductionDeploy)
     .plan(releaseChangelog).after(releaseVersion)
     .plan(releaseTag).after(release, releaseDocker);
 
