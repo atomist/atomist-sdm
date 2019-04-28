@@ -234,7 +234,7 @@ export const GlobalKubernetesDeployGoals = goals("Global Deploy")
     .plan(globalProductionDeploy).after(globalStagingDeploy, autoCodeInspection)
     .plan(releaseDocker, releaseDocs, releaseVersion).after(globalProductionDeploy)
     .plan(releaseChangelog).after(releaseVersion)
-    .plan(releaseTag).after(release, releaseDocker);
+    .plan(releaseTag).after(releaseDocker);
 
 // Docker build and testing and multiple production kubernetes deploys
 export const MultiKubernetesDeployGoals = goals("Multiple Deploy")
