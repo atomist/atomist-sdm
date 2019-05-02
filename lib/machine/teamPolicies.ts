@@ -38,7 +38,6 @@ import {
 } from "@atomist/slack-messages";
 import * as _ from "lodash";
 import { AddCommunityFiles } from "../autofix/addCommunityFiles";
-// import { UpdateSupportFilesFix } from "../autofix/updateSupportFiles";
 import {
     autofix,
     pushImpact,
@@ -58,26 +57,13 @@ export function addTeamPolicies(sdm: SoftwareDeliveryMachine<SoftwareDeliveryMac
 
     // Check case of commit message; they should use upper case too
     pushImpact.withListener(async l => {
-        const commits = l.push.commits.filter(c => !isUpperCase(c.message));
+        const nonUpperCaseCommits = l.push.commits.filter(c => !isUpperCase(c.message));
+        const commitsEndingWithPeriod = l.push.commits.filter(c => c.message.trim().endsWith("."));
         const screenName = _.get(l.push, "after.committer.person.chatId.screenName");
-        if (screenName && commits.length > 0) {
-            await warnAboutInvalidCommitMessages(sdm, l, commits, screenName);
+        if (screenName && (nonUpperCaseCommits.length > 0 || commitsEndingWithPeriod.length > 0)) {
+            await warnAboutInvalidCommitMessages(sdm, l, nonUpperCaseCommits, screenName);
         }
 
-        return Success;
-    }).withListener(async l => {
-        const screenName = _.get(l.push, "after.committer.person.chatId.screenName");
-        const nlp = require("compromise");
-        const commits = l.push.commits.filter(c => {
-            const msg = c.message.split("\n")[0];
-            const doc = nlp(msg);
-            const tenses = doc.verbs().conjugation();
-            return tenses.some(t => t.toLowerCase() === "past" || t.toLowerCase() === "pasttense");
-        });
-
-        if (screenName && commits.length > 0) {
-            await warnAboutInvalidCommitMessages(sdm, l, commits, screenName);
-        }
         return Success;
     });
 
@@ -91,7 +77,7 @@ async function warnAboutInvalidCommitMessages(sdm: SoftwareDeliveryMachine,
                                               screenName: string): Promise<void> {
     const msg = slackWarningMessage(
         "Commit Message",
-        `Please make sure that your commit messages start with an upper case letter and use present tense.
+        `Please make sure that your commit messages start with an upper case letter and do not end with a period.
 
 The following ${commits.length > 1 ? "commits" : "commit"} in ${
             bold(`${pushImpactListenerInvocation.push.repo.owner}/${
