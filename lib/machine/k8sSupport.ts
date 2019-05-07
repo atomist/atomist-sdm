@@ -143,6 +143,9 @@ export function ingressFromGoal(repo: string, ns: string): Partial<KubernetesApp
     } else if (repo === "rolar") {
         host = "rolar";
         path = "/";
+    } else if (repo === "org-visualizer") {
+        host = "visualizer";
+        path = "/";
     } else {
         return undefined;
     }
