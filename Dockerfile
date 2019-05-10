@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install -y \
         bundler \
         zlib1g-dev \
         golang-go \
+        gradle \
     && rm -rf /var/lib/apt/lists/*
 
 ENV LEIN_ROOT true
