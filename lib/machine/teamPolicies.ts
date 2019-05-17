@@ -57,18 +57,17 @@ export function addTeamPolicies(sdm: SoftwareDeliveryMachine<SoftwareDeliveryMac
 
     // Check case of commit message; they should use upper case too
     pushImpact.withListener(async l => {
-        const nonUpperCaseCommits = l.push.commits.filter(c => !isUpperCase(c.message));
-        const commitsEndingWithPeriod = l.push.commits.filter(c => c.message.trim().endsWith("."));
+        const violations = l.push.commits.filter(c => !isUpperCase(c.message) || titleEndsWithPeriod(c.message));
         const screenName = _.get(l.push, "after.committer.person.chatId.screenName");
-        if (screenName && (nonUpperCaseCommits.length > 0 || commitsEndingWithPeriod.length > 0)) {
-            await warnAboutInvalidCommitMessages(sdm, l, nonUpperCaseCommits, screenName);
+        if (screenName && violations.length > 0) {
+            await warnAboutInvalidCommitMessages(sdm, l, violations, screenName);
         }
 
         return Success;
     });
 
     autofix.with(AddCommunityFiles);
-// autofix.with(UpdateSupportFilesFix);
+    // autofix.with(UpdateSupportFilesFix);
 }
 
 async function warnAboutInvalidCommitMessages(sdm: SoftwareDeliveryMachine,
@@ -80,10 +79,10 @@ async function warnAboutInvalidCommitMessages(sdm: SoftwareDeliveryMachine,
         `Please make sure that your commit messages start with an upper case letter and do not end with a period.
 
 The following ${commits.length > 1 ? "commits" : "commit"} in ${
-            bold(`${pushImpactListenerInvocation.push.repo.owner}/${
-                pushImpactListenerInvocation.push.repo.name}/${
-                pushImpactListenerInvocation.push.branch}`)} ${
-            commits.length > 1 ? "don't" : "doesn't"} follow that standard:
+        bold(`${pushImpactListenerInvocation.push.repo.owner}/${
+            pushImpactListenerInvocation.push.repo.name}/${
+            pushImpactListenerInvocation.push.branch}`)} ${
+        commits.length > 1 ? "don't" : "doesn't"} follow that standard:
 
 ${commits.map(c => `${codeLine(c.sha.slice(0, 7))} ${truncateCommitMessage(c.message, pushImpactListenerInvocation.push.repo)}`).join("\n")}`,
         pushImpactListenerInvocation.context, {
@@ -111,6 +110,10 @@ async function upperCaseTitle(issueOrPr: { title?: string, body?: string, number
     return Success;
 }
 
-function isUpperCase(message: string): boolean {
+function isUpperCase(message: string | undefined): boolean {
     return message && message.charAt(0) === message.charAt(0).toUpperCase();
+}
+
+export function titleEndsWithPeriod(message: string | undefined): boolean {
+    return message && message.split("\n")[0].trim().endsWith(".");
 }
