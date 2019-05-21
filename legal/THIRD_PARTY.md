@@ -27,7 +27,8 @@ This page details all runtime OSS dependencies of `@atomist/atomist-sdm`.
 |[GPL-3.0](#gpl-30)|4|
 |[ISC](#isc)|86|
 |[MIT AND BSD-3-Clause](#mit-and-bsd-3-clause)|1|
-|[MIT](#mit)|975|
+|[MIT](#mit)|978|
+|[Public Domain](#public-domain)|1|
 |[UNKNOWN](#unknown)|1|
 |[Unlicense](#unlicense)|3|
 |[WTFPL](#wtfpl)|1|
@@ -53,7 +54,7 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 |`@atomist/sdm-pack-docker`|`1.2.1-master.20190502172115`|Atomist|[https://github.com/atomist/sdm-pack-docker](https://github.com/atomist/sdm-pack-docker)|
 |`@atomist/sdm-pack-fingerprints`|`2.0.2`|Atomist|[https://github.com/atomist/sdm-pack-fingerprints](https://github.com/atomist/sdm-pack-fingerprints)|
 |`@atomist/sdm-pack-issue`|`1.2.2`|Atomist|[https://github.com/atomist/sdm-pack-issue](https://github.com/atomist/sdm-pack-issue)|
-|`@atomist/sdm-pack-k8s`|`1.4.3-master.20190418162856`|Atomist|[https://github.com/atomist/sdm-pack-k8s](https://github.com/atomist/sdm-pack-k8s)|
+|`@atomist/sdm-pack-k8s`|`1.5.0`|Atomist|[https://github.com/atomist/sdm-pack-k8s](https://github.com/atomist/sdm-pack-k8s)|
 |`@atomist/sdm-pack-node`|`1.0.4-master.20190405133406`|Atomist|[https://github.com/atomist/sdm-pack-node](https://github.com/atomist/sdm-pack-node)|
 |`@atomist/sdm-pack-s3`|`0.4.2-master.20190502212109`|Atomist|[https://github.com/atomist/sdm-pack-s3](https://github.com/atomist/sdm-pack-s3)|
 |`@atomist/sdm-pack-spring`|`2.0.0-master.20190429120158`|Atomist|[https://github.com/atomist/sdm-pack-spring](https://github.com/atomist/sdm-pack-spring)|
@@ -390,6 +391,7 @@ MIT License - [http://www.opensource.org/licenses/MIT](http://www.opensource.org
 |`@types/is-glob`|`4.0.0`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/isomorphic-fetch`|`0.0.35`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/js-yaml`|`3.12.1`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
+|`@types/json-stable-stringify`|`1.0.32`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/json-stringify-safe`|`5.0.0`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/jssha`|`2.0.0`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
 |`@types/lodash`|`4.14.123`||[https://github.com/DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)|
@@ -880,12 +882,14 @@ MIT License - [http://www.opensource.org/licenses/MIT](http://www.opensource.org
 |`js-tokens`|`4.0.0`|Simon Lydell|[https://github.com/lydell/js-tokens](https://github.com/lydell/js-tokens)|
 |`js-yaml`|`3.12.1`|Vladimir Zapparov|[https://github.com/nodeca/js-yaml](https://github.com/nodeca/js-yaml)|
 |`js-yaml`|`3.13.0`|Vladimir Zapparov|[https://github.com/nodeca/js-yaml](https://github.com/nodeca/js-yaml)|
+|`js-yaml`|`3.13.1`|Vladimir Zapparov|[https://github.com/nodeca/js-yaml](https://github.com/nodeca/js-yaml)|
 |`jsbn`|`0.1.1`|Tom Wu|[https://github.com/andyperlitch/jsbn](https://github.com/andyperlitch/jsbn)|
 |`jsesc`|`2.5.2`|Mathias Bynens|[https://github.com/mathiasbynens/jsesc](https://github.com/mathiasbynens/jsesc)|
 |`json-buffer`|`3.0.0`|Dominic Tarr|[https://github.com/dominictarr/json-buffer](https://github.com/dominictarr/json-buffer)|
 |`json-parse-better-errors`|`1.0.2`|Kat Marchán|[https://github.com/zkat/json-parse-better-errors](https://github.com/zkat/json-parse-better-errors)|
 |`json-schema-traverse`|`0.4.1`|Evgeny Poberezkin|[https://github.com/epoberezkin/json-schema-traverse](https://github.com/epoberezkin/json-schema-traverse)|
 |`json-stable-stringify-without-jsonify`|`1.0.1`|James Halliday|[https://github.com/samn/json-stable-stringify](https://github.com/samn/json-stable-stringify)|
+|`json-stable-stringify`|`1.0.1`|James Halliday|[https://github.com/substack/json-stable-stringify](https://github.com/substack/json-stable-stringify)|
 |`jsonfile`|`4.0.0`|JP Richardson|[https://github.com/jprichardson/node-jsonfile](https://github.com/jprichardson/node-jsonfile)|
 |`jsonparse`|`1.3.1`|Tim Caswell|[https://github.com/creationix/jsonparse](https://github.com/creationix/jsonparse)|
 |`jsonpath`|`1.0.1`|david@fmail.co.uk|[https://github.com/dchester/jsonpath](https://github.com/dchester/jsonpath)|
@@ -1307,6 +1311,12 @@ MIT License - [http://www.opensource.org/licenses/MIT](http://www.opensource.org
 | Name | Version | Publisher | Repository |
 |------|---------|-----------|------------|
 |`sha.js`|`2.4.11`|Dominic Tarr|[https://github.com/crypto-browserify/sha.js](https://github.com/crypto-browserify/sha.js)|
+
+#### Public Domain
+
+| Name | Version | Publisher | Repository |
+|------|---------|-----------|------------|
+|`jsonify`|`0.0.0`|Douglas Crockford|[https://github.com/substack/jsonify](https://github.com/substack/jsonify)|
 
 #### UNKNOWN
 
