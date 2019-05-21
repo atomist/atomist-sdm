@@ -15,7 +15,6 @@
  */
 
 import {
-    Configuration,
     GitProject,
     logger,
 } from "@atomist/automation-client";
@@ -25,13 +24,11 @@ import {
     StagingEnvironment,
 } from "@atomist/sdm";
 import {
-    encodeSecret,
     KubernetesApplication,
     KubernetesDeploy,
 } from "@atomist/sdm-pack-k8s";
 import { IsAtomistAutomationClient } from "@atomist/sdm-pack-node";
 import { IsMaven } from "@atomist/sdm-pack-spring";
-import * as stringify from "json-stringify-safe";
 import * as _ from "lodash";
 
 export const kubernetesDeployRegistrationProd = {
@@ -81,7 +78,7 @@ export async function kubernetesApplicationData(
         replicas,
         ...ingress,
     };
-    return (name === "k8s-sdm") ? addK8sSecret(baseApp, goal, goalEvent.fulfillment.name) : baseApp;
+    return baseApp;
 }
 
 /**
@@ -155,88 +152,4 @@ export function ingressFromGoal(repo: string, ns: string): Partial<KubernetesApp
         path,
         tlsSecret: `star-atomist-${tail}`,
     };
-}
-
-/**
- * Create the an SDM confiugration and add it as a secret in the
- * application data.  Needed configuration properties will be selected
- * from `goal.sdm.configuration`.
- *
- * The configuration will then be converted into a Kubernetes secret
- * and added to the application data.  The secret name will be
- * `app.name` and the key in the secret data containing the encoded
- * configuration will be `client.config.json`.
- *
- * The proper secret configuration will be added to the `app.deploymentSpec`.
- *
- * @param app Current value of application data
- * @param config the user configuration.
- * @param sdmName Name this k8s-sdm should register as.
- * @return Kubernetes application data with SDM configuration as secret.
- */
-export function addK8sSecret(app: KubernetesApplication, goal: KubernetesDeploy, sdmName: string): KubernetesApplication {
-    const secretApp = _.merge({ deploymentSpec: { spec: { template: { spec: { containers: [{}] } } } } }, app);
-
-    const config: Configuration = {
-        apiKey: goal.sdm.configuration.apiKey,
-        applicationEvents: goal.sdm.configuration.applicationEvents,
-        cluster: {
-            enabled: true,
-            workers: 2,
-        },
-        environment: sdmName.split("_")[1] || sdmName,
-        logging: {
-            level: "debug",
-        },
-        logzio: goal.sdm.configuration.logzio,
-        name: sdmName,
-        statsd: {
-            enabled: _.get(goal, "sdm.configuration.statsd.enabled", false),
-            host: _.get(goal, "sdm.configuration.statsd.host", undefined),
-        },
-        workspaceIds: goal.sdm.configuration.workspaceIds,
-    };
-    const secretData: { [key: string]: string } = {};
-    const sdmSecretConfigKey = "client.config.json";
-    secretData[sdmSecretConfigKey] = stringify(config);
-    const configSecret = encodeSecret(secretApp.name, secretData);
-    if (secretApp.secrets) {
-        secretApp.secrets.push(configSecret);
-    } else {
-        secretApp.secrets = [configSecret];
-    }
-
-    const secretVolume = {
-        name: secretApp.name,
-        secret: {
-            defaultMode: 288,
-            secretName: secretApp.name,
-        },
-    };
-    if (secretApp.deploymentSpec.spec.template.spec.volumes) {
-        secretApp.deploymentSpec.spec.template.spec.volumes.push(secretVolume);
-    } else {
-        secretApp.deploymentSpec.spec.template.spec.volumes = [secretVolume];
-    }
-    const volumeMount = {
-        mountPath: "/opt/atm",
-        name: secretVolume.name,
-        readOnly: true,
-    };
-    if (secretApp.deploymentSpec.spec.template.spec.containers[0].volumeMounts) {
-        secretApp.deploymentSpec.spec.template.spec.containers[0].volumeMounts.push(volumeMount);
-    } else {
-        secretApp.deploymentSpec.spec.template.spec.containers[0].volumeMounts = [volumeMount];
-    }
-    const secretEnv = {
-        name: "ATOMIST_CONFIG_PATH",
-        value: `${volumeMount.mountPath}/${sdmSecretConfigKey}`,
-    };
-    if (secretApp.deploymentSpec.spec.template.spec.containers[0].env) {
-        secretApp.deploymentSpec.spec.template.spec.containers[0].env.push(secretEnv);
-    } else {
-        secretApp.deploymentSpec.spec.template.spec.containers[0].env = [secretEnv];
-    }
-
-    return secretApp;
 }
