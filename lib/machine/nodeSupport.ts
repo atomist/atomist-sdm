@@ -46,7 +46,6 @@ import {
 import {
     github,
     ProjectIdentifier,
-    tagRepo,
 } from "@atomist/sdm-core";
 import {
     DockerOptions,
