@@ -98,7 +98,6 @@ import {
     isNamed,
     isOrgNamed,
 } from "../support/identityPushTests";
-import { AutomationClientTagger } from "../support/tagger";
 import { transformToProjectListener } from "../support/transformToProjectListener";
 import { dependenciesToPeerDependenciesTransform } from "../transform/dependenciesToPeerDependencies";
 import { RewriteImports } from "../transform/rewriteImports";
@@ -265,8 +264,6 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         name: "npm-release-version",
         goalExecutor: executeReleaseVersion(NodeProjectIdentifier, npmIncrementPatch),
     });
-
-    sdm.addFirstPushListener(tagRepo(AutomationClientTagger));
 
     sdm.addEvent(deleteDistTagOnBranchDeletion(
         sdm.configuration.sdm.projectLoader,

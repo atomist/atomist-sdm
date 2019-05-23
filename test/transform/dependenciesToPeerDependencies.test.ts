@@ -20,9 +20,16 @@ import {
     Project,
 } from "@atomist/automation-client";
 import * as assert from "power-assert";
+import * as semver from "semver";
 import { dependenciesToPeerDependenciesTransform } from "../../lib/transform/dependenciesToPeerDependencies";
 
 describe("dependenciesToPeerDependenciesTransform", () => {
+
+    it("should test semver", () => {
+        assert(semver.gt("1.4.1-remove-remote-repo-ref-from.20190417141720", "1.4.1-master.20190503164044"));
+        assert(!semver.gt("1.4.1-20190417141720+remove-remote-repo-ref", "1.4.1-20190503164044+master"));
+        assert(!semver.gt("1.4.1-20190417141720-remove-remote-repo-ref", "1.4.1-20190503164044-master"));
+    });
 
     it("should rewrite single dependency regex", async () => {
         const pj = {
