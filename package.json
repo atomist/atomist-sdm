@@ -41,7 +41,7 @@
     "@atomist/sdm-pack-spring": "2.0.0-master.20190429120158",
     "@atomist/slack-messages": "^1.1.0",
     "@types/app-root-path": "^1.2.4",
-    "@types/fs-extra": "^5.0.2",
+    "@types/fs-extra": "^7.0.0",
     "@types/json-stringify-safe": "^5.0.0",
     "@types/lodash": "^4.14.116",
     "@types/node": "^12.0.2",
