@@ -29,7 +29,7 @@
     "@atomist/microgrammar": "^1.2.0",
     "@atomist/sdm": "1.5.0-master.20190503092504",
     "@atomist/sdm-core": "1.5.0-master.20190429220018",
-    "@atomist/sdm-pack-analysis": "1.1.0-master.20190429060345",
+    "@atomist/sdm-pack-analysis": "1.1.0-with-goals.20190423211420",
     "@atomist/sdm-pack-build": "^1.0.4",
     "@atomist/sdm-pack-changelog": "1.0.3-master.20190508005005",
     "@atomist/sdm-pack-docker": "1.2.1-master.20190502172115",
