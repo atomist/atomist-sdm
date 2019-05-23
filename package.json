@@ -36,7 +36,7 @@
     "@atomist/sdm-pack-fingerprints": "^3.0.2",
     "@atomist/sdm-pack-issue": "^1.2.2",
     "@atomist/sdm-pack-k8s": "^1.5.0",
-    "@atomist/sdm-pack-node": "next",
+    "@atomist/sdm-pack-node": "^1.1.0",
     "@atomist/sdm-pack-s3": "branch-master",
     "@atomist/sdm-pack-spring": "branch-master",
     "@atomist/slack-messages": "^1.1.0",
