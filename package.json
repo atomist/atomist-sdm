@@ -51,7 +51,7 @@
     "fs-extra": "^8.0.1",
     "gc-stats": "^1.2.0",
     "json-stringify-safe": "^5.0.1",
-    "license-checker": "^20.2.0",
+    "license-checker": "^25.0.1",
     "lodash": "^4.17.10",
     "minimatch": "^3.0.4",
     "semver": "^6.1.0",
