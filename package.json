@@ -44,7 +44,7 @@
     "@types/fs-extra": "^5.0.2",
     "@types/json-stringify-safe": "^5.0.0",
     "@types/lodash": "^4.14.116",
-    "@types/node": "^10.7.1",
+    "@types/node": "^12.0.2",
     "@types/semver": "^5.5.0",
     "app-root-path": "^2.1.0",
     "compromise": "^11.12.3",
