@@ -54,7 +54,7 @@
     "license-checker": "^20.2.0",
     "lodash": "^4.17.10",
     "minimatch": "^3.0.4",
-    "semver": "^5.6.0",
+    "semver": "^6.1.0",
     "spdx-license-list": "^6.0.0",
     "tslint": "^5.12.1",
     "typedoc": "^0.14.2",
