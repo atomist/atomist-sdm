@@ -48,7 +48,7 @@
     "@types/semver": "^6.0.0",
     "app-root-path": "^2.1.0",
     "compromise": "^11.12.3",
-    "fs-extra": "^7.0.0",
+    "fs-extra": "^8.0.1",
     "gc-stats": "^1.2.0",
     "json-stringify-safe": "^5.0.1",
     "license-checker": "^20.2.0",
