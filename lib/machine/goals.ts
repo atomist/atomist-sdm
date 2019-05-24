@@ -38,7 +38,7 @@ import { KubernetesDeploy } from "@atomist/sdm-pack-k8s";
 export const autoCodeInspection = new AutoCodeInspection({ isolate: true });
 export const pushImpact = new PushImpact();
 export const version = new Version();
-export const autofix = new Autofix();
+export const autofix = new Autofix({ setAuthor: true });
 export const build = new Build();
 export const tag = new Tag();
 export const tagWithApproval = new Tag({ approval: true });
