@@ -183,7 +183,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
     autoCodeInspection.with(TslintInspection)
         .with(npmAuditInspection())
         .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }))
-        .withListener(singleIssuePerCategoryManaging(sdm.configuration.name, true, () => true))
+        .withListener(singleIssuePerCategoryManaging(sdm.configuration.name, false, () => true))
         .withListener(ApproveGoalIfErrorComments);
 
     publish.with({
