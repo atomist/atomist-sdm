@@ -32,7 +32,7 @@ import * as path from "path";
  * @return the project
  */
 export async function addCommunityFilesToProject(p: Project): Promise<Project> {
-    const communityFiles = ["CODE_OF_CONDUCT.md", "CONTRIBUTING.md"];
+    const communityFiles = ["CODE_OF_CONDUCT.md", "CONTRIBUTING.md", "SECURITY.md"];
     const baseDir = appRoot.path;
     return Promise.all(communityFiles.map(src => {
         const srcPath = path.join(baseDir, src);
