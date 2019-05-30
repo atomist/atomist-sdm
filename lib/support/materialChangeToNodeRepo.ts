@@ -25,7 +25,15 @@ import {
 import * as _ from "lodash";
 
 const FilesWithExtensionToWatch = ["ts", "json", "graphql"];
-const FilesToWatch = ["Dockerfile", ".gitattributes", ".npmignore", ".dockerignore", ".gitignore"];
+const FilesToWatch = [
+    "Dockerfile",
+    ".gitattributes",
+    ".npmignore",
+    ".dockerignore",
+    ".gitignore",
+    "CODE_OF_CONDUCT.md",
+    "CONTRIBUTIONS.md" ,
+    "SECURITY.md"];
 const DirectoriesToWatch = [".atomist/", "legal"];
 
 /**
