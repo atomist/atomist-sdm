@@ -1346,7 +1346,7 @@ The Unlicense - [http://unlicense.org/](http://unlicense.org/)
 
 | Name | Version | Publisher | Repository |
 |------|---------|-----------|------------|
-|`gc-stats`|`1.3.0`||[https://github.com/dainis/node-gcstats](https://github.com/dainis/node-gcstats)|
+|`gc-stats`|`1.4.0`||[https://github.com/dainis/node-gcstats](https://github.com/dainis/node-gcstats)|
 |`tweetnacl`|`0.14.5`|TweetNaCl-js contributors|[https://github.com/dchest/tweetnacl-js](https://github.com/dchest/tweetnacl-js)|
 
 #### WTFPL
