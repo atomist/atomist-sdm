@@ -90,11 +90,11 @@ import {
     autofix,
     build,
     BuildGoals,
-    BuildReleaseAndHomebrewGoals,
     BuildReleaseGoals,
     DemoKubernetesDeployGoals,
     demoProductionDeploy,
     DockerGoals,
+    DockerReleaseAndHomebrewGoals,
     DockerReleaseGoals,
     FixGoals,
     GlobalKubernetesDeployGoals,
@@ -327,6 +327,10 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             .itMeans("Demo Cluster Deploy")
             .setGoals(DemoKubernetesDeployGoals),
 
+        whenPushSatisfies(isNamed("cli"), IsNode, ToDefaultBranch)
+            .itMeans("CLI Release Build")
+            .setGoals(DockerReleaseAndHomebrewGoals),
+
         whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, IsDeployEnabled)
             .itMeans("Deploy")
             .setGoals(KubernetesDeployGoals),
@@ -342,14 +346,6 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         whenPushSatisfies(HasDockerfile, isOrgNamed("atomist"))
             .itMeans("Simple Docker Release Build")
             .setGoals(SimpleDockerReleaseGoals),
-
-        whenPushSatisfies(IsNode, not(HasDockerfile), ToDefaultBranch)
-            .itMeans("Release Build")
-            .setGoals(BuildReleaseGoals),
-
-        whenPushSatisfies(isNamed("cli"), IsNode, not(HasDockerfile), ToDefaultBranch)
-            .itMeans("Release Build")
-            .setGoals(BuildReleaseAndHomebrewGoals),
 
         whenPushSatisfies(IsNode, not(HasDockerfile), ToDefaultBranch)
             .itMeans("Release Build")
@@ -382,8 +378,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             buildGoal: build,
             issueCreation: {
                 issueRouter: {
-                    raiseIssue: async () => { /* intentionally left empty */
-                    },
+                    raiseIssue: async () => { /* intentionally left empty */ },
                 },
             },
         }),
