@@ -78,6 +78,7 @@ import * as fs from "fs-extra";
 import * as path from "path";
 import { AddAtomistTypeScriptHeader } from "../autofix/addAtomistHeader";
 import { TypeScriptImports } from "../autofix/imports/importsFix";
+import { ReadmeSampleListingAutofix } from "../autofix/ReadmeAutofix";
 import {
     RenameTest,
     RenameTestFix,
@@ -170,6 +171,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         .with(RenameTestFix)
         .with(AddThirdPartyLicenseAutofix)
         .with(UpdateSupportFilesAutofix)
+        .with(ReadmeSampleListingAutofix)
         .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }));
 
     build.with({
