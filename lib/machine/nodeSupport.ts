@@ -78,7 +78,7 @@ import * as fs from "fs-extra";
 import * as path from "path";
 import { AddAtomistTypeScriptHeader } from "../autofix/addAtomistHeader";
 import { TypeScriptImports } from "../autofix/imports/importsFix";
-import { ReadmeSampleListingAutofix } from "../autofix/ReadmeAutofix";
+import { ReadmeSampleListingAutofix } from "../autofix/ReadmeSampleListingAutofix";
 import {
     RenameTest,
     RenameTestFix,
