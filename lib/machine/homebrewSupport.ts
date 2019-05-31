@@ -18,14 +18,17 @@ import {
     GitCommandGitProject,
     GitHubRepoRef,
     GitProject,
+    HttpClientOptions,
+    HttpMethod,
+    HttpResponse,
     logger,
     ProjectFile,
     projectUtils,
     RemoteRepoRef,
 } from "@atomist/automation-client";
+import { isTokenCredentials } from "@atomist/automation-client/lib/operations/common/ProjectOperationCredentials";
 import {
     allSatisfied,
-    DelimitedWriteProgressLogDecorator,
     execPromise,
     ExecuteGoal,
     GoalInvocation,
@@ -78,53 +81,94 @@ export function executeReleaseHomebrew(projectIdentifier: ProjectIdentifier): Ex
     return async (gi: GoalInvocation) => {
         const { configuration, credentials, id, context } = gi;
         return configuration.sdm.projectLoader.doWithProject({ credentials, id, context, readOnly: true }, async (project: GitProject) => {
-            const log = new DelimitedWriteProgressLogDecorator(gi.progressLog, "\n");
+            const log = gi.progressLog;
             try {
                 const version = await rwlcVersion(gi);
                 const versionRelease = releaseOrPreRelease(version, gi);
                 const pkgInfo = await downloadNpmPackage(project, gi, versionRelease);
-                log.write(`Creating Homebrew formula for ${project.name} version ${versionRelease}\n`);
+                log.write(`Creating Homebrew formula for ${project.name} version ${versionRelease}`);
                 const pkgSha = await fileSha256(pkgInfo.path);
-                log.write(`Calculated SHA256 for ${path.basename(pkgInfo.path)}: ${pkgSha}\n`);
+                log.write(`Calculated SHA256 for ${path.basename(pkgInfo.path)}: ${pkgSha}`);
                 try {
                     await execPromise("rm", ["-rf", path.dirname(pkgInfo.path)]);
                 } catch (e) {
                     const errMsg = `Failed to remove downloaded NPM package: ${e.message}`;
                     logger.warn(errMsg);
-                    log.write(`${errMsg}\n${e.stdout}\n${e.stderr}\n`);
+                    log.write(`${errMsg}\n${e.stdout}\n${e.stderr}`);
                 }
                 const formulae: { [key: string]: string } = {};
                 await projectUtils.doWithFiles(project, homebrewFormulaGlob, async (f: ProjectFile) => {
-                    log.write(`Creating Homebrew formula ${f.name}\n`);
+                    log.write(`Creating Homebrew formula ${f.name}`);
                     const content = await f.getContent();
                     formulae[f.name] = content.replace(/%URL%/g, pkgInfo.url)
                         .replace(/%VERSION%/g, versionRelease)
                         .replace(/%SHA256%/g, pkgSha);
                 });
-                // is there a generic way to do this?
-                const tapRepo: RemoteRepoRef = GitHubRepoRef.from({
+                if (Object.keys(formulae).length < 1) {
+                    log.write(`No formulae updated`);
+                    return;
+                }
+                const formulaeRepo: RemoteRepoRef = GitHubRepoRef.from({
                     owner: id.owner,
-                    repo: "homebrew-tap",
+                    repo: "homebrew-core",
                 });
-                log.write(`Cloning ${tapRepo.owner}/${tapRepo.repo}\n`);
-                const tapProject = await GitCommandGitProject.cloned(credentials, tapRepo);
+                log.write(`Cloning ${formulaeRepo.owner}/${formulaeRepo.repo}`);
+                const formulaeProject = await GitCommandGitProject.cloned(credentials, formulaeRepo, { depth: 1000 });
+                const execOpts = { cwd: formulaeProject.baseDir };
+                const logOutput = await execPromise("git", ["log", "-1", "--format=%at"], execOpts);
+                const sinceTimestamp = Number.parseInt(logOutput.stdout.trim(), 10) - 120;
+                const brewRemote = "brew";
+                const brewRemoteUrl = "https://github.com/Homebrew/homebrew-core.git";
+                const brewBranch = "brew-master";
+                log.write(`Adding Homebrew remote`);
+                await execPromise("git", ["remote", "add", brewRemote, brewRemoteUrl], execOpts);
+                log.write(`Fetching Homebrew remote master`);
+                await execPromise("git", ["fetch", "--no-tags", `--shallow-since=${sinceTimestamp}`, brewRemote, `+master:${brewBranch}`], execOpts);
+                log.write(`Rebasing onto Homebrew remote master`);
+                await execPromise("git", ["rebase", brewBranch], execOpts);
+                log.write(`Pushing changes from Homebrew remote master`);
+                await formulaeProject.push();
+                const firstFormulaBasename = Object.keys(formulae)[0].replace(/\.rb$/, "");
+                const prBranch = `${firstFormulaBasename}-${versionRelease}`;
+                log.write(`Creating branch ${prBranch} for PR`);
+                await formulaeProject.createBranch(prBranch);
                 for (const [formulaName, formulaContent] of Object.entries(formulae)) {
                     const formulaPath = `Formula/${formulaName}`;
-                    log.write(`Updating ${formulaPath}\n`);
-                    const formulaFile = await tapProject.getFile(formulaPath);
+                    log.write(`Updating ${formulaPath}`);
+                    const formulaFile = await formulaeProject.getFile(formulaPath);
                     if (formulaFile) {
                         await formulaFile.setContent(formulaContent);
                     } else {
-                        await tapProject.addFile(formulaPath, formulaContent);
+                        await formulaeProject.addFile(formulaPath, formulaContent);
                     }
                 }
-                log.write(`Committing Homebrew formula changes...`);
-                const commitMsg = `Update formula from ${project.name}\n\n` +
-                    `Formula updated: ${Object.keys(formulae).join(" ")}\n`;
-                await tapProject.commit(commitMsg);
-                log.write(` done.\nPushing Homebrew formula changes...`);
-                await tapProject.push();
-                log.write(` done.\n`);
+                log.write(`Committing Homebrew formula changes: ${Object.keys(formulae).join(" ")}`);
+                const title = `${firstFormulaBasename} ${versionRelease}`;
+                await formulaeProject.commit(title);
+                log.write(`Pushing Homebrew formula changes`);
+                await formulaeProject.push();
+                const httpClient = configuration.http.client.factory.create();
+                if (!isTokenCredentials(credentials)) {
+                    log.write("Provided credentials do not contain GitHub.com token");
+                    return;
+                }
+                const brewPrUrl = "https://api.github.com/repos/Homebrew/homebrew-core/pulls";
+                const brewPrOptions: HttpClientOptions = {
+                    body: {
+                        base: "master",
+                        body: "Created by @atomist-bot.",
+                        head: `${formulaeRepo.owner}:${prBranch}`,
+                        title,
+                    },
+                    headers: {
+                        Accept: "application/vnd.github.v3+json",
+                        Authorization: `token ${credentials.token}`,
+                    },
+                    method: HttpMethod.Post,
+                };
+                log.write(`Creating PR in Homebrew/homebrew-core`);
+                const prResp: HttpResponse<{ html_url: string, number: number }> = await httpClient.exchange(brewPrUrl, brewPrOptions);
+                log.write(`Created PR#${prResp.body.number} ${prResp.body.html_url}`);
                 await log.flush();
             } catch (e) {
                 const msg = `Failed to update Homebrew formulae: ${e.message}`;
