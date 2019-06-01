@@ -68,7 +68,7 @@ ${samples.map(s => `|[${codeLine(s.name)}](${s.name})|${s.description}|${s.tags.
 
         const readme = await p.getFile("README.md");
         const readmeContent = await readme.getContent();
-        const newReadmeContent = readmeContent.replace(/<!---atomist:samples=start--->[\s\S]*<!---atomist:samples=end--->/gm, sampleTable);
+        const newReadmeContent = readmeContent.replace(/<!---atomist:sample=start--->[\s\S]*<!---atomist:sample=end--->/gm, sampleTable);
         await readme.setContent(newReadmeContent);
 
         return p;
