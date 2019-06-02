@@ -36,30 +36,33 @@ export const ReadmeSampleListingAutofix: AutofixRegistration = {
     name: "README.md sample listing",
     pushTest: allSatisfied(isOrgNamed("atomist"), isNamed("samples")),
     transform: async p => {
-        const samples = _.sortBy((await projectUtils.gatherFromFiles<{ name: string, description: string, tags: string[] }>(p, ["**/*.ts"], async f => {
-            if (!f.path.includes("lib/")) {
+        const samples = _.sortBy((await projectUtils.gatherFromFiles<{ name: string, description: string, tags: string[] }>(
+            p,
+            ["**/*.ts"],
+            async f => {
+                if (!f.path.includes("lib/")) {
+                    return undefined;
+                }
+                const content = await f.getContent();
+                DescriptionRegexp.lastIndex = 0;
+                TagsRegexp.lastIndex = 0;
+                const descriptionMatch = DescriptionRegexp.exec(content);
+
+                const tagsMatch = TagsRegexp.exec(content);
+                const tags: string[] = [];
+                if (!!tagsMatch) {
+                    tags.push(...tagsMatch[1].split(","));
+                }
+
+                if (!!descriptionMatch) {
+                    return {
+                        name: f.path,
+                        description: descriptionMatch[1],
+                        tags: tags.sort(),
+                    };
+                }
                 return undefined;
-            }
-            const content = await f.getContent();
-            DescriptionRegexp.lastIndex = 0;
-            TagsRegexp.lastIndex = 0;
-            const descriptionMatch = DescriptionRegexp.exec(content);
-
-            const tagsMatch = TagsRegexp.exec(content);
-            const tags: string[] = [];
-            if (!!tagsMatch) {
-                tags.push(...tagsMatch[1].split(","));
-            }
-
-            if (!!descriptionMatch) {
-                return {
-                    name: f.path,
-                    description: descriptionMatch[1],
-                    tags: tags.sort(),
-                };
-            }
-            return undefined;
-        })).filter(s => !!s), "name");
+            })).filter(s => !!s), "name");
 
         const sampleTable = `<!---atomist:sample=start--->
 |Name|Description|Tags|
