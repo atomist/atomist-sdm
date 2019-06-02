@@ -20,11 +20,11 @@ import {
     AutofixRegistration,
 } from "@atomist/sdm";
 import { codeLine } from "@atomist/slack-messages";
+import * as _ from "lodash";
 import {
     isNamed,
     isOrgNamed,
 } from "../support/identityPushTests";
-import * as _ from "lodash";
 
 const DescriptionRegexp = new RegExp(/\* @description (.*)/, "g");
 const TagsRegexp = new RegExp(/\* @tag (.*)/, "g");
