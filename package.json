@@ -27,7 +27,7 @@
     "@atomist/automation-client-ext-logzio": "^1.0.2",
     "@atomist/automation-client-ext-raven": "^1.0.2",
     "@atomist/microgrammar": "^1.2.0",
-    "@atomist/sdm": "1.5.1-master.20190601211624",
+    "@atomist/sdm": "1.5.1-project-contributions.20190531194459",
     "@atomist/sdm-core": "1.5.1-master.20190530230030",
     "@atomist/sdm-pack-analysis": "branch-master",
     "@atomist/sdm-pack-build": "^1.0.4",
