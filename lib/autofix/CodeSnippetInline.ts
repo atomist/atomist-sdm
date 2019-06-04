@@ -72,7 +72,7 @@ ${sampleMatch[2].trim()}
 };
 
 export const CodeSnippetInlineAutofix: AutofixRegistration = {
-    name: "code inline",
+    name: "Code snippet inline",
     pushTest: hasFileWithExtension("md"),
     transform: CodeSnippetInlineTransform,
 };
