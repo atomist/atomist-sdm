@@ -77,6 +77,7 @@ import { IsMaven } from "@atomist/sdm-pack-spring";
 import * as fs from "fs-extra";
 import * as path from "path";
 import { AddAtomistTypeScriptHeader } from "../autofix/addAtomistHeader";
+import { CodeSnippetInlineAutofix } from "../autofix/CodeSnippetInline";
 import { TypeScriptImports } from "../autofix/imports/importsFix";
 import { ReadmeSampleListingAutofix } from "../autofix/ReadmeSampleListingAutofix";
 import {
@@ -172,6 +173,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         .with(AddThirdPartyLicenseAutofix)
         .with(UpdateSupportFilesAutofix)
         .with(ReadmeSampleListingAutofix)
+        .with(CodeSnippetInlineAutofix)
         .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }));
 
     build.with({
