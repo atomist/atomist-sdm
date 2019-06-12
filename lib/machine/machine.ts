@@ -91,6 +91,7 @@ import {
     build,
     BuildGoals,
     BuildReleaseGoals,
+    CheckGoals,
     DemoKubernetesDeployGoals,
     demoProductionDeploy,
     DockerGoals,
@@ -139,6 +140,7 @@ import {
 } from "./webSupport";
 
 const AtomistHQWorkspace = "T095SFFBK";
+const AtomistCustomerWorkspace = "A62C8F8L8";
 
 export function machine(configuration: SoftwareDeliveryMachineConfiguration): SoftwareDeliveryMachine {
 
@@ -281,6 +283,14 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         whenPushSatisfies(not(isSdmEnabled(configuration.name)), isTeam(AtomistHQWorkspace))
             .itMeans("Disabled repository in atomisthq workspace")
             .setGoals(goals("No Goals")),
+
+        whenPushSatisfies(isTeam(AtomistHQWorkspace), nameMatches(/poc-sdm/))
+            .itMeans("POC SDM in atomisthq")
+            .setGoals(goals("No Goals")),
+
+        whenPushSatisfies(isTeam(AtomistCustomerWorkspace), nameMatches(/poc-sdm/))
+            .itMeans("POC SDM in atomist-customer")
+            .setGoals(CheckGoals),
 
         // Node
         whenPushSatisfies(IsNode, not(IsMaven), not(MaterialChangeToNodeRepo))

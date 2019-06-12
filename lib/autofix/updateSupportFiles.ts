@@ -21,14 +21,17 @@ import {
     Project,
 } from "@atomist/automation-client";
 import {
+    allSatisfied,
     AutofixRegistration,
     CodeTransformRegistration,
+    not,
     ToDefaultBranch,
 } from "@atomist/sdm";
 import { BuildAwareMarker } from "@atomist/sdm-pack-build";
 import * as appRoot from "app-root-path";
 import * as fs from "fs-extra";
 import * as path from "path";
+import { isNamed } from "../support/identityPushTests";
 
 /**
  * Update the TypeScript support files in a project.  They are not
@@ -57,7 +60,7 @@ export async function updateSupportFilesInProject(p: Project): Promise<Project> 
 
 export const UpdateSupportFilesAutofix: AutofixRegistration = {
     name: "Update support files",
-    pushTest: ToDefaultBranch,
+    pushTest: allSatisfied(ToDefaultBranch, not(isNamed("web-app"))),
     transform: updateSupportFilesInProject,
 };
 
