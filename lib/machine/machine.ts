@@ -23,6 +23,7 @@ import { AutoMergeMethod, AutoMergeMode } from "@atomist/automation-client/lib/o
 import {
     allSatisfied,
     anySatisfied,
+    Fingerprint,
     gitHubTeamVoter,
     GoalApprovalRequestVote,
     goals,
@@ -36,7 +37,6 @@ import {
     StagingEnvironment,
     ToDefaultBranch,
     whenPushSatisfies,
-    Fingerprint,
 } from "@atomist/sdm";
 import {
     createSoftwareDeliveryMachine,
