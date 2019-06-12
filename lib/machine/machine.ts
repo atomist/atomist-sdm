@@ -19,7 +19,10 @@ import {
     editModes,
     guid,
 } from "@atomist/automation-client";
-import { AutoMergeMethod, AutoMergeMode } from "@atomist/automation-client/lib/operations/edit/editModes";
+import {
+    AutoMergeMethod,
+    AutoMergeMode,
+} from "@atomist/automation-client/lib/operations/edit/editModes";
 import {
     allSatisfied,
     anySatisfied,
@@ -55,7 +58,10 @@ import {
 import { changelogSupport } from "@atomist/sdm-pack-changelog/lib/changelog";
 import { HasDockerfile } from "@atomist/sdm-pack-docker";
 import {
-    fingerprintImpactHandler, fingerprintSupport, messageMaker, NpmDeps,
+    fingerprintImpactHandler,
+    fingerprintSupport,
+    messageMaker,
+    NpmDeps,
 } from "@atomist/sdm-pack-fingerprints";
 import { issueSupport } from "@atomist/sdm-pack-issue";
 import {
