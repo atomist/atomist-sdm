@@ -19,7 +19,6 @@
 import {
     AutoCodeInspection,
     Autofix,
-    Fingerprint,
     goals,
     GoalWithFulfillment,
     IndependentOfEnvironment,
@@ -43,7 +42,6 @@ export const build = new Build();
 export const tag = new Tag();
 export const tagWithApproval = new Tag({ approval: true });
 export const dockerBuild = new DockerBuild();
-export const fingerprint = new Fingerprint();
 
 export const stagingDeploy = new KubernetesDeploy({ environment: "testing", approval: true });
 export const productionDeploy = new KubernetesDeploy({ environment: "production" });
@@ -141,11 +139,11 @@ export const FixGoals = goals("Fix")
 
 // Just running review and autofix
 export const CheckGoals = goals("Check")
-    .plan(autofix, autoCodeInspection, pushImpact, fingerprint);
+    .plan(autofix, autoCodeInspection, pushImpact);
 
 // Goals for running in local mode
 export const LocalGoals = goals("Local Build")
-    .plan(autofix, pushImpact, fingerprint)
+    .plan(autofix, pushImpact)
     .plan(version).after(autofix)
     .plan(build).after(autofix, version)
     .plan(autoCodeInspection).after(build);
