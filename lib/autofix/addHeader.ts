@@ -140,5 +140,5 @@ function separatePrefixLines(content: string): [string, string] {
 export function upsertHeader(header: string, content: string): string {
     const [prefix, rest] = separatePrefixLines(content);
     const preamble = prefix + header + "\n";
-    return preamble + rest.replace(/^(?:\s*\n)?(?:\/\*[\s\S]*?\*\/\s*\n)?/, "");
+    return preamble + rest.replace(/^(?:\s*\n)?(?:\/\*[^*][\s\S]*?\*\/\s*\n)?/, "");
 }

@@ -176,6 +176,45 @@ process.exit(2);
             assert(n === e);
         });
 
+        it("should not replace a file-documentation comment", () => {
+            const c = `/**
+ * This file does some stuff
+ *
+ * You should use it.
+ */
+
+import * as path from "path";
+console.log(path.join(__dirname, "index.ts");
+process.exit(2);
+`;
+            const h = `/*
+ * Copyright © 2016 Atomist, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ */
+`;
+            const n = upsertHeader(h, c);
+            const e = `/*
+ * Copyright © 2016 Atomist, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ */
+
+/**
+ * This file does some stuff
+ *
+ * You should use it.
+ */
+
+import * as path from "path";
+console.log(path.join(__dirname, "index.ts");
+process.exit(2);
+`;
+            assert.strictEqual(n, e);
+        })
+
         it("should replace the current header after sh-bang", () => {
             const c = `#!/usr/bin/env node
 /*
