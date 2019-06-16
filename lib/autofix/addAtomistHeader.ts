@@ -17,6 +17,7 @@
 import {
     allSatisfied,
     AutofixRegistration,
+    guessSourceLocation,
     hasFileContaining,
     PushTest,
 } from "@atomist/sdm";
@@ -43,5 +44,6 @@ export function addAtomistHeader(name: string,
         // Ignored any parameters passed in, which will be undefined in an autofix, and provide predefined parameters
         transform: addHeaderTransform,
         parametersInstance,
+        registrationSourceLocation: guessSourceLocation(),
     };
 }
