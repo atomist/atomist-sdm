@@ -213,7 +213,7 @@ console.log(path.join(__dirname, "index.ts");
 process.exit(2);
 `;
             assert.strictEqual(n, e);
-        })
+        });
 
         it("should replace the current header after sh-bang", () => {
             const c = `#!/usr/bin/env node
