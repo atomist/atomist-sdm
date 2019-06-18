@@ -97,7 +97,7 @@ export const ApprovalCommand: CommandHandlerRegistration<ApprovalParameters> = {
                 `Successfully approved goal ${italic(goal.url ? url(goal.url, goal.name) : goal.name)} on ${
                 codeLine(goal.sha.slice(0, 7))} of ${bold(`${goal.repo.owner}/${goal.repo.name}/${goal.branch}`)}`,
                 {
-                    footer: `${slackFooter()} \u00B7 ${goal.goalSet} \u00B7 ${goal.goalSetId.slice(0, 7)} \u00B7 ${
+                    footer: `${slackFooter()} \u00B7 ${goal.goalSet.toLowerCase()} \u00B7 ${goal.goalSetId.slice(0, 7)} \u00B7 ${
                         channel(goal.approval.channelId)}`,
                 }),
             {
@@ -153,7 +153,7 @@ export const CancelApprovalCommand: CommandHandlerRegistration<ApprovalParameter
                     channel(goal.approval.channelId)}`,
                 ci.context,
                 {
-                    footer: `${slackFooter()} \u00B7 ${goal.goalSet} \u00B7 ${goal.goalSetId.slice(0, 7)}`,
+                    footer: `${slackFooter()} \u00B7 ${goal.goalSet.toLowerCase()} \u00B7 ${goal.goalSetId.slice(0, 7)}`,
                 }),
             {
                 id: ci.parameters.msgId,
