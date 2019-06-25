@@ -60,7 +60,7 @@ export async function updateSupportFilesInProject(p: Project): Promise<Project> 
 
 export const UpdateSupportFilesAutofix: AutofixRegistration = {
     name: "Update support files",
-    pushTest: allSatisfied(ToDefaultBranch, not(isNamed("web-app"))),
+    pushTest: allSatisfied(ToDefaultBranch, not(isNamed("web-app")), not(isNamed("atomist-sdm"))),
     transform: updateSupportFilesInProject,
 };
 
