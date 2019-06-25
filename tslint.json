@@ -181,16 +181,13 @@
     "triple-equals": {
       "options": ["allow-null-check"]
     },
-    "typedef": {
-      "severity": "warning",
-      "options": [
-        true,
-        "call-signature",
-        "parameter",
-        "property-declaration",
-        "member-variable-declaration"
-      ]
-    },
+    "typedef": [
+      true,
+      "call-signature",
+      "parameter",
+      "property-declaration",
+      "member-variable-declaration"
+    ],
     "typedef-whitespace": {
       "options": [
         {
