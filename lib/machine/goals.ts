@@ -44,7 +44,9 @@ export const tagWithApproval = new Tag({ approval: true });
 export const dockerBuild = new DockerBuild();
 
 export const stagingDeploy = new KubernetesDeploy({ environment: "testing", approval: true });
+export const orgVisualizerStagingDeploy = new KubernetesDeploy({ environment: "testing", approval: true });
 export const productionDeploy = new KubernetesDeploy({ environment: "production" });
+export const orgVisualizerProductionDeploy = new KubernetesDeploy({ environment: "production" });
 export const productionDeployWithApproval = new KubernetesDeploy({ environment: "production", approval: true });
 export const globalStagingDeploy = new KubernetesDeploy({ environment: "testing", approval: true });
 export const globalProductionDeploy = new KubernetesDeploy({ environment: "production" });
@@ -208,6 +210,14 @@ export const KubernetesDeployGoals = goals("Deploy")
     .plan(DockerGoals)
     .plan(stagingDeploy).after(dockerBuild)
     .plan(productionDeploy).after(stagingDeploy, autoCodeInspection)
+    .plan(release, releaseDocker, releaseDocs, releaseVersion).after(productionDeploy)
+    .plan(releaseChangelog).after(releaseVersion)
+    .plan(releaseTag).after(release, releaseDocker);
+
+export const OrgVisualizerKubernetesDeployGoals = goals("Job Deploy")
+    .plan(DockerGoals)
+    .plan(stagingDeploy, orgVisualizerStagingDeploy).after(dockerBuild)
+    .plan(productionDeploy, orgVisualizerProductionDeploy).after(stagingDeploy, autoCodeInspection)
     .plan(release, releaseDocker, releaseDocs, releaseVersion).after(productionDeploy)
     .plan(releaseChangelog).after(releaseVersion)
     .plan(releaseTag).after(release, releaseDocker);

@@ -29,11 +29,14 @@ import {
 } from "@atomist/sdm-pack-k8s";
 import { IsAtomistAutomationClient } from "@atomist/sdm-pack-node";
 import { IsMaven } from "@atomist/sdm-pack-spring";
-import * as _ from "lodash";
 
 export const kubernetesDeployRegistrationProd = {
     name: "@atomist/k8s-sdm_gke-int-production",
     applicationData: kubernetesApplicationData,
+};
+export const orgVisualizerKubernetesDeployRegistrationProd = {
+    name: "@atomist/k8s-sdm_gke-int-production",
+    applicationData: orgVisualizerJobKubernetesApplicationData,
 };
 export const kubernetesDeployRegistrationGlobal = {
     name: "@atomist/k8s-sdm_gke-customer-global",
@@ -65,7 +68,11 @@ export async function kubernetesApplicationData(
     }
     let replicas = 1;
     if (ns === "production") {
-        replicas = 3;
+        if (name === "lifecycle-automation") {
+            replicas = 6;
+        } else {
+            replicas = 3;
+        }
     } else if (ns === "sdm" && (name === "atomist-sdm" || name === "global-sdm")) {
         replicas = 3;
     }
@@ -77,6 +84,37 @@ export async function kubernetesApplicationData(
         port,
         replicas,
         ...ingress,
+    };
+    return baseApp;
+}
+
+/**
+ * Augment default Kubernetes application object used for 2nd org-visualizer deployment in
+ * batch job mode
+ */
+export async function orgVisualizerJobKubernetesApplicationData(
+    app: KubernetesApplication,
+    p: GitProject,
+    goal: KubernetesDeploy,
+    goalEvent: SdmGoalEvent,
+): Promise<KubernetesApplication> {
+
+    const name = `${goalEvent.repo.name}-job`;
+    const ns = namespaceFromGoal(goalEvent);
+    const port = 2866;
+    let replicas = 1;
+    if (ns === "production") {
+        replicas = 6;
+    }
+
+    app.deploymentSpec.spec.template.spec.containers[0].env.push({ name: "ATOMIST_ORG_VISUALIZER_MODE", value: "job"});
+
+    const baseApp = {
+        ...app,
+        name,
+        ns,
+        port,
+        replicas,
     };
     return baseApp;
 }

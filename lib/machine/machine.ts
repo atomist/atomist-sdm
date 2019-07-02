@@ -106,6 +106,9 @@ import {
     MavenBuildGoals,
     MavenDockerReleaseGoals,
     MultiKubernetesDeployGoals,
+    OrgVisualizerKubernetesDeployGoals,
+    orgVisualizerProductionDeploy,
+    orgVisualizerStagingDeploy,
     productionDeploy,
     productionDeployWithApproval,
     releaseTag,
@@ -125,6 +128,7 @@ import {
     kubernetesDeployRegistrationDemo,
     kubernetesDeployRegistrationGlobal,
     kubernetesDeployRegistrationProd,
+    orgVisualizerKubernetesDeployRegistrationProd,
 } from "./k8sSupport";
 import { addMavenSupport } from "./mavenSupport";
 import { addNodeSupport } from "./nodeSupport";
@@ -145,7 +149,9 @@ const AtomistCustomerWorkspace = "A62C8F8L8";
 export function machine(configuration: SoftwareDeliveryMachineConfiguration): SoftwareDeliveryMachine {
 
     stagingDeploy.with(kubernetesDeployRegistrationProd);
+    orgVisualizerStagingDeploy.with(orgVisualizerKubernetesDeployRegistrationProd);
     productionDeploy.with(kubernetesDeployRegistrationProd);
+    orgVisualizerProductionDeploy.with(orgVisualizerKubernetesDeployRegistrationProd);
     productionDeployWithApproval.with(kubernetesDeployRegistrationProd);
     globalStagingDeploy.with(kubernetesDeployRegistrationGlobal);
     globalProductionDeploy.with(kubernetesDeployRegistrationGlobal);
@@ -322,6 +328,12 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             isNamed("global-sdm"))
             .itMeans("Global Deploy")
             .setGoals(GlobalKubernetesDeployGoals),
+
+        // Deploy org-visualizer
+        whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, IsAtomistAutomationClient,
+            isNamed("org-visualizer"))
+            .itMeans("Deploy")
+            .setGoals(OrgVisualizerKubernetesDeployGoals),
 
         // Deploy k8s-sdm to all the clusters
         whenPushSatisfies(anySatisfied(
