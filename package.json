@@ -27,7 +27,7 @@
     "@atomist/automation-client-ext-logzio": "^1.0.2",
     "@atomist/automation-client-ext-raven": "^1.0.2",
     "@atomist/microgrammar": "^1.2.0",
-    "@atomist/sdm": "1.6.0-master.20190702114952",
+    "@atomist/sdm": "1.6.0-logging.20190703173010",
     "@atomist/sdm-core": "1.6.0-master.20190702120023",
     "@atomist/sdm-pack-analysis": "^1.0.0",
     "@atomist/sdm-pack-build": "^1.0.4",
