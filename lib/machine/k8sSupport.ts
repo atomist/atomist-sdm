@@ -104,7 +104,7 @@ export async function orgVisualizerJobKubernetesApplicationData(
     const port = 2866;
     let replicas = 1;
     if (ns === "production") {
-        replicas = 6;
+        replicas = 10;
     }
 
     app.deploymentSpec.spec.template.spec.containers[0].env.push({ name: "ATOMIST_ORG_VISUALIZER_MODE", value: "job"});
