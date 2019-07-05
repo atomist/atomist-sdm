@@ -17,7 +17,7 @@
 const log = require("why-is-node-running");
 import { Configuration } from "@atomist/automation-client";
 import { configureDashboardNotifications } from "@atomist/automation-client-ext-dashboard";
-import { configureLogzio } from "@atomist/automation-client-ext-logzio";
+import { configureHumio } from "@atomist/automation-client-ext-humio";
 import { configureRaven } from "@atomist/automation-client-ext-raven";
 import {
     ConfigureOptions,
@@ -39,7 +39,7 @@ const machineOptions: ConfigureOptions = {
 
 export const configuration: Configuration = {
     postProcessors: [
-        configureLogzio,
+        configureHumio,
         configureRaven,
         configureDashboardNotifications,
         configureSdm(machine, machineOptions),
