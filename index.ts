@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+const log = require('why-is-node-running')
 import { Configuration } from "@atomist/automation-client";
 import { configureDashboardNotifications } from "@atomist/automation-client-ext-dashboard";
 import { configureLogzio } from "@atomist/automation-client-ext-logzio";
@@ -22,6 +22,7 @@ import {
     ConfigureOptions,
     configureSdm,
 } from "@atomist/sdm-core";
+import * as cluster from "cluster";
 import { machine } from "./lib/machine/machine";
 
 const machineOptions: ConfigureOptions = {
@@ -41,6 +42,18 @@ export const configuration: Configuration = {
         configureRaven,
         configureDashboardNotifications,
         configureSdm(machine, machineOptions),
+        async cfg => {
+
+            if (cluster.isWorker &&
+                !!process.env.ATOMIST_GOAL_UNIQUE_NAME
+                && process.env.ATOMIST_GOAL_UNIQUE_NAME.includes("autofix")) {
+                setTimeout(function () {
+                    log() // logs out active handles that are keeping node running
+                }, 500)
+            }
+
+            return cfg;
+        },
     ],
     sdm: {
         npm: {

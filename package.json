@@ -58,7 +58,8 @@
     "spdx-license-list": "^6.0.0",
     "tslint": "^5.17.0",
     "typedoc": "^0.14.2",
-    "typescript": "^3.5.2"
+    "typescript": "^3.5.2",
+    "why-is-node-running": "^2.1.0"
   },
   "devDependencies": {
     "@atomist/sdm-local": "^1.0.8",
