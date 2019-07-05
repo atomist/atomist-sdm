@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-const log = require("why-is-node-running");
+const log = require('why-is-node-running')
 import { Configuration } from "@atomist/automation-client";
 import { configureDashboardNotifications } from "@atomist/automation-client-ext-dashboard";
 import { configureLogzio } from "@atomist/automation-client-ext-logzio";
@@ -48,9 +47,9 @@ export const configuration: Configuration = {
             if (cluster.isWorker &&
                 !!process.env.ATOMIST_GOAL_UNIQUE_NAME
                 && process.env.ATOMIST_GOAL_UNIQUE_NAME.includes("autofix")) {
-                setTimeout(function() {
-                    log(); // logs out active handles that are keeping node running
-                }, 500);
+                setInterval(function () {
+                    log() // logs out active handles that are keeping node running
+                }, 500).unref()
             }
 
             return cfg;
