@@ -32,8 +32,6 @@ import {
     execPromise,
     ExecuteGoalResult,
     GoalInvocation,
-    GoalProjectListenerEvent,
-    GoalProjectListenerRegistration,
     LogSuppressor,
     pushTest,
     spawnLog,
@@ -41,9 +39,14 @@ import {
     SpawnLogOptions,
 } from "@atomist/sdm";
 import {
+    cachePut,
+    cacheRestore,
+} from "@atomist/sdm-core";
+import {
     Builder,
     spawnBuilder,
 } from "@atomist/sdm-pack-build";
+import { IsNode } from "@atomist/sdm-pack-node";
 import * as fs from "fs-extra";
 import * as path from "path";
 
@@ -79,11 +82,37 @@ export async function webNpmBuild(project: GitProject, goalInvocation: GoalInvoc
     return { code: 0, message: "Site NPM build successful" };
 }
 
-export const WebNpmBuildAfterCheckout: GoalProjectListenerRegistration = {
-    name: "npm web build",
-    events: [GoalProjectListenerEvent.before],
-    listener: webNpmBuild,
-};
+const webNpmCacheClassifier = "npm-web-cache";
+export const webNpmCachePut = cachePut({
+    entries: [
+        { classifier: webNpmCacheClassifier, pattern: { directory: "public" } },
+    ],
+    pushTest: IsNode,
+});
+export const webNpmCacheRestore = cacheRestore({
+    entries: [{ classifier: webNpmCacheClassifier }],
+    onCacheMiss: {
+        name: "cache-miss-web-npm-build",
+        listener: webNpmBuild,
+    },
+    pushTest: IsNode,
+});
+
+const webJekyllCacheClassifier = "jekyll-cache";
+export const webJekyllCachePut = cachePut({
+    entries: [
+        { classifier: webJekyllCacheClassifier, pattern: { directory: "_site" } },
+    ],
+    pushTest: IsJekyllProject,
+});
+export const webJekyllCacheRestore = cacheRestore({
+    entries: [{ classifier: webJekyllCacheClassifier }],
+    onCacheMiss: {
+        name: "cache-miss-jekyll-build",
+        listener: jekyllBuild,
+    },
+    pushTest: IsJekyllProject,
+});
 
 const jekyllCommands: SpawnLogCommand[] = [
     { command: "bundle", args: ["install"] },
@@ -109,12 +138,6 @@ export async function jekyllBuild(project: GitProject, goalInvocation: GoalInvoc
     }
     return { code: 0, message: "Site Jekyll build successful" };
 }
-
-export const JekyllBuildAfterCheckout: GoalProjectListenerRegistration = {
-    name: "jekyll build",
-    events: [GoalProjectListenerEvent.before],
-    listener: jekyllBuild,
-};
 
 export function webBuilder(sitePath: string): Builder {
     const commands = (sitePath === "_site") ? jekyllCommands : webNpmCommands;
@@ -152,14 +175,18 @@ export function webBuilder(sitePath: string): Builder {
  * @return function that takes a project and returns ReviewComments
  */
 function runHtmltest(sitePath: string): CodeInspection<ProjectReview, NoParameters> {
-    return async (p: Project) => {
+    return async (p, papi) => {
         const review: ProjectReview = { repoId: p.id, comments: [] };
         if (!isLocalProject(p)) {
-            logger.error(`Project ${p.name} is not a local project`);
+            const msg = `Project ${p.name} is not a local project`;
+            logger.error(msg);
+            papi.progressLog.write(msg);
             return review;
         }
         if (!await p.hasDirectory(sitePath)) {
-            logger.error(`Project ${p.name} does not have site directory '${sitePath}'`);
+            const msg = `Project ${p.name} does not have site directory '${sitePath}'`;
+            logger.error(msg);
+            papi.progressLog.write(msg);
             return review;
         }
         const absPath = path.join(p.baseDir, sitePath);
@@ -173,7 +200,9 @@ function runHtmltest(sitePath: string): CodeInspection<ProjectReview, NoParamete
             const comments = await mapHtmltestResultsToReviewComments(p.baseDir);
             review.comments.push(...comments);
         } catch (e) {
-            logger.error(`Failed to run htmltest: ${e.message}`);
+            const msg = `Failed to run htmltest: ${e.message}`;
+            logger.error(msg);
+            papi.progressLog.write(msg);
         }
         return review;
     };
@@ -185,6 +214,7 @@ export function htmltestInspection(sitePath: string): CodeInspectionRegistration
         description: "Run htmltest on website",
         inspection: runHtmltest(sitePath),
         intent: "htmltest",
+        repoFilter: r => r.owner === "atomisthq" && r.repo === "web-site",
     };
 }
 

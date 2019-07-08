@@ -138,9 +138,11 @@ import { addFileVersionerSupport } from "./version";
 import {
     htmltestInspection,
     IsJekyllProject,
-    JekyllBuildAfterCheckout,
     webBuilder,
-    WebNpmBuildAfterCheckout,
+    webJekyllCachePut,
+    webJekyllCacheRestore,
+    webNpmCachePut,
+    webNpmCacheRestore,
 } from "./webSupport";
 
 const AtomistHQWorkspace = "T095SFFBK";
@@ -170,6 +172,10 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
     });
     const S3ImagesGoals = goals("Image Publish").plan(publishS3Images);
 
+    autoCodeInspection
+        .with(htmltestInspection("_site"))
+        .withProjectListener(webJekyllCacheRestore);
+
     const buildWeb = new Build()
         .with({
             name: "web-npm-build",
@@ -180,14 +186,14 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             name: "web-jekyll-build",
             builder: webBuilder("_site"),
             pushTest: IsJekyllProject,
-        });
+        })
+        .withProjectListener(webNpmCachePut)
+        .withProjectListener(webJekyllCachePut);
     const WebBuildGoals = goals("Web Build")
         .plan(autofix)
         .plan(version).after(autofix)
         .plan(buildWeb).after(version)
-        .plan(tag).after(buildWeb);
-
-    autoCodeInspection.with(htmltestInspection("_site"));
+        .plan(autoCodeInspection, tag).after(buildWeb);
 
     const publishWebAppToStaging = new PublishToS3({
         environment: StagingEnvironment,
@@ -199,7 +205,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         pathToIndex: "public/",
         sync: true,
         isolated: true,
-    }).withProjectListener(WebNpmBuildAfterCheckout);
+    }).withProjectListener(webNpmCacheRestore);
     const publishWebAppToProduction = new PublishToS3({
         environment: ProductionEnvironment,
         uniqueName: "publish web-app to production s3 bucket",
@@ -211,7 +217,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         sync: true,
         isolated: true,
         preApprovalRequired: true,
-    }).withProjectListener(WebNpmBuildAfterCheckout);
+    }).withProjectListener(webNpmCacheRestore);
     const WebAppGoals = goals("Web App Build with Release")
         .plan(WebBuildGoals)
         .plan(publishWebAppToStaging).after(buildWeb)
@@ -229,7 +235,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         pathToIndex: "_site/",
         sync: true,
         isolated: true,
-    }).withProjectListener(JekyllBuildAfterCheckout);
+    }).withProjectListener(webJekyllCacheRestore);
     const publishWebSiteToProduction = new PublishToS3({
         environment: ProductionEnvironment,
         uniqueName: "publish web-site to production s3 bucket",
@@ -242,10 +248,10 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         sync: true,
         isolated: true,
         preApprovalRequired: true,
-    }).withProjectListener(JekyllBuildAfterCheckout);
+    }).withProjectListener(webJekyllCacheRestore);
     const WebSiteGoals = goals("Web Site Build with Release")
         .plan(WebBuildGoals)
-        .plan(publishWebSiteToStaging, autoCodeInspection).after(buildWeb)
+        .plan(publishWebSiteToStaging).after(buildWeb)
         .plan(publishWebSiteToProduction).after(publishWebSiteToStaging)
         .plan(releaseTag, releaseVersion).after(publishWebSiteToProduction);
 
@@ -282,7 +288,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         whenPushSatisfies(isOrgNamed("atomisthq"), isNamed("web-site"), ToDefaultBranch)
             .itMeans("Web Site Deploy")
             .setGoals(WebSiteGoals),
-        whenPushSatisfies(isOrgNamed("atomisthq"), isNamed("web-app", "web-app"))
+        whenPushSatisfies(isOrgNamed("atomisthq"), isNamed("web-app", "web-site"))
             .itMeans("Web Build")
             .setGoals(WebBuildGoals),
 
