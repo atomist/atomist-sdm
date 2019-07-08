@@ -50,8 +50,10 @@ export const configuration: Configuration = {
                 },
             },
         },
-        k8: {
-            environment: "test",
+        k8s: {
+            job: {
+                cleanupInterval: 1000 * 60 * 10,
+            },
         },
         cache: {
             enabled: true,
