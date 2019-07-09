@@ -35,7 +35,7 @@ import { Changelog } from "@atomist/sdm-pack-changelog/lib/goal/Changelog";
 import { DockerBuild } from "@atomist/sdm-pack-docker";
 import { KubernetesDeploy } from "@atomist/sdm-pack-k8s";
 
-export const queue = new Queue({ concurrent: 3, fetch: 50 });
+export const queue = new Queue({ concurrent: 5 });
 
 export const autoCodeInspection = new AutoCodeInspection({ isolate: true });
 export const pushImpact = new PushImpact();
