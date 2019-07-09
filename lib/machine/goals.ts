@@ -24,6 +24,7 @@ import {
     IndependentOfEnvironment,
     ProductionEnvironment,
     PushImpact,
+    Queue,
 } from "@atomist/sdm";
 import {
     Tag,
@@ -33,6 +34,8 @@ import { Build } from "@atomist/sdm-pack-build";
 import { Changelog } from "@atomist/sdm-pack-changelog/lib/goal/Changelog";
 import { DockerBuild } from "@atomist/sdm-pack-docker";
 import { KubernetesDeploy } from "@atomist/sdm-pack-k8s";
+
+export const queue = new Queue({ concurrent: 3, fetch: 50 });
 
 export const autoCodeInspection = new AutoCodeInspection({ isolate: true });
 export const pushImpact = new PushImpact();
@@ -137,15 +140,18 @@ export const releaseVersion = new GoalWithFulfillment({
 
 // Just autofix
 export const FixGoals = goals("Fix")
-    .plan(autofix);
+    .plan(queue)
+    .plan(autofix).after(queue);
 
 // Just running review and autofix
 export const CheckGoals = goals("Check")
-    .plan(autofix, autoCodeInspection, pushImpact);
+    .plan(queue)
+    .plan(autofix, autoCodeInspection, pushImpact).after(queue);
 
 // Goals for running in local mode
 export const LocalGoals = goals("Local Build")
-    .plan(autofix, pushImpact)
+    .plan(queue)
+    .plan(autofix, pushImpact).after(queue)
     .plan(version).after(autofix)
     .plan(build).after(autofix, version)
     .plan(autoCodeInspection).after(build);
