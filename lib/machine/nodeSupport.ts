@@ -101,6 +101,7 @@ import {
 import { transformToProjectListener } from "../support/transformToProjectListener";
 import { dependenciesToPeerDependenciesTransform } from "../transform/dependenciesToPeerDependencies";
 import { RewriteImports } from "../transform/rewriteImports";
+import { TryToUpdateAllDependencies } from "../transform/tryToUpdateAllDependencies";
 import { TryToUpdateAtomistDependencies } from "../transform/tryToUpdateAtomistDependencies";
 import { TryToUpdateAtomistPeerDependencies } from "../transform/tryToUpdateAtomistPeerDependencies";
 import { TryToUpdateDependency } from "../transform/tryToUpdateDependency";
@@ -277,7 +278,8 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         .addCodeTransformCommand(UpdatePackageAuthor)
         .addCodeTransformCommand(UpdateSupportFilesTransform)
         .addCodeTransformCommand(RewriteImports)
-        .addCodeTransformCommand(RenameTest);
+        .addCodeTransformCommand(RenameTest)
+        .addCodeTransformCommand(TryToUpdateAllDependencies);
 
     return sdm;
 }

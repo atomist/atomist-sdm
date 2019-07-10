@@ -1,4 +1,4 @@
-FROM atomist/sdm-base:0.2.0
+FROM atomist/sdm-base:0.2.1
 
 RUN apt-get update && apt-get install -y \
         openjdk-8-jdk-headless maven \
@@ -13,6 +13,8 @@ RUN curl -sL -o /usr/local/bin/lein https://raw.githubusercontent.com/technomanc
     && chmod +x /usr/local/bin/lein
 
 RUN curl https://htmltest.wjdp.uk | sudo bash -s -- -b /usr/local/bin
+
+RUN npm i -g npm-check-updates
 
 COPY package.json package-lock.json ./
 
