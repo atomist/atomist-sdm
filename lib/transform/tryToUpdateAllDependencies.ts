@@ -74,7 +74,7 @@ export const UpdateAllDependenciesTransform: CodeTransform<UpdateAllDependencies
 
         let result = await spawnLog(
             "ncu",
-            ["-u", "--loglevel", "verbose"], {
+            ["-u", "--loglevel", "verbose", "--packageFile", "package.json"], {
                 cwd: (p as GitProject).baseDir,
                 env: {
                     ...process.env,
