@@ -22,9 +22,9 @@ import {
 
 describe("identityPushTests", () => {
 
-    describe("isNamed push test", () => {
+    describe("isNamed", () => {
 
-        it("Names itself uniquely for unique input", () => {
+        it("should name itself uniquely for unique input", () => {
             const pt1 = isNamed("Yes", "No");
             const pt2 = isNamed("No");
             assert(pt1.name !== pt2.name, `${pt1.name} = ${pt2.name}`);

@@ -19,10 +19,12 @@ import { configureDashboardNotifications } from "@atomist/automation-client-ext-
 import { configureHumio } from "@atomist/automation-client-ext-humio";
 import { configureRaven } from "@atomist/automation-client-ext-raven";
 import {
+    CompressingGoalCache,
     ConfigureOptions,
     configureSdm,
 } from "@atomist/sdm-core";
 import { machine } from "./lib/machine/machine";
+import { GoogleCloudStorageGoalCacheArchiveStore } from "./lib/support/cache";
 
 const machineOptions: ConfigureOptions = {
     requiredConfigurationValues: [
@@ -56,8 +58,10 @@ export const configuration: Configuration = {
             },
         },
         cache: {
+            bucket: "atm-atomist-sdm-goal-cache-production",
             enabled: true,
-            path: "/opt/data",
+            path: "atomist-sdm-cache",
+            store: new CompressingGoalCache(new GoogleCloudStorageGoalCacheArchiveStore()),
         },
     },
 };
