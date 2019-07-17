@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased](https://github.com/atomist/atomist-sdm/compare/1.4.0...HEAD)
 
+### Added
+
+-   Add GCS goal cache support. [#201](https://github.com/atomist/atomist-sdm/issues/201)
+
 ### Removed
 
 -   Move code snippet autofix work to docs-sdm. [#197](https://github.com/atomist/atomist-sdm/issues/197)
