@@ -44,7 +44,7 @@ export const autofix = new Autofix({ setAuthor: true });
 export const build = new Build();
 export const tag = new Tag();
 export const tagWithApproval = new Tag({ approval: true });
-export const dockerBuild = new DockerBuild();
+export const dockerBuild = new DockerBuild({ retryCondition: { retries: 5 } });
 
 export const stagingDeploy = new KubernetesDeploy({ environment: "testing", approval: true });
 export const orgVisualizerStagingDeploy = new KubernetesDeploy({ environment: "testing" });
