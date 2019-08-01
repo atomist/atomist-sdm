@@ -70,6 +70,8 @@ export async function kubernetesApplicationData(
     if (ns === "production") {
         if (name === "lifecycle-automation") {
             replicas = 6;
+        } else if (name === "org-visualizer") {
+            replicas = 10;
         } else {
             replicas = 3;
         }
@@ -107,7 +109,7 @@ export async function orgVisualizerJobKubernetesApplicationData(
         replicas = 10;
     }
 
-    app.deploymentSpec.spec.template.spec.containers[0].env.push({ name: "ATOMIST_ORG_VISUALIZER_MODE", value: "job"});
+    app.deploymentSpec.spec.template.spec.containers[0].env.push({ name: "ATOMIST_ORG_VISUALIZER_MODE", value: "job" });
 
     const baseApp = {
         ...app,
