@@ -30,6 +30,11 @@ import {
 import { IsAtomistAutomationClient } from "@atomist/sdm-pack-node";
 import { IsMaven } from "@atomist/sdm-pack-spring";
 
+export const kubernetesDeployRegistrationStaging = {
+    name: "@atomist/k8s-sdm_k8s-internal-staging",
+    applicationData: kubernetesApplicationData,
+};
+
 export const kubernetesDeployRegistrationProd = {
     name: "@atomist/k8s-sdm_gke-int-production",
     applicationData: kubernetesApplicationData,
