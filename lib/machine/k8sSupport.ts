@@ -36,19 +36,19 @@ export const kubernetesDeployRegistrationStaging = {
 };
 
 export const kubernetesDeployRegistrationProd = {
-    name: "@atomist/k8s-sdm_gke-int-production",
+    name: "@atomist/k8s-sdm_k8s-internal-production",
     applicationData: kubernetesApplicationData,
 };
 export const orgVisualizerKubernetesDeployRegistrationProd = {
-    name: "@atomist/k8s-sdm_gke-int-production",
+    name: "@atomist/k8s-sdm_k8s-internal-production",
     applicationData: orgVisualizerJobKubernetesApplicationData,
 };
 export const kubernetesDeployRegistrationGlobal = {
-    name: "@atomist/k8s-sdm_gke-customer-global",
+    name: "@atomist/k8s-sdm_k8s-customer-global",
     applicationData: kubernetesApplicationData,
 };
 export const kubernetesDeployRegistrationDemo = {
-    name: "@atomist/k8s-sdm_gke-int-demo",
+    name: "@atomist/k8s-sdm_k8s-internal-demo",
     applicationData: kubernetesApplicationData,
 };
 
