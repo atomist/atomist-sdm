@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 -   Move code snippet autofix work to docs-sdm. [#197](https://github.com/atomist/atomist-sdm/issues/197)
 
+### Fixed
+
+-   Retain bottle section of homebrew formula. [#202](https://github.com/atomist/atomist-sdm/issues/202)
+
 ## [1.4.0](https://github.com/atomist/atomist-sdm/compare/1.2.0...1.4.0) - 2019-06-15
 
 ### Added
