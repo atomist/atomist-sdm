@@ -62,16 +62,14 @@ export const HasHomebrewFormula: PushTest = pushTest(
     async (pi: PushListenerInvocation) => projectUtils.fileExists(pi.project, homebrewFormulaGlob, () => true),
 );
 
-/**
- * Compute SHA256 hash of file contents.
- *
- * @param file path to file
- * @return hex SHA256 of file contents
- */
-export async function fileSha256(file: string): Promise<string> {
-    const hash = crypto.createHash("sha256");
-    const fileBuffer = await fs.readFile(file);
-    return hash.update(fileBuffer).digest("hex");
+export function addHomebrewSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMachine {
+    releaseHomebrew.with({
+        name: "homebrew-release",
+        pushTest: allSatisfied(IsNode, HasHomebrewFormula),
+        logInterpreter: LogSuppressor,
+        goalExecutor: executeReleaseHomebrew(NodeProjectIdentifier),
+    });
+    return sdm;
 }
 
 /**
@@ -96,7 +94,7 @@ export function executeReleaseHomebrew(projectIdentifier: ProjectIdentifier): Ex
                     logger.warn(errMsg);
                     log.write(`${errMsg}\n${e.stdout}\n${e.stderr}`);
                 }
-                const formulae: { [key: string]: string } = {};
+                const formulae: Record<string, string> = {};
                 await projectUtils.doWithFiles(project, homebrewFormulaGlob, async (f: ProjectFile) => {
                     log.write(`Creating Homebrew formula ${f.name}`);
                     const content = await f.getContent();
@@ -141,7 +139,9 @@ export function executeReleaseHomebrew(projectIdentifier: ProjectIdentifier): Ex
                     log.write(`Updating ${formulaPath}`);
                     const formulaFile = await formulaeProject.getFile(formulaPath);
                     if (formulaFile) {
-                        await formulaFile.setContent(formulaContent);
+                        const formulaFileContent = await formulaFile.getContent();
+                        const bottledContent = restoreBottles(formulaContent, formulaFileContent);
+                        await formulaFile.setContent(bottledContent);
                     } else {
                         await formulaeProject.addFile(formulaPath, formulaContent);
                     }
@@ -193,12 +193,46 @@ export function executeReleaseHomebrew(projectIdentifier: ProjectIdentifier): Ex
     };
 }
 
-export function addHomebrewSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMachine {
-    releaseHomebrew.with({
-        name: "homebrew-release",
-        pushTest: allSatisfied(IsNode, HasHomebrewFormula),
-        logInterpreter: LogSuppressor,
-        goalExecutor: executeReleaseHomebrew(NodeProjectIdentifier),
-    });
-    return sdm;
+/**
+ * Compute SHA256 hash of file contents.
+ *
+ * @param file path to file
+ * @return hex SHA256 of file contents
+ */
+export async function fileSha256(file: string): Promise<string> {
+    const hash = crypto.createHash("sha256");
+    const fileBuffer = await fs.readFile(file);
+    return hash.update(fileBuffer).digest("hex");
+}
+
+/**
+ * Extract the bottle section from `bottled` and insert it into
+ * `updated` between the `bottle do` and `end` lines, which should be
+ * consecutive.  If the `bottled` formula does not contain a bottle
+ * section, remove the empty bottle section from `updated`.  If
+ * `updated` does not contain a bottle section, just return the
+ * unchanged `updated` formula.
+ *
+ * @param updated new formula content possibly with bottle empty section
+ * @param bottled old formula content possibly with bottle section
+ * @return new formula with old bottle section or no bottle section
+ */
+export function restoreBottles(updated: string, bottled: string): string {
+    const updateLines = updated.split("\n");
+    const updateStart = updateLines.findIndex(l => /^\s*bottle\s+do\s*$/.test(l));
+    if (updateStart < 0) {
+        return updated;
+    }
+    if (/^\s*bottle\s+do\s*$/m.test(bottled)) {
+        const bottleLines = bottled.split("\n");
+        const bottleStart = bottleLines.findIndex(l => /^\s*bottle\s+do\s*$/.test(l));
+        const bottleEnd = bottleLines.findIndex((l, i) => i > bottleStart && /^\s*end\s*$/.test(l));
+        updateLines.splice(updateStart + 1, 0, ...bottleLines.slice(bottleStart + 1, bottleEnd));
+    } else {
+        updateLines.splice(updateStart, 2);
+        if (/^\s*$/.test(updateLines[updateStart]) && /^\s*$/.test(updateLines[updateStart - 1])) {
+            updateLines.splice(updateStart, 1);
+        }
+    }
+    return updateLines.join("\n");
 }
