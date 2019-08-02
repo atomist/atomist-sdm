@@ -130,6 +130,7 @@ import {
     kubernetesDeployRegistrationProd,
     kubernetesDeployRegistrationStaging,
     orgVisualizerKubernetesDeployRegistrationProd,
+    orgVisualizerKubernetesDeployRegistrationStaging,
 } from "./k8sSupport";
 import { addMavenSupport } from "./mavenSupport";
 import { addNodeSupport } from "./nodeSupport";
@@ -152,7 +153,7 @@ const AtomistCustomerWorkspace = "A62C8F8L8";
 export function machine(configuration: SoftwareDeliveryMachineConfiguration): SoftwareDeliveryMachine {
 
     stagingDeploy.with(kubernetesDeployRegistrationStaging);
-    orgVisualizerStagingDeploy.with(orgVisualizerKubernetesDeployRegistrationProd);
+    orgVisualizerStagingDeploy.with(orgVisualizerKubernetesDeployRegistrationStaging);
     productionDeploy.with(kubernetesDeployRegistrationProd);
     orgVisualizerProductionDeploy.with(orgVisualizerKubernetesDeployRegistrationProd);
     productionDeployWithApproval.with(kubernetesDeployRegistrationProd);

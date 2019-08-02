@@ -34,10 +34,13 @@ export const kubernetesDeployRegistrationStaging = {
     name: "@atomist/k8s-sdm_k8s-internal-staging",
     applicationData: kubernetesApplicationData,
 };
-
 export const kubernetesDeployRegistrationProd = {
     name: "@atomist/k8s-sdm_k8s-internal-production",
     applicationData: kubernetesApplicationData,
+};
+export const orgVisualizerKubernetesDeployRegistrationStaging = {
+    name: "@atomist/k8s-sdm_k8s-internal-staging",
+    applicationData: orgVisualizerJobKubernetesApplicationData,
 };
 export const orgVisualizerKubernetesDeployRegistrationProd = {
     name: "@atomist/k8s-sdm_k8s-internal-production",
