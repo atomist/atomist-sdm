@@ -54,6 +54,7 @@ export const productionDeployWithApproval = new KubernetesDeploy({ environment: 
 export const globalStagingDeploy = new KubernetesDeploy({ environment: "testing", approval: true });
 export const globalProductionDeploy = new KubernetesDeploy({ environment: "production" });
 export const demoProductionDeploy = new KubernetesDeploy({ environment: "production" });
+export const integrationProductionDeploy = new KubernetesDeploy({ environment: "production" });
 
 export const releaseChangelog = new Changelog();
 
@@ -254,7 +255,7 @@ export const GlobalKubernetesDeployGoals = goals("Global Deploy")
 export const MultiKubernetesDeployGoals = goals("Multiple Deploy")
     .plan(DockerGoals)
     .plan(stagingDeploy).after(dockerBuild)
-    .plan(demoProductionDeploy, globalProductionDeploy, productionDeploy).after(stagingDeploy, autoCodeInspection)
+    .plan(demoProductionDeploy, globalProductionDeploy, integrationProductionDeploy, productionDeploy).after(stagingDeploy, autoCodeInspection)
     .plan(release, releaseDocker, releaseDocs, releaseVersion).after(stagingDeploy)
     .plan(releaseChangelog).after(releaseVersion)
     .plan(releaseTag).after(release, releaseDocker);

@@ -101,6 +101,7 @@ import {
     GlobalKubernetesDeployGoals,
     globalProductionDeploy,
     globalStagingDeploy,
+    integrationProductionDeploy,
     KubernetesDeployGoals,
     LocalGoals,
     MavenBuildGoals,
@@ -127,6 +128,7 @@ import { addHomebrewSupport } from "./homebrewSupport";
 import {
     kubernetesDeployRegistrationDemo,
     kubernetesDeployRegistrationGlobal,
+    kubernetesDeployRegistrationIntegration,
     kubernetesDeployRegistrationProd,
     kubernetesDeployRegistrationStaging,
     orgVisualizerKubernetesDeployRegistrationProd,
@@ -160,6 +162,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
     globalStagingDeploy.with(kubernetesDeployRegistrationGlobal);
     globalProductionDeploy.with(kubernetesDeployRegistrationGlobal);
     demoProductionDeploy.with(kubernetesDeployRegistrationDemo);
+    integrationProductionDeploy.with(kubernetesDeployRegistrationIntegration);
 
     const publishS3Images = new PublishToS3({
         uniqueName: "publish s3-images to s3",
