@@ -33,6 +33,7 @@ import {
     ExecuteGoal,
     GoalInvocation,
     LogSuppressor,
+    ProgressLog,
     PushListenerInvocation,
     pushTest,
     PushTest,
@@ -136,14 +137,16 @@ export function executeReleaseHomebrew(projectIdentifier: ProjectIdentifier): Ex
                 await formulaeProject.createBranch(prBranch);
                 for (const [formulaName, formulaContent] of Object.entries(formulae)) {
                     const formulaPath = `Formula/${formulaName}`;
-                    log.write(`Updating ${formulaPath}`);
                     const formulaFile = await formulaeProject.getFile(formulaPath);
                     if (formulaFile) {
+                        log.write(`Updating ${formulaPath}`);
                         const formulaFileContent = await formulaFile.getContent();
-                        const bottledContent = restoreBottles(formulaContent, formulaFileContent);
+                        const bottledContent = restoreBottles(formulaContent, formulaFileContent, log);
                         await formulaFile.setContent(bottledContent);
                     } else {
-                        await formulaeProject.addFile(formulaPath, formulaContent);
+                        log.write(`Adding ${formulaPath}`);
+                        const debottled = restoreBottles(formulaContent, "", log);
+                        await formulaeProject.addFile(formulaPath, debottled);
                     }
                 }
                 log.write(`Committing Homebrew formula changes: ${Object.keys(formulae).join(" ")}`);
@@ -217,18 +220,21 @@ export async function fileSha256(file: string): Promise<string> {
  * @param bottled old formula content possibly with bottle section
  * @return new formula with old bottle section or no bottle section
  */
-export function restoreBottles(updated: string, bottled: string): string {
+export function restoreBottles(updated: string, bottled: string, log: ProgressLog): string {
     const updateLines = updated.split("\n");
     const updateStart = updateLines.findIndex(l => /^\s*bottle\s+do\s*$/.test(l));
     if (updateStart < 0) {
+        log.write("No bottle section found in updated formula");
         return updated;
     }
     if (/^\s*bottle\s+do\s*$/m.test(bottled)) {
+        log.write("Found bottle section found in previous formula, adding to updated formula");
         const bottleLines = bottled.split("\n");
         const bottleStart = bottleLines.findIndex(l => /^\s*bottle\s+do\s*$/.test(l));
         const bottleEnd = bottleLines.findIndex((l, i) => i > bottleStart && /^\s*end\s*$/.test(l));
         updateLines.splice(updateStart + 1, 0, ...bottleLines.slice(bottleStart + 1, bottleEnd));
     } else {
+        log.write("No bottle section found in previous formula, removing from updated formula");
         updateLines.splice(updateStart, 2);
         if (/^\s*$/.test(updateLines[updateStart]) && /^\s*$/.test(updateLines[updateStart - 1])) {
             updateLines.splice(updateStart, 1);

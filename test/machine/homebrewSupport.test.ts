@@ -89,6 +89,8 @@ describe("homebrewSupport", () => {
 
     describe("restoreBottles", () => {
 
+        const l: any = { write: () => { } };
+
         it("should remove bottle section if no bottles", () => {
             const u = `require "language/node"
 
@@ -141,7 +143,7 @@ class AtomistCli < Formula
   end
 end
 `;
-            const n = restoreBottles(u, b);
+            const n = restoreBottles(u, b, l);
             const e = `require "language/node"
 
 class AtomistCli < Formula
@@ -220,7 +222,7 @@ class AtomistCli < Formula
   end
 end
 `;
-            const n = restoreBottles(u, b);
+            const n = restoreBottles(u, b, l);
             const e = `require "language/node"
 
 class AtomistCli < Formula
@@ -306,7 +308,7 @@ class AtomistCli < Formula
   end
 end
 `;
-            const n = restoreBottles(u, b);
+            const n = restoreBottles(u, b, l);
             const e = `require "language/node"
 
 class AtomistCli < Formula
