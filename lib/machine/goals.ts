@@ -66,7 +66,7 @@ export const deploymentGate = goal(
             planned: "Deployment pending",
             waitingForPreApproval: "Deployment pending",
             completed: "Deployment started",
-        }
+        },
     },
     async gi => { /** Intentionally left empty */ });
 
