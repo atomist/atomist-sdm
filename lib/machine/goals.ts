@@ -19,6 +19,7 @@
 import {
     AutoCodeInspection,
     Autofix,
+    goal,
     goals,
     GoalWithFulfillment,
     IndependentOfEnvironment,
@@ -55,6 +56,19 @@ export const globalStagingDeploy = new KubernetesDeploy({ environment: "testing"
 export const globalProductionDeploy = new KubernetesDeploy({ environment: "production" });
 export const demoProductionDeploy = new KubernetesDeploy({ environment: "production" });
 export const integrationProductionDeploy = new KubernetesDeploy({ environment: "production" });
+
+export const deploymentGate = goal(
+    {
+        displayName: "deployment",
+        preApproval: true,
+        environment: "testing",
+        descriptions: {
+            planned: "Deployment pending",
+            waitingForPreApproval: "Deployment pending",
+            completed: "Deployment started",
+        }
+    },
+    async gi => { /** Intentionally left empty */ });
 
 export const releaseChangelog = new Changelog();
 
@@ -223,7 +237,8 @@ export const KubernetesDeployGoals = goals("Deploy")
 
 export const OrgVisualizerKubernetesDeployGoals = goals("Job Deploy")
     .plan(DockerGoals)
-    .plan(stagingDeploy, orgVisualizerStagingDeploy).after(dockerBuild)
+    .plan(deploymentGate).after(dockerBuild)
+    .plan(stagingDeploy, orgVisualizerStagingDeploy).after(deploymentGate)
     .plan(productionDeploy, orgVisualizerProductionDeploy).after(stagingDeploy, autoCodeInspection)
     .plan(release, releaseDocker, releaseDocs, releaseVersion).after(productionDeploy)
     .plan(releaseChangelog).after(releaseVersion)
