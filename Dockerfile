@@ -1,4 +1,4 @@
-FROM atomist/sdm-base:0.2.1
+FROM atomist/sdm-base:0.3.0
 
 RUN apt-get update && apt-get install -y \
         openjdk-8-jdk-headless maven \
