@@ -342,7 +342,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
 
         // Deploy org-visualizer
         whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, IsAtomistAutomationClient,
-            anySatisfied(isNamed("org-visualizer"), isNamed("aspect-sdm")))
+            isNamed("aspect-sdm"))
             .itMeans("Deploy")
             .setGoals(OrgVisualizerKubernetesDeployGoals),
 
