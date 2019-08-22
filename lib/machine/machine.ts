@@ -342,7 +342,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
 
         // Deploy org-visualizer
         whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, IsAtomistAutomationClient,
-            isNamed("org-visualizer"))
+            anySatisfied(isNamed("org-visualizer"), isNamed("drift-sdm")))
             .itMeans("Deploy")
             .setGoals(OrgVisualizerKubernetesDeployGoals),
 
