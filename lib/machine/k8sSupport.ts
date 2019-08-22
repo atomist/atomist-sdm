@@ -82,7 +82,7 @@ export async function kubernetesApplicationData(
     if (ns === "production") {
         if (name === "lifecycle-automation") {
             replicas = 6;
-        } else if (name === "org-visualizer" || name === "drift-sdm") {
+        } else if (name === "org-visualizer" || name === "aspect-sdm") {
             replicas = 10;
         } else {
             replicas = 3;
@@ -195,8 +195,8 @@ export function ingressFromGoal(repo: string, ns: string): Partial<KubernetesApp
     } else if (repo === "org-visualizer") {
         host = "visualizer";
         path = "/";
-    } else if (repo === "drift-sdm") {
-        host = "drift";
+    } else if (repo === "aspect-sdm") {
+        host = "aspect";
         path = "/";
     } else {
         return undefined;
