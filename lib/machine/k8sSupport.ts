@@ -147,7 +147,7 @@ function namespaceFromGoal(goalEvent: SdmGoalEvent): string {
         } else if (goalEvent.environment === ProductionEnvironment.replace(/\/$/, "")) {
             return "sdm";
         }
-    } else if (/-sdm$/.test(name) && name !== "sample-sdm" && name !== "spring-sdm") {
+    } else if (/-sdm$/.test(name) && name !== "sample-sdm" && name !== "spring-sdm" && name !== "aspect-sdm") {
         return "sdm";
     } else if (name === "k8vent") {
         return "k8vent";
