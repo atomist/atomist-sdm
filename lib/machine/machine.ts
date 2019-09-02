@@ -418,7 +418,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         goalStateSupport({
             cancellation: {
                 enabled: true,
-            }
+            },
         }),
         githubGoalStatusSupport(),
         notificationSupport(),
