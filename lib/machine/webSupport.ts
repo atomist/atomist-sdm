@@ -55,6 +55,7 @@ export const IsJekyllProject = pushTest("IsJekyllProject", inv => inv.project.ha
 const webNpmCommands: SpawnLogCommand[] = [
     { command: "npm", args: ["ci"], options: { env: { ...process.env, NODE_ENV: "development" }, log: undefined } },
     { command: "npm", args: ["run", "compile"] },
+    { command: "npm", args: ["run", "test"] },
 ];
 
 function spawnCommandString(cmd: SpawnLogCommand): string {
