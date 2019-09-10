@@ -23,11 +23,11 @@ import {
 } from "@atomist/automation-client";
 import {
     CommandHandlerRegistration,
-    GoalRootType,
     slackFooter,
     slackSuccessMessage,
     slackWarningMessage,
 } from "@atomist/sdm";
+import { GoalRootType } from "@atomist/sdm/lib/api/goal/SdmGoalMessage";
 import {
     bold,
     channel,
