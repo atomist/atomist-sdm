@@ -36,7 +36,7 @@
     "@atomist/sdm-pack-fingerprints": "^3.1.1",
     "@atomist/sdm-pack-issue": "^1.2.2",
     "@atomist/sdm-pack-k8s": "^1.7.1",
-    "@atomist/sdm-pack-node": "1.1.1-master.20190616204043",
+    "@atomist/sdm-pack-node": "1.2.0-master.20190916151817",
     "@atomist/sdm-pack-s3": "^0.5.0",
     "@atomist/sdm-pack-spring": "^2.0.1",
     "@atomist/slack-messages": "^1.1.1",
