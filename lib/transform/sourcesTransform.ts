@@ -16,8 +16,8 @@
 
 import {
     LocalProject,
-    projectUtils,
     ProjectFile,
+    projectUtils,
 } from "@atomist/automation-client";
 import { CodeTransform } from "@atomist/sdm";
 import * as fs from "fs-extra";
