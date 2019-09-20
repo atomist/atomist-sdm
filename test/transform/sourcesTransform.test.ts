@@ -17,10 +17,10 @@
 import { InMemoryProject } from "@atomist/automation-client";
 import * as assert from "assert";
 import * as fs from "fs-extra";
+import * as glob from "glob";
 import * as path from "path";
 import * as util from "util";
 import { SourcesTransform } from "../../lib/transform/sourcesTransform";
-import * as glob from "glob";
 
 describe("SourcesTransform", () => {
     it("should transform", async () => {
