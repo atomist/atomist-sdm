@@ -37,8 +37,8 @@ export const SourcesTransform: CodeTransform = async p => {
             // Get both map files
             const basePath = file.path;
             const base = file.path.slice(0, -3);
-            const tsMap = path.join(`${base}.d.ts.map`);
-            const jsMap = path.join(`${base}.js.map`);
+            const tsMap = `${base}.d.ts.map`;
+            const jsMap = `${base}.js.map`;
 
             // Move the ts file out of the way
             await p.moveFile(file.path, path.join("src", file.path));
@@ -53,10 +53,10 @@ async function updateSourceMap(mapPath: string, p: Project, basePath: string): P
     const segments = `..${path.sep}`.repeat(basePath.split("/").length - 1);
     if (await p.hasFile(mapPath)) {
         const mapFile = await p.getFile(mapPath);
-        const content = await mapFile.getContent();
-        const newContent = content.replace(
-            /("sources":\[.*?\])/g,
-            `"sources":["${segments}src${path.sep}${basePath}"]`);
-        await mapFile.setContent(newContent);
+        const sourceMap = JSON.parse(await mapFile.getContent());
+        sourceMap.sources = [
+            `${segments}src${path.sep}${basePath}`,
+        ];
+        await mapFile.setContent(JSON.stringify(sourceMap));
     }
 }
