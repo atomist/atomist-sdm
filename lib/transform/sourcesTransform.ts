@@ -15,49 +15,48 @@
  */
 
 import {
-    LocalProject,
-    ProjectFile,
+    Project,
     projectUtils,
 } from "@atomist/automation-client";
 import { CodeTransform } from "@atomist/sdm";
-import * as fs from "fs-extra";
 import * as path from "path";
 
 /**
  * CodeTransform to prepare a project to package TS files in the final NPM archive.
  */
 export const SourcesTransform: CodeTransform = async p => {
-    const cwd = (p as LocalProject).baseDir;
 
     const files = (await projectUtils.gatherFromFiles(p, ["**/*.ts"], async f => f))
         .filter(f => !f.path.endsWith(".d.ts"));
 
     if (files.length > 0) {
         // Make sure the src path exists and we can move files into
-        await fs.ensureDir(path.join(cwd, "src"));
+        await p.addDirectory("src");
 
         for (const file of files) {
-            // Move the ts file out of the way
-            await fs.move(path.join(cwd, file.path), path.join(cwd, "src", file.path));
-
             // Get both map files
+            const basePath = file.path;
             const base = file.path.slice(0, -3);
-            const tsMap = path.join(cwd, `${base}.d.ts.map`);
-            const jsMap = path.join(cwd, `${base}.js.map`);
+            const tsMap = path.join(`${base}.d.ts.map`);
+            const jsMap = path.join(`${base}.js.map`);
 
-            await updateSourceMap(tsMap, file);
-            await updateSourceMap(jsMap, file);
+            // Move the ts file out of the way
+            await p.moveFile(file.path, path.join("src", file.path));
+
+            await updateSourceMap(tsMap, p, basePath);
+            await updateSourceMap(jsMap, p, basePath);
         }
     }
 };
 
-async function updateSourceMap(mapPath: string, file: ProjectFile): Promise<void> {
-    const segments = `..${path.sep}`.repeat(file.path.split("/").length - 1);
-    if (await fs.pathExists(mapPath)) {
-        const content = (await fs.readFile(mapPath)).toString();
+async function updateSourceMap(mapPath: string, p: Project, basePath: string): Promise<void> {
+    const segments = `..${path.sep}`.repeat(basePath.split("/").length - 1);
+    if (await p.hasFile(mapPath)) {
+        const mapFile = await p.getFile(mapPath);
+        const content = await mapFile.getContent();
         const newContent = content.replace(
             /("sources":\[.*?\])/g,
-            `"sources":["${segments}src${path.sep}${file.path}"]`);
-        await fs.writeFile(mapPath, newContent);
+            `"sources":["${segments}src${path.sep}${basePath}"]`);
+        await mapFile.setContent(newContent);
     }
 }
