@@ -70,9 +70,9 @@ import {
     TslintInspection,
 } from "@atomist/sdm-pack-node";
 import {
-    CacheScope,
-    npmInstallProjectListener,
-} from "@atomist/sdm-pack-node/lib/build/npmBuilder";
+    NpmNodeModuledCacheRestore,
+    NpmNodeModulesCachePut,
+} from "@atomist/sdm-pack-node/lib/listener/npm";
 import { IsMaven } from "@atomist/sdm-pack-spring";
 import * as fs from "fs-extra";
 import * as path from "path";
@@ -174,7 +174,8 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         .with(AddThirdPartyLicenseAutofix)
         .with(UpdateSupportFilesAutofix)
         .with(ReadmeSampleListingAutofix)
-        .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }));
+        .withProjectListener(NpmNodeModuledCacheRestore)
+        .withProjectListener(NpmNodeModulesCachePut);
 
     build.with({
         ...NodeDefaultOptions,
@@ -182,11 +183,11 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         builder: nodeBuilder({ command: "npm", args: ["run", "compile"] }, { command: "npm", args: ["test"] }),
         pushTest: NodeDefaultOptions.pushTest,
     })
-        .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }));
+        .withProjectListener(NpmNodeModuledCacheRestore)
 
     autoCodeInspection.with(TslintInspection)
         .with(npmAuditInspection())
-        .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }))
+        .withProjectListener(NpmNodeModuledCacheRestore)
         .withListener(singleIssuePerCategoryManaging(sdm.configuration.name, false, () => true))
         .withListener(ApproveGoalIfErrorComments);
 
@@ -203,7 +204,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
                 /@atomist\/sdm.*/, /@atomist\/automation-client.*/),
             "package.json rewrite",
             allSatisfied(IsNode, isOrgNamed("atomist"), isNamed("uhura"))))
-        .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }))
+        .withProjectListener(NpmNodeModuledCacheRestore)
         .withProjectListener(NpmVersionProjectListener)
         .withProjectListener(NpmCompileProjectListener)
         .withProjectListener(transformToProjectListener(SourcesTransform, "package sources"));
@@ -221,7 +222,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
                 /@atomist\/sdm.*/, /@atomist\/automation-client.*/),
             "package.json rewrite",
             allSatisfied(IsNode, isOrgNamed("atomist"), isNamed("uhura"))))
-        .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }))
+        .withProjectListener(NpmNodeModuledCacheRestore)
         .withProjectListener(NpmVersionProjectListener)
         .withProjectListener(NpmCompileProjectListener)
         .withProjectListener(transformToProjectListener(SourcesTransform, "package sources"));
@@ -245,7 +246,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         },
         pushTest: allSatisfied(IsNode, HasDockerfile, not(allSatisfied(isOrgNamed("atomisthq"), isNamed("global-sdm")))),
     })
-        .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }))
+        .withProjectListener(NpmNodeModuledCacheRestore)
         .withProjectListener(NpmVersionProjectListener)
         .withProjectListener(NpmCompileProjectListener);
 
