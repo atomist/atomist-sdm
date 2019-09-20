@@ -34,6 +34,7 @@ import {
     ExecuteGoal,
     ExecuteGoalResult,
     GoalInvocation,
+    GoalProjectListenerEvent,
     LogSuppressor,
     not,
     PrepareForGoalExecution,
@@ -175,7 +176,11 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         .with(UpdateSupportFilesAutofix)
         .with(ReadmeSampleListingAutofix)
         .withProjectListener(NpmNodeModuledCacheRestore)
-        .withProjectListener(NpmNodeModulesCachePut);
+        .withProjectListener({
+            // something is cleaning out the node_modules folder -> cache it early
+            ...NpmNodeModulesCachePut,
+            events: [GoalProjectListenerEvent.before],
+        });
 
     build.with({
         ...NodeDefaultOptions,
