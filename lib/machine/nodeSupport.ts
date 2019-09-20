@@ -101,6 +101,7 @@ import {
 import { transformToProjectListener } from "../support/transformToProjectListener";
 import { dependenciesToPeerDependenciesTransform } from "../transform/dependenciesToPeerDependencies";
 import { RewriteImports } from "../transform/rewriteImports";
+import { SourcesTransform } from "../transform/sourcesTransform";
 import { TryToUpdateAllDependencies } from "../transform/tryToUpdateAllDependencies";
 import { TryToUpdateAtomistDependencies } from "../transform/tryToUpdateAtomistDependencies";
 import { TryToUpdateAtomistPeerDependencies } from "../transform/tryToUpdateAtomistPeerDependencies";
@@ -204,7 +205,8 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
             allSatisfied(IsNode, isOrgNamed("atomist"), isNamed("uhura"))))
         .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }))
         .withProjectListener(NpmVersionProjectListener)
-        .withProjectListener(NpmCompileProjectListener);
+        .withProjectListener(NpmCompileProjectListener)
+        .withProjectListener(transformToProjectListener(SourcesTransform, "package sources"));
 
     publishWithApproval.with({
         ...NodeDefaultOptions,
@@ -221,7 +223,8 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
             allSatisfied(IsNode, isOrgNamed("atomist"), isNamed("uhura"))))
         .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }))
         .withProjectListener(NpmVersionProjectListener)
-        .withProjectListener(NpmCompileProjectListener);
+        .withProjectListener(NpmCompileProjectListener)
+        .withProjectListener(transformToProjectListener(SourcesTransform, "package sources"));
 
     dockerBuild.with({
         ...NodeDefaultOptions,
