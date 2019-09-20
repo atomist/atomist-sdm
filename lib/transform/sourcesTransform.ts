@@ -26,7 +26,7 @@ import * as path from "path";
 /**
  * CodeTransform to prepare a project to package TS files in the final NPM archive.
  */
-export const SourcesTransform: CodeTransform = async (p, papi) => {
+export const SourcesTransform: CodeTransform = async p => {
     const cwd = (p as LocalProject).baseDir;
 
     const files = (await projectUtils.gatherFromFiles(p, ["**/*.ts"], async f => f))
