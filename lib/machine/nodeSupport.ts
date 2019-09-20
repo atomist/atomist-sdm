@@ -183,7 +183,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         builder: nodeBuilder({ command: "npm", args: ["run", "compile"] }, { command: "npm", args: ["test"] }),
         pushTest: NodeDefaultOptions.pushTest,
     })
-        .withProjectListener(NpmNodeModuledCacheRestore)
+        .withProjectListener(NpmNodeModuledCacheRestore);
 
     autoCodeInspection.with(TslintInspection)
         .with(npmAuditInspection())
