@@ -26,7 +26,7 @@ import * as path from "path";
  */
 export const SourcesTransform: CodeTransform = async p => {
 
-    const files = (await projectUtils.gatherFromFiles(p, ["**/*.ts", "**/*.tsx", "!**/*.d.ts"], async f => f));
+    const files = (await projectUtils.gatherFromFiles(p, ["**/!(*.d).ts{,x}"], async f => f));
 
     if (files.length > 0) {
         // Make sure the src path exists and we can move files into
@@ -35,8 +35,7 @@ export const SourcesTransform: CodeTransform = async p => {
         for (const file of files) {
             // Get both map files
             const basePath = file.path;
-            const extension = path.parse(basePath).ext;
-            const base = file.path.slice(0, -1 - extension.length);
+            const base = file.path.slice(0, -path.extname(basePath).length);
             const tsMap = `${base}.d.ts.map`;
             const jsMap = `${base}.js.map`;
 
