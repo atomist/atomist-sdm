@@ -62,18 +62,17 @@ import {
     NodeProjectIdentifier,
     NodeProjectVersioner,
     npmAuditInspection,
-    NpmCompileProjectListener,
+    NpmNodeModulesCachePut,
+    NpmNodeModulesCacheRestore,
     NpmOptions,
     NpmProgressReporter,
     NpmVersionProjectListener,
     PackageLockUrlRewriteAutofix,
     TslintAutofix,
     TslintInspection,
+    TypeScriptCompileCachePut,
+    TypeScriptCompileCacheRestore,
 } from "@atomist/sdm-pack-node";
-import {
-    NpmNodeModuledCacheRestore,
-    NpmNodeModulesCachePut,
-} from "@atomist/sdm-pack-node/lib/listener/npm";
 import { IsMaven } from "@atomist/sdm-pack-spring";
 import * as fs from "fs-extra";
 import * as path from "path";
@@ -175,7 +174,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         .with(AddThirdPartyLicenseAutofix)
         .with(UpdateSupportFilesAutofix)
         .with(ReadmeSampleListingAutofix)
-        .withProjectListener(NpmNodeModuledCacheRestore)
+        .withProjectListener(NpmNodeModulesCacheRestore)
         .withProjectListener({
             // something is cleaning out the node_modules folder -> cache it early
             ...NpmNodeModulesCachePut,
@@ -188,11 +187,12 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         builder: nodeBuilder({ command: "npm", args: ["run", "compile"] }, { command: "npm", args: ["test"] }),
         pushTest: NodeDefaultOptions.pushTest,
     })
-        .withProjectListener(NpmNodeModuledCacheRestore);
+        .withProjectListener(NpmNodeModulesCacheRestore)
+        .withProjectListener(TypeScriptCompileCachePut);
 
     autoCodeInspection.with(TslintInspection)
         .with(npmAuditInspection())
-        .withProjectListener(NpmNodeModuledCacheRestore)
+        .withProjectListener(NpmNodeModulesCacheRestore)
         .withListener(singleIssuePerCategoryManaging(sdm.configuration.name, false, () => true))
         .withListener(ApproveGoalIfErrorComments);
 
@@ -209,9 +209,9 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
                 /@atomist\/sdm.*/, /@atomist\/automation-client.*/),
             "package.json rewrite",
             allSatisfied(IsNode, isOrgNamed("atomist"), isNamed("uhura"))))
-        .withProjectListener(NpmNodeModuledCacheRestore)
+        .withProjectListener(NpmNodeModulesCacheRestore)
         .withProjectListener(NpmVersionProjectListener)
-        .withProjectListener(NpmCompileProjectListener)
+        .withProjectListener(TypeScriptCompileCacheRestore)
         .withProjectListener(transformToProjectListener(SourcesTransform, "package sources"));
 
     publishWithApproval.with({
@@ -227,9 +227,9 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
                 /@atomist\/sdm.*/, /@atomist\/automation-client.*/),
             "package.json rewrite",
             allSatisfied(IsNode, isOrgNamed("atomist"), isNamed("uhura"))))
-        .withProjectListener(NpmNodeModuledCacheRestore)
+        .withProjectListener(NpmNodeModulesCacheRestore)
         .withProjectListener(NpmVersionProjectListener)
-        .withProjectListener(NpmCompileProjectListener)
+        .withProjectListener(TypeScriptCompileCacheRestore)
         .withProjectListener(transformToProjectListener(SourcesTransform, "package sources"));
 
     dockerBuild.with({
@@ -251,9 +251,9 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         },
         pushTest: allSatisfied(IsNode, HasDockerfile, not(allSatisfied(isOrgNamed("atomisthq"), isNamed("global-sdm")))),
     })
-        .withProjectListener(NpmNodeModuledCacheRestore)
+        .withProjectListener(NpmNodeModulesCacheRestore)
         .withProjectListener(NpmVersionProjectListener)
-        .withProjectListener(NpmCompileProjectListener);
+        .withProjectListener(TypeScriptCompileCacheRestore)
 
     release.with({
         ...NodeDefaultOptions,
