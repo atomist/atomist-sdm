@@ -51,6 +51,7 @@
     "compromise": "^11.12.3",
     "fs-extra": "^8.0.1",
     "gc-stats": "^1.2.0",
+    "glob": "^7.1.4",
     "json-stringify-safe": "^5.0.1",
     "license-checker": "^25.0.1",
     "lodash": "^4.17.15",
