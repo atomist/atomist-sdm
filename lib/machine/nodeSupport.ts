@@ -253,7 +253,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
     })
         .withProjectListener(NpmNodeModulesCacheRestore)
         .withProjectListener(NpmVersionProjectListener)
-        .withProjectListener(TypeScriptCompileCacheRestore)
+        .withProjectListener(TypeScriptCompileCacheRestore);
 
     release.with({
         ...NodeDefaultOptions,
