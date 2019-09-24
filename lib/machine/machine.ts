@@ -98,9 +98,6 @@ import {
     DockerReleaseAndHomebrewGoals,
     DockerReleaseGoals,
     FixGoals,
-    GlobalKubernetesDeployGoals,
-    globalProductionDeploy,
-    globalStagingDeploy,
     integrationProductionDeploy,
     KubernetesDeployGoals,
     LocalGoals,
@@ -127,7 +124,6 @@ import {
 import { addHomebrewSupport } from "./homebrewSupport";
 import {
     kubernetesDeployRegistrationDemo,
-    kubernetesDeployRegistrationGlobal,
     kubernetesDeployRegistrationIntegration,
     kubernetesDeployRegistrationProd,
     kubernetesDeployRegistrationStaging,
@@ -159,8 +155,6 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
     productionDeploy.with(kubernetesDeployRegistrationProd);
     orgVisualizerProductionDeploy.with(orgVisualizerKubernetesDeployRegistrationProd);
     productionDeployWithApproval.with(kubernetesDeployRegistrationProd);
-    globalStagingDeploy.with(kubernetesDeployRegistrationGlobal);
-    globalProductionDeploy.with(kubernetesDeployRegistrationGlobal);
     demoProductionDeploy.with(kubernetesDeployRegistrationDemo);
     integrationProductionDeploy.with(kubernetesDeployRegistrationIntegration);
 
@@ -333,12 +327,6 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             isNamed("atomist-sdm", "docs-sdm", "manifesto-sdm"))
             .itMeans("Simplified Deploy")
             .setGoals(SimplifiedKubernetesDeployGoals),
-
-        // Deploy assets to "global" Kubernetes cluster
-        whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, IsAtomistAutomationClient,
-            isNamed("global-sdm"))
-            .itMeans("Global Deploy")
-            .setGoals(GlobalKubernetesDeployGoals),
 
         // Deploy org-visualizer
         whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, IsAtomistAutomationClient,

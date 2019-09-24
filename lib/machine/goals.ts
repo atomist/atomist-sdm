@@ -52,8 +52,6 @@ export const orgVisualizerStagingDeploy = new KubernetesDeploy({ environment: "t
 export const productionDeploy = new KubernetesDeploy({ environment: "production" });
 export const orgVisualizerProductionDeploy = new KubernetesDeploy({ environment: "production" });
 export const productionDeployWithApproval = new KubernetesDeploy({ environment: "production", approval: true });
-export const globalStagingDeploy = new KubernetesDeploy({ environment: "testing", approval: true });
-export const globalProductionDeploy = new KubernetesDeploy({ environment: "production" });
 export const demoProductionDeploy = new KubernetesDeploy({ environment: "production" });
 export const integrationProductionDeploy = new KubernetesDeploy({ environment: "production" });
 
@@ -256,20 +254,11 @@ export const DemoKubernetesDeployGoals = goals("Demo Deploy")
     .plan(DockerGoals)
     .plan(demoProductionDeploy).after(dockerBuild, autoCodeInspection);
 
-// Docker build and testing and production kubernetes deploy to global cluster
-export const GlobalKubernetesDeployGoals = goals("Global Deploy")
-    .plan(DockerGoals)
-    .plan(globalStagingDeploy).after(dockerBuild)
-    .plan(globalProductionDeploy).after(globalStagingDeploy, autoCodeInspection)
-    .plan(releaseDocker, releaseDocs, releaseVersion).after(globalProductionDeploy)
-    .plan(releaseChangelog).after(releaseVersion)
-    .plan(releaseTag).after(releaseDocker);
-
 // Docker build and testing and multiple production kubernetes deploys
 export const MultiKubernetesDeployGoals = goals("Multiple Deploy")
     .plan(DockerGoals)
     .plan(stagingDeploy).after(dockerBuild)
-    .plan(demoProductionDeploy, globalProductionDeploy, integrationProductionDeploy, productionDeploy).after(stagingDeploy, autoCodeInspection)
+    .plan(demoProductionDeploy, integrationProductionDeploy, productionDeploy).after(stagingDeploy, autoCodeInspection)
     .plan(release, releaseDocker, releaseDocs, releaseVersion).after(stagingDeploy)
     .plan(releaseChangelog).after(releaseVersion)
     .plan(releaseTag).after(release, releaseDocker);

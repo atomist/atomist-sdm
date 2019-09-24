@@ -46,10 +46,6 @@ export const orgVisualizerKubernetesDeployRegistrationProd = {
     name: "@atomist/k8s-sdm_k8s-internal-production",
     applicationData: orgVisualizerJobKubernetesApplicationData,
 };
-export const kubernetesDeployRegistrationGlobal = {
-    name: "@atomist/k8s-sdm_k8s-customer-global",
-    applicationData: kubernetesApplicationData,
-};
 export const kubernetesDeployRegistrationDemo = {
     name: "@atomist/k8s-sdm_k8s-internal-demo",
     applicationData: kubernetesApplicationData,
@@ -87,7 +83,7 @@ export async function kubernetesApplicationData(
         } else {
             replicas = 3;
         }
-    } else if (ns === "sdm" && (name === "atomist-sdm" || name === "global-sdm")) {
+    } else if (ns === "sdm" && name === "atomist-sdm") {
         replicas = 3;
     }
     const ingress = ingressFromGoal(name, ns);
@@ -141,7 +137,7 @@ export async function orgVisualizerJobKubernetesApplicationData(
  */
 function namespaceFromGoal(goalEvent: SdmGoalEvent): string {
     const name = goalEvent.repo.name;
-    if (name === "atomist-internal-sdm" || name === "global-sdm") {
+    if (name === "atomist-internal-sdm") {
         if (goalEvent.environment === StagingEnvironment.replace(/\/$/, "")) {
             return "sdm-testing";
         } else if (goalEvent.environment === ProductionEnvironment.replace(/\/$/, "")) {

@@ -144,26 +144,9 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
 
     version.with({
         ...NodeDefaultOptions,
-        name: "npm-versioner-global-sdm",
-        versioner: async (sdmGoal, p, log) => {
-            const branch = sdmGoal.branch;
-            if (branch === sdmGoal.push.repo.defaultBranch) {
-                sdmGoal.branch = "global";
-            }
-            let v: string;
-            try {
-                v = await NodeProjectVersioner(sdmGoal, p, log);
-            } finally {
-                sdmGoal.branch = branch;
-            }
-            return v;
-        },
-        pushTest: allSatisfied(IsNode, isOrgNamed("atomisthq"), isNamed("global-sdm")),
-    }).with({
-        ...NodeDefaultOptions,
         name: "npm-versioner",
         versioner: NodeProjectVersioner,
-        pushTest: allSatisfied(IsNode, not(allSatisfied(isOrgNamed("atomisthq"), isNamed("global-sdm")))),
+        pushTest: IsNode,
     });
 
     autofix.with(AddAtomistTypeScriptHeader)
@@ -234,22 +217,13 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
 
     dockerBuild.with({
         ...NodeDefaultOptions,
-        name: "npm-docker-build-global-sdm",
-        options: {
-            ...sdm.configuration.sdm.docker.t095sffbk as DockerOptions,
-            push: true,
-            builder: "docker",
-        },
-        pushTest: allSatisfied(IsNode, HasDockerfile, isOrgNamed("atomisthq"), isNamed("global-sdm")),
-    }).with({
-        ...NodeDefaultOptions,
         name: "npm-docker-build",
         options: {
             ...sdm.configuration.sdm.docker.hub as DockerOptions,
             push: true,
             builder: "docker",
         },
-        pushTest: allSatisfied(IsNode, HasDockerfile, not(allSatisfied(isOrgNamed("atomisthq"), isNamed("global-sdm")))),
+        pushTest: allSatisfied(IsNode, HasDockerfile),
     })
         .withProjectListener(NpmNodeModulesCacheRestore)
         .withProjectListener(NpmVersionProjectListener)

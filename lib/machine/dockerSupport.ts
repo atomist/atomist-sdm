@@ -35,7 +35,6 @@ import {
     SpawnWatchCommand,
 } from "../support/executeLogger";
 import {
-    isNamed,
     isOrgNamed,
 } from "../support/identityPushTests";
 import {
@@ -72,16 +71,10 @@ export function addDockerSupport(sdm: SoftwareDeliveryMachine): SoftwareDelivery
 
     releaseDocker
         .with({
-            name: "docker-release-global-sdm",
-            goalExecutor: executeReleaseDocker(sdm.configuration.sdm.docker.t095sffbk as DockerOptions),
-            pushTest: allSatisfied(IsNode, HasDockerfile, allSatisfied(isOrgNamed("atomisthq"), isNamed("global-sdm"))),
-            logInterpreter: LogSuppressor,
-        })
-        .with({
             name: "docker-release",
             goalExecutor: executeReleaseDocker(sdm.configuration.sdm.docker.hub as DockerOptions),
             pushTest: anySatisfied(
-                allSatisfied(anySatisfied(IsNode, IsMaven), HasDockerfile, not(allSatisfied(isOrgNamed("atomisthq"), isNamed("global-sdm")))),
+                allSatisfied(anySatisfied(IsNode, IsMaven), HasDockerfile),
                 IsGoMakeDocker,
             ),
             logInterpreter: LogSuppressor,
