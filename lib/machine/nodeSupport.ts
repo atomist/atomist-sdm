@@ -167,6 +167,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
     build.with({
         ...NodeDefaultOptions,
         name: "npm-run-build",
+        // tslint:disable-next-line:deprecation
         builder: nodeBuilder({ command: "npm", args: ["run", "compile"] }, { command: "npm", args: ["test"] }),
         pushTest: NodeDefaultOptions.pushTest,
     })
