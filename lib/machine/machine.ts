@@ -205,6 +205,18 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         sync: true,
         isolated: true,
     }).withProjectListener(webNpmCacheRestore);
+    const publishWebAppToS1 = new PublishToS3({
+        environment: StagingEnvironment,
+        uniqueName: "publish web-app to s1 s3 bucket",
+        bucketName: "s1.atomist.services",
+        region: "us-east-1",
+        filesToPublish: ["public/**/*"],
+        pathTranslation: filepath => filepath.replace("public/", ""),
+        pathToIndex: "public/",
+        sync: true,
+        isolated: true,
+        preApprovalRequired: true,
+    }).withProjectListener(webNpmCacheRestore);
     const publishWebAppToProduction = new PublishToS3({
         environment: ProductionEnvironment,
         uniqueName: "publish web-app to production s3 bucket",
@@ -220,7 +232,8 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
     const WebAppGoals = goals("Web App Build with Release")
         .plan(WebBuildGoals)
         .plan(publishWebAppToStaging).after(buildWeb)
-        .plan(publishWebAppToProduction).after(publishWebAppToStaging)
+        .plan(publishWebAppToS1).after(publishWebAppToStaging)
+        .plan(publishWebAppToProduction).after(publishWebAppToS1)
         .plan(releaseTag, releaseVersion).after(publishWebAppToProduction);
 
     const publishWebSiteToStaging = new PublishToS3({
