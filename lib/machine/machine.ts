@@ -208,7 +208,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
     const publishWebAppToS1 = new PublishToS3({
         environment: StagingEnvironment,
         uniqueName: "publish web-app to s1 s3 bucket",
-        bucketName: "s1.atomist.services",
+        bucketName: "s1.atomist.com",
         region: "us-east-1",
         filesToPublish: ["public/**/*"],
         pathTranslation: filepath => filepath.replace("public/", ""),
