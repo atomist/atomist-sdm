@@ -162,10 +162,10 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         uniqueName: "publish s3-images to s3",
         bucketName: "images-atomist",
         region: "us-east-1",
-        filesToPublish: ["images/**/*"],
+        filesToPublish: ["public/**/*"],
         paramsExt: ".s3params",
-        pathTranslation: filepath => filepath.replace("images/", ""),
-        pathToIndex: "images/",
+        pathTranslation: filepath => filepath.replace("public/", ""),
+        pathToIndex: "public/",
         sync: true,
         isolated: true,
     });
