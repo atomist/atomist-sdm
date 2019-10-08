@@ -283,7 +283,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             .itMeans("Manifesto repository")
             .setGoals(goals("No Goals")),
 
-        whenPushSatisfies(isOrgNamed("atomist"), isNamed("atomist-client-sdm"))
+        whenPushSatisfies(isOrgNamed("atomist"), isNamed("atomist-client-sdm", "atomist-web-sdm"))
             .itMeans("Client SDM repository")
             .setGoals(goals("No Goals")),
 
