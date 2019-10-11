@@ -26,7 +26,7 @@
     "@atomist/automation-client-ext-dashboard": "^1.0.2",
     "@atomist/automation-client-ext-humio": "^0.2.1",
     "@atomist/automation-client-ext-raven": "^1.0.2",
-    "@atomist/microgrammar": "^1.2.0",
+    "@atomist/microgrammar": "^1.2.1",
     "@atomist/sdm": "1.7.1-master.20190920014925",
     "@atomist/sdm-core": "1.7.1-master.20190921200901",
     "@atomist/sdm-pack-analysis": "^1.0.0",
