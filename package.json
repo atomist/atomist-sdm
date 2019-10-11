@@ -22,7 +22,7 @@
     "url": "https://github.com/atomist/atomist-sdm/issues"
   },
   "dependencies": {
-    "@atomist/automation-client": "^1.7.0",
+    "@atomist/automation-client": "1.8.0-master.20191011083000",
     "@atomist/automation-client-ext-dashboard": "^1.0.2",
     "@atomist/automation-client-ext-humio": "1.0.3-master.20190319172045",
     "@atomist/automation-client-ext-raven": "^1.0.2",
