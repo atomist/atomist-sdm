@@ -405,7 +405,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
     addGoSupport(sdm);
 
     sdm.addExtensionPacks(
-        k8sGoalSchedulingSupport(),
+        // k8sGoalSchedulingSupport(),
         changelogSupport(),
         BadgeSupport,
         buildAwareCodeTransforms({
@@ -432,7 +432,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         }),
     );
 
-    sdm.addGoalApprovalRequestVoter(gitHubTeamVoter("atomist-automation"));
+    // sdm.addGoalApprovalRequestVoter(gitHubTeamVoter("atomist-automation"));
     sdm.addGoalApprovalRequestVoter(async gi => {
         if (gi.goal.data) {
             const data = JSON.parse(gi.goal.data);
