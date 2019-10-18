@@ -21,7 +21,6 @@ import {
 import {
     allSatisfied,
     anySatisfied,
-    gitHubTeamVoter,
     GoalApprovalRequestVote,
     goals,
     IsDeployEnabled,
@@ -405,7 +404,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
     addGoSupport(sdm);
 
     sdm.addExtensionPacks(
-        // k8sGoalSchedulingSupport(),
+        k8sGoalSchedulingSupport(),
         changelogSupport(),
         BadgeSupport,
         buildAwareCodeTransforms({
