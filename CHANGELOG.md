@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 -   Add GCS goal cache support. [#201](https://github.com/atomist/atomist-sdm/issues/201)
+-   Add tsx files as a material change. [#215](https://github.com/atomist/atomist-sdm/issues/215)
 
 ### Removed
 
