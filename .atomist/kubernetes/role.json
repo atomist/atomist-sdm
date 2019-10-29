@@ -6,6 +6,11 @@
       "verbs": ["get", "list", "watch", "create", "update", "patch", "delete"]
     },
     {
+      "apiGroups": [""],
+      "resources": ["pods/log"],
+      "verbs": ["get", "list", "watch"]
+    },
+    {
       "apiGroups": ["batch"],
       "resources": ["jobs"],
       "verbs": ["get", "list", "watch", "create", "update", "patch", "delete"]
