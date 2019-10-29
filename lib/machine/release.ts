@@ -34,7 +34,7 @@ import {
     SdmGoalEvent,
 } from "@atomist/sdm";
 import {
-    createTagForStatus,
+    createGitTag,
     github,
     ProjectIdentifier,
     readSdmVersion,
@@ -128,7 +128,7 @@ export function executeReleaseTag(): ExecuteGoal {
             const version = await rwlcVersion(gi);
             const versionRelease = releaseOrPreRelease(version, gi);
             if (!(gi.goalEvent.push.after.tags || []).some(t => t.name === versionRelease)) {
-                await createTagForStatus(id, gi.goalEvent.sha, gi.goalEvent.push.after.message, versionRelease, credentials);
+                await createGitTag({ project: p, message: gi.goalEvent.push.after.message, tag: versionRelease, log: gi.progressLog });
             }
             const commitTitle = gi.goalEvent.push.after.message.replace(/\n[\S\s]*/, "");
             const release = {
