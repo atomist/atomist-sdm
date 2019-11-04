@@ -16,24 +16,13 @@
 
 import {
     GitProject,
-    isLocalProject,
-    logger,
-    NoParameters,
     Project,
-    ProjectReview,
     RemoteRepoRef,
-    ReviewComment,
-    Severity,
-    SourceLocation,
 } from "@atomist/automation-client";
 import {
-    CodeInspection,
-    CodeInspectionRegistration,
-    execPromise,
     ExecuteGoalResult,
     GoalInvocation,
     LogSuppressor,
-    pushTest,
     spawnLog,
     SpawnLogCommand,
     SpawnLogOptions,
@@ -47,10 +36,6 @@ import {
     spawnBuilder,
 } from "@atomist/sdm-pack-build";
 import { IsNode } from "@atomist/sdm-pack-node";
-import * as fs from "fs-extra";
-import * as path from "path";
-
-export const IsJekyllProject = pushTest("IsJekyllProject", inv => inv.project.hasFile("_config.yml"));
 
 const webNpmCommands: SpawnLogCommand[] = [
     { command: "npm", args: ["ci"], options: { env: { ...process.env, NODE_ENV: "development" }, log: undefined } },
@@ -99,49 +84,8 @@ export const webNpmCacheRestore = cacheRestore({
     pushTest: IsNode,
 });
 
-const webJekyllCacheClassifier = "jekyll-cache";
-export const webJekyllCachePut = cachePut({
-    entries: [
-        { classifier: webJekyllCacheClassifier, pattern: { directory: "_site" } },
-    ],
-    pushTest: IsJekyllProject,
-});
-export const webJekyllCacheRestore = cacheRestore({
-    entries: [{ classifier: webJekyllCacheClassifier }],
-    onCacheMiss: {
-        name: "cache-miss-jekyll-build",
-        listener: jekyllBuild,
-    },
-    pushTest: IsJekyllProject,
-});
-
-const jekyllCommands: SpawnLogCommand[] = [
-    { command: "bundle", args: ["install"] },
-    { command: "bundle", args: ["exec", "jekyll", "build"] },
-];
-
-export async function jekyllBuild(project: GitProject, goalInvocation: GoalInvocation): Promise<ExecuteGoalResult> {
-    const siteRoot = await project.getFile("_site/index.html");
-    if (siteRoot) {
-        return { code: 0, message: `Site directory already exists in '${project.baseDir}'` };
-    }
-    const log = goalInvocation.progressLog;
-    const opts: SpawnLogOptions = {
-        cwd: project.baseDir,
-        log,
-    };
-    for (const spawnCmd of jekyllCommands) {
-        const res = await spawnLog(spawnCmd.command, spawnCmd.args, opts);
-        if (res.code) {
-            log.write(`Command failed '${spawnCommandString(spawnCmd)}': ${res.error.message}`);
-            return res;
-        }
-    }
-    return { code: 0, message: "Site Jekyll build successful" };
-}
-
 export function webBuilder(sitePath: string): Builder {
-    const commands = (sitePath === "_site") ? jekyllCommands : webNpmCommands;
+    const commands = webNpmCommands;
     return spawnBuilder({
         name: "WebBuilder",
         commands,
@@ -167,95 +111,4 @@ export function webBuilder(sitePath: string): Builder {
             };
         },
     });
-}
-
-/**
- * Run htmltest on `sitePath` and convert results to ReviewComments.
- *
- * @param sitePath path to web site relative to root of project
- * @return function that takes a project and returns ReviewComments
- */
-function runHtmltest(sitePath: string): CodeInspection<ProjectReview, NoParameters> {
-    return async (p, papi) => {
-        const review: ProjectReview = { repoId: p.id, comments: [] };
-        if (!isLocalProject(p)) {
-            const msg = `Project ${p.name} is not a local project`;
-            logger.error(msg);
-            papi.progressLog.write(msg);
-            return review;
-        }
-        if (!await p.hasDirectory(sitePath)) {
-            const msg = `Project ${p.name} does not have site directory '${sitePath}'`;
-            logger.error(msg);
-            papi.progressLog.write(msg);
-            return review;
-        }
-        const absPath = path.join(p.baseDir, sitePath);
-        logger.debug(`Running htmltest on ${absPath}`);
-        try {
-            const result = await execPromise("htmltest", [absPath]);
-            if (result.stderr) {
-                logger.debug(`htmltest standard error from ${p.name}: ${result.stderr}`);
-            }
-            logger.debug(`htmltest standard output from ${p.name}: ${result.stdout}`);
-            const comments = await mapHtmltestResultsToReviewComments(p.baseDir);
-            review.comments.push(...comments);
-        } catch (e) {
-            const msg = `Failed to run htmltest: ${e.message}`;
-            logger.error(msg);
-            papi.progressLog.write(msg);
-        }
-        return review;
-    };
-}
-
-export function htmltestInspection(sitePath: string): CodeInspectionRegistration<ProjectReview, NoParameters> {
-    return {
-        name: "RunHtmltest",
-        description: "Run htmltest on website",
-        inspection: runHtmltest(sitePath),
-        intent: "htmltest",
-        repoFilter: r => r.owner === "atomisthq" && r.repo === "web-site",
-    };
-}
-
-/**
- * Convert the output of htmltest to proper ReviewComments.  If any
- * part of the process fails, an empty array is returned.
- *
- * @param output string output from running `htmltest` that will be parsed and converted.
- * @return htmltest errors and warnings as ReviewComments
- */
-export async function mapHtmltestResultsToReviewComments(baseDir: string): Promise<ReviewComment[]> {
-    const logFile = path.join(baseDir, "tmp", ".htmltest", "htmltest.log");
-    const logContent = await fs.readFile(logFile, "utf8");
-    return htmltestLogToReviewComments(logContent);
-}
-
-/**
- * Testable unit of mapHtmltestResultsToReviewComments.
- */
-export function htmltestLogToReviewComments(logContent: string): ReviewComment[] {
-    const resultRegExp = /^(.*?)\s+---\s+(.*?)\s+-->\s+(.*?)$/;
-    const comments = logContent.split("\n").map(r => r.trim()).filter(r => r).map(r => {
-        const matches = resultRegExp.exec(r);
-        if (!matches) {
-            logger.warn(`Failed to match htmltest output line '${r}': ${JSON.stringify(matches)}`);
-            return undefined;
-        }
-        const [description, sourcePath, detail] = matches.slice(1);
-        const sourceLocation: SourceLocation = {
-            path: sourcePath,
-            offset: 0,
-        };
-        const severity: Severity = (description === "target does not exist") ? "error" : "warn";
-        return {
-            category: "htmltest",
-            detail,
-            severity,
-            sourceLocation,
-            subcategory: description,
-        };
-    }).filter(r => r);
-    return comments;
 }

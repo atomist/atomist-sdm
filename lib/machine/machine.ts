@@ -135,11 +135,7 @@ import { IsReleaseCommit } from "./release";
 import { addTeamPolicies } from "./teamPolicies";
 import { addFileVersionerSupport } from "./version";
 import {
-    htmltestInspection,
-    IsJekyllProject,
     webBuilder,
-    webJekyllCachePut,
-    webJekyllCacheRestore,
     webNpmCachePut,
     webNpmCacheRestore,
 } from "./webSupport";
@@ -157,36 +153,13 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
     demoProductionDeploy.with(kubernetesDeployRegistrationDemo);
     integrationProductionDeploy.with(kubernetesDeployRegistrationIntegration);
 
-    const publishS3Images = new PublishToS3({
-        uniqueName: "publish s3-images to s3",
-        bucketName: "images-atomist",
-        region: "us-east-1",
-        filesToPublish: ["public/**/*"],
-        paramsExt: ".s3params",
-        pathTranslation: filepath => filepath.replace("public/", ""),
-        pathToIndex: "public/",
-        sync: true,
-        isolated: true,
-    });
-    const S3ImagesGoals = goals("Image Publish").plan(publishS3Images);
-
-    autoCodeInspection
-        .with(htmltestInspection("_site"))
-        .withProjectListener(webJekyllCacheRestore);
-
     const buildWeb = new Build()
         .with({
             name: "web-npm-build",
             builder: webBuilder("public"),
             pushTest: IsNode,
         })
-        .with({
-            name: "web-jekyll-build",
-            builder: webBuilder("_site"),
-            pushTest: IsJekyllProject,
-        })
-        .withProjectListener(webNpmCachePut)
-        .withProjectListener(webJekyllCachePut);
+        .withProjectListener(webNpmCachePut);
     const WebBuildGoals = goals("Web Build")
         .plan(autofix)
         .plan(version).after(autofix)
@@ -235,36 +208,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         .plan(publishWebAppToProduction).after(publishWebAppToS1)
         .plan(releaseTag, releaseVersion).after(publishWebAppToProduction);
 
-    const publishWebSiteToStaging = new PublishToS3({
-        environment: StagingEnvironment,
-        uniqueName: "publish web-site to staging s3 bucket",
-        bucketName: "www-staging.atomist.services",
-        region: "us-east-1",
-        filesToPublish: ["_site/**/*"],
-        paramsExt: ".s3params",
-        pathTranslation: filepath => filepath.replace("_site/", ""),
-        pathToIndex: "_site/",
-        sync: true,
-        isolated: true,
-    }).withProjectListener(webJekyllCacheRestore);
-    const publishWebSiteToProduction = new PublishToS3({
-        environment: ProductionEnvironment,
-        uniqueName: "publish web-site to production s3 bucket",
-        bucketName: "atomist.com",
-        region: "us-east-1",
-        filesToPublish: ["_site/**/*"],
-        paramsExt: ".s3params",
-        pathTranslation: filepath => filepath.replace("_site/", ""),
-        pathToIndex: "_site/",
-        sync: true,
-        isolated: true,
-        preApprovalRequired: true,
-    }).withProjectListener(webJekyllCacheRestore);
-    const WebSiteGoals = goals("Web Site Build with Release")
-        .plan(WebBuildGoals)
-        .plan(publishWebSiteToStaging).after(buildWeb)
-        .plan(publishWebSiteToProduction).after(publishWebSiteToStaging)
-        .plan(releaseTag, releaseVersion).after(publishWebSiteToProduction);
+    const NoGoals = goals("No Goals");
 
     const sdm = createSoftwareDeliveryMachine({
         name: "Atomist Software Delivery Machine",
@@ -272,44 +216,41 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
     },
 
         whenPushSatisfies(isOrgNamed("atomist-playground"))
-            .setGoals(goals("No Goals")),
+            .setGoals(NoGoals),
 
         whenPushSatisfies(isOrgNamed("atomist-seeds"), not(nameMatches(/sdm/)))
             .itMeans("Non-Atomist seed")
-            .setGoals(goals("No Goals")),
+            .setGoals(NoGoals),
 
         whenPushSatisfies(isOrgNamed("sdd-manifesto"), isNamed("manifesto", "manifesto-app"))
             .itMeans("Manifesto repository")
-            .setGoals(goals("No Goals")),
+            .setGoals(NoGoals),
 
         whenPushSatisfies(IsReleaseCommit)
             .itMeans("Release commit")
-            .setGoals(goals("No Goals")),
+            .setGoals(NoGoals),
 
         whenPushSatisfies(IsNode, IsInLocalMode)
             .itMeans("Node repository in local mode")
             .setGoals(LocalGoals),
 
-        whenPushSatisfies(isOrgNamed("atomisthq"), isNamed("s3-images"), ToDefaultBranch)
-            .itMeans("Images Site Deploy")
-            .setGoals(S3ImagesGoals),
+        whenPushSatisfies(isOrgNamed("atomisthq"), isNamed("s3-images", "web-site"))
+            .itMeans("Built by atomist-web-sdm")
+            .setGoals(NoGoals),
         whenPushSatisfies(isOrgNamed("atomisthq"), isNamed("web-app"), ToDefaultBranch)
             .itMeans("Web App Deploy")
             .setGoals(WebAppGoals),
-        whenPushSatisfies(isOrgNamed("atomisthq"), isNamed("web-site"), ToDefaultBranch)
-            .itMeans("Web Site Deploy")
-            .setGoals(WebSiteGoals),
-        whenPushSatisfies(isOrgNamed("atomisthq"), isNamed("web-app", "web-site"))
+        whenPushSatisfies(isOrgNamed("atomisthq"), isNamed("web-app"))
             .itMeans("Web Build")
             .setGoals(WebBuildGoals),
 
         whenPushSatisfies(not(isSdmEnabled(configuration.name)), isTeam(AtomistHQWorkspace))
             .itMeans("Disabled repository in atomisthq workspace")
-            .setGoals(goals("No Goals")),
+            .setGoals(NoGoals),
 
         whenPushSatisfies(isTeam(AtomistHQWorkspace), nameMatches(/poc-sdm/))
             .itMeans("POC SDM in atomisthq")
-            .setGoals(goals("No Goals")),
+            .setGoals(NoGoals),
 
         whenPushSatisfies(isTeam(AtomistCustomerWorkspace), nameMatches(/poc-sdm/))
             .itMeans("POC SDM in atomist-customer")
