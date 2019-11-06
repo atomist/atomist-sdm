@@ -39,7 +39,6 @@ import {
     ProjectIdentifier,
     readSdmVersion,
 } from "@atomist/sdm-core";
-import * as _ from "lodash";
 import * as semver from "semver";
 import {
     ExecuteLogger,
@@ -81,7 +80,7 @@ export function releaseOrPreRelease(version: string, gi: GoalInvocation): string
 }
 
 function preReleaseVersion(gi: GoalInvocation): string | undefined {
-    const tags = _.get(gi, "goalEvent.push.after.tags") || [];
+    const tags = gi.goalEvent.push?.after?.tags || [];
     const tag = tags.find(t => {
         if (isNextVersion(t.name)) {
             return true;

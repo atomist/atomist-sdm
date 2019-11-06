@@ -22,7 +22,6 @@ import {
     pushTest,
     PushTest,
 } from "@atomist/sdm";
-import * as _ from "lodash";
 
 const FilesWithExtensionToWatch = ["ts", "tsx", "json", "graphql"];
 const FilesToWatch = [
@@ -53,7 +52,7 @@ export const MaterialChangeToNodeRepo: PushTest = pushTest("Material change to N
         logger.debug("Change is material on %j: changed files=[%s]", pci.id, changedFiles.join(","));
         return true;
     }
-    const repoName: string = _.get(pci, "push.repo.name");
+    const repoName: string = pci?.push?.repo?.name;
     if (repoName === "developer-tutorials") {
         return true;
     }

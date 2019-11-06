@@ -27,8 +27,8 @@
     "@atomist/automation-client-ext-humio": "^0.2.1",
     "@atomist/automation-client-ext-raven": "^1.0.2",
     "@atomist/microgrammar": "^1.2.1",
-    "@atomist/sdm": "^1.8.0-execute-goal-result.20191029193519",
-    "@atomist/sdm-core": "^1.8.0-progress-log-close-206.20191030142114",
+    "@atomist/sdm": "^1.8.0-master.20191102194220",
+    "@atomist/sdm-core": "^1.8.0-master.20191104170555",
     "@atomist/sdm-pack-analysis": "^1.0.0",
     "@atomist/sdm-pack-build": "1.0.7-master.20191011105702",
     "@atomist/sdm-pack-changelog": "1.0.3-master.20190530031834",
@@ -58,9 +58,9 @@
     "minimatch": "^3.0.4",
     "semver": "^6.1.0",
     "spdx-license-list": "^6.0.0",
-    "tslint": "^5.20.0",
+    "tslint": "^5.20.1",
     "typedoc": "^0.15.0",
-    "typescript": "^3.6.4"
+    "typescript": "^3.7.2"
   },
   "devDependencies": {
     "@atomist/sdm-local": "^1.2.1",
@@ -73,7 +73,7 @@
     "prettier": "^1.14.2",
     "rimraf": "^2.6.2",
     "supervisor": "^0.12.0",
-    "ts-node": "^8.3.0"
+    "ts-node": "^8.4.1"
   },
   "directories": {
     "test": "test"

@@ -58,7 +58,7 @@ export function addTeamPolicies(sdm: SoftwareDeliveryMachine<SoftwareDeliveryMac
     // Check case of commit message; they should use upper case too
     pushImpact.withListener(async l => {
         const violations = l.push.commits.filter(c => !isUpperCase(c.message) || titleEndsWithPeriod(c.message));
-        const screenName = _.get(l.push, "after.committer.person.chatId.screenName");
+        const screenName = l.push.after?.committer?.person?.chatId?.screenName;
         if (screenName && violations.length > 0) {
             await warnAboutInvalidCommitMessages(sdm, l, violations, screenName);
         }
@@ -86,8 +86,8 @@ The following ${commits.length > 1 ? "commits" : "commit"} in ${
 
 ${commits.map(c => `${codeLine(c.sha.slice(0, 7))} ${truncateCommitMessage(c.message, pushImpactListenerInvocation.push.repo)}`).join("\n")}`,
         pushImpactListenerInvocation.context, {
-            footer: `${sdm.configuration.name}:${sdm.configuration.version}`,
-        });
+        footer: `${sdm.configuration.name}:${sdm.configuration.version}`,
+    });
     await pushImpactListenerInvocation.context.messageClient.addressUsers(
         msg,
         screenName,
