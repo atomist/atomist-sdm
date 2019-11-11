@@ -25,12 +25,10 @@ import {
     goals,
     IsDeployEnabled,
     not,
-    ProductionEnvironment,
     slackFooter,
     slackQuestionMessage,
     SoftwareDeliveryMachine,
     SoftwareDeliveryMachineConfiguration,
-    StagingEnvironment,
     ToDefaultBranch,
     whenPushSatisfies,
 } from "@atomist/sdm";
@@ -45,7 +43,6 @@ import {
     notificationSupport,
 } from "@atomist/sdm-core";
 import {
-    Build,
     buildAwareCodeTransforms,
 } from "@atomist/sdm-pack-build";
 import { changelogSupport } from "@atomist/sdm-pack-changelog/lib/changelog";
@@ -55,7 +52,6 @@ import {
     IsAtomistAutomationClient,
     IsNode,
 } from "@atomist/sdm-pack-node";
-import { PublishToS3 } from "@atomist/sdm-pack-s3";
 import {
     IsMaven,
     MaterialChangeToJavaRepo,
@@ -85,8 +81,6 @@ import { MaterialChangeToNodeRepo } from "../support/materialChangeToNodeRepo";
 import { addDockerSupport } from "./dockerSupport";
 import { addGithubSupport } from "./githubSupport";
 import {
-    autoCodeInspection,
-    autofix,
     build,
     BuildGoals,
     BuildReleaseGoals,
@@ -108,13 +102,9 @@ import {
     orgVisualizerStagingDeploy,
     productionDeploy,
     productionDeployWithApproval,
-    releaseTag,
-    releaseVersion,
     SimpleDockerReleaseGoals,
     SimplifiedKubernetesDeployGoals,
     stagingDeploy,
-    tag,
-    version,
 } from "./goals";
 import {
     addGoSupport,
@@ -134,11 +124,6 @@ import { addNodeSupport } from "./nodeSupport";
 import { IsReleaseCommit } from "./release";
 import { addTeamPolicies } from "./teamPolicies";
 import { addFileVersionerSupport } from "./version";
-import {
-    webBuilder,
-    webNpmCachePut,
-    webNpmCacheRestore,
-} from "./webSupport";
 
 const AtomistHQWorkspace = "T095SFFBK";
 const AtomistCustomerWorkspace = "A62C8F8L8";
@@ -152,61 +137,6 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
     productionDeployWithApproval.with(kubernetesDeployRegistrationProd);
     demoProductionDeploy.with(kubernetesDeployRegistrationDemo);
     integrationProductionDeploy.with(kubernetesDeployRegistrationIntegration);
-
-    const buildWeb = new Build()
-        .with({
-            name: "web-npm-build",
-            builder: webBuilder("public"),
-            pushTest: IsNode,
-        })
-        .withProjectListener(webNpmCachePut);
-    const WebBuildGoals = goals("Web Build")
-        .plan(autofix)
-        .plan(version).after(autofix)
-        .plan(buildWeb).after(version)
-        .plan(autoCodeInspection, tag).after(buildWeb);
-
-    const publishWebAppToStaging = new PublishToS3({
-        environment: StagingEnvironment,
-        uniqueName: "publish web-app to staging s3 bucket",
-        bucketName: "app-staging.atomist.services",
-        region: "us-east-1",
-        filesToPublish: ["public/**/*"],
-        pathTranslation: filepath => filepath.replace("public/", ""),
-        pathToIndex: "public/",
-        sync: true,
-        isolated: true,
-    }).withProjectListener(webNpmCacheRestore);
-    const publishWebAppToS1 = new PublishToS3({
-        environment: StagingEnvironment,
-        uniqueName: "publish web-app to s1 s3 bucket",
-        bucketName: "s1.atomist.com",
-        region: "us-east-1",
-        filesToPublish: ["public/**/*"],
-        pathTranslation: filepath => filepath.replace("public/", ""),
-        pathToIndex: "public/",
-        sync: true,
-        isolated: true,
-        preApprovalRequired: true,
-    }).withProjectListener(webNpmCacheRestore);
-    const publishWebAppToProduction = new PublishToS3({
-        environment: ProductionEnvironment,
-        uniqueName: "publish web-app to production s3 bucket",
-        bucketName: "app.atomist.com",
-        region: "us-east-1",
-        filesToPublish: ["public/**/*"],
-        pathTranslation: filepath => filepath.replace("public/", ""),
-        pathToIndex: "public/",
-        sync: true,
-        isolated: true,
-        preApprovalRequired: true,
-    }).withProjectListener(webNpmCacheRestore);
-    const WebAppGoals = goals("Web App Build with Release")
-        .plan(WebBuildGoals)
-        .plan(publishWebAppToStaging).after(buildWeb)
-        .plan(publishWebAppToS1).after(publishWebAppToStaging)
-        .plan(publishWebAppToProduction).after(publishWebAppToS1)
-        .plan(releaseTag, releaseVersion).after(publishWebAppToProduction);
 
     const NoGoals = goals("No Goals");
 
@@ -234,15 +164,9 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             .itMeans("Node repository in local mode")
             .setGoals(LocalGoals),
 
-        whenPushSatisfies(isOrgNamed("atomisthq"), isNamed("s3-images", "web-site"))
+        whenPushSatisfies(isOrgNamed("atomisthq"), isNamed("s3-images", "web-app", "web-site"))
             .itMeans("Built by atomist-web-sdm")
             .setGoals(NoGoals),
-        whenPushSatisfies(isOrgNamed("atomisthq"), isNamed("web-app"), ToDefaultBranch)
-            .itMeans("Web App Deploy")
-            .setGoals(WebAppGoals),
-        whenPushSatisfies(isOrgNamed("atomisthq"), isNamed("web-app"))
-            .itMeans("Web Build")
-            .setGoals(WebBuildGoals),
 
         whenPushSatisfies(not(isSdmEnabled(configuration.name)), isTeam(AtomistHQWorkspace))
             .itMeans("Disabled repository in atomisthq workspace")
