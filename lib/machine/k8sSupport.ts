@@ -77,7 +77,7 @@ export async function kubernetesApplicationData(
     let replicas = 1;
     if (ns === "production") {
         if (name === "lifecycle-automation") {
-            replicas = 6;
+            replicas = 20;
         } else if (name === "aspect-sdm") {
             replicas = 10;
         } else {
