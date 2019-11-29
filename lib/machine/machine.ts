@@ -201,7 +201,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         // Simplified deployment goal set for atomist-sdm, k8-automation; we are skipping
         // testing for these and deploying straight into their respective namespaces
         whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, IsAtomistAutomationClient,
-            isNamed("atomist-sdm", "atomist-client-sdm", "atomist-web-sdm", "docs-sdm", "manifesto-sdm"))
+            isNamed("atomist-sdm", "atomist-client-sdm", "atomist-web-sdm", "docs-sdm", "manifesto-sdm", "catalog-sdm"))
             .itMeans("Simplified Deploy")
             .setGoals(SimplifiedKubernetesDeployGoals),
 
