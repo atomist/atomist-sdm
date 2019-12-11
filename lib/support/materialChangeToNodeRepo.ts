@@ -23,7 +23,7 @@ import {
     PushTest,
 } from "@atomist/sdm";
 
-const FilesWithExtensionToWatch = ["ts", "tsx", "json", "graphql"];
+const FilesWithExtensionToWatch = ["ts", "tsx", "json", "graphql", "yaml", "yml"];
 const FilesToWatch = [
     "Dockerfile",
     ".gitattributes",
