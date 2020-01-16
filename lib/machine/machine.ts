@@ -148,6 +148,9 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         whenPushSatisfies(isOrgNamed("atomist-playground"))
             .setGoals(NoGoals),
 
+        whenPushSatisfies(isOrgNamed("atomist-skills"))
+            .setGoals(NoGoals),
+
         whenPushSatisfies(isOrgNamed("atomist-seeds"), not(nameMatches(/sdm/)))
             .itMeans("Non-Atomist seed")
             .setGoals(NoGoals),
