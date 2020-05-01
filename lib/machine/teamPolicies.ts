@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-    HandlerResult,
-    Issue,
-    ProjectOperationCredentials,
-    RemoteRepoRef,
-    Success,
-} from "@atomist/automation-client";
+import { Success } from "@atomist/automation-client";
 import {
     PushFields,
     PushImpactListenerInvocation,
@@ -28,10 +22,7 @@ import {
     SoftwareDeliveryMachine,
     SoftwareDeliveryMachineConfiguration,
 } from "@atomist/sdm";
-import {
-    github,
-    truncateCommitMessage,
-} from "@atomist/sdm-core";
+import { truncateCommitMessage } from "@atomist/sdm-core";
 import {
     bold,
     codeLine,
@@ -44,16 +35,6 @@ import {
 } from "./goals";
 
 export function addTeamPolicies(sdm: SoftwareDeliveryMachine<SoftwareDeliveryMachineConfiguration>): void {
-
-    // Upper case the title of a new issue
-    sdm.addNewIssueListener(async l => {
-        return upperCaseTitle(l.issue, l.credentials, l.id);
-    });
-
-    // Upper case the title of a new pull request
-    sdm.addPullRequestListener(async l => {
-        return upperCaseTitle(l.pullRequest, l.credentials, l.id);
-    });
 
     // Check case of commit message; they should use upper case too
     pushImpact.withListener(async l => {
@@ -94,20 +75,6 @@ ${commits.map(c => `${codeLine(c.sha.slice(0, 7))} ${truncateCommitMessage(c.mes
         {
             id: `team_policies/commit_messages/${pushImpactListenerInvocation.push.after.sha}`,
         });
-}
-
-async function upperCaseTitle(issueOrPr: { title?: string, body?: string, number?: number },
-                              credentials: string | ProjectOperationCredentials,
-                              rr: RemoteRepoRef): Promise<HandlerResult> {
-    const title = issueOrPr.title;
-    if (!isUpperCase(title)) {
-        const newIssue: Issue = {
-            title: _.upperFirst(title),
-            body: issueOrPr.body,
-        };
-        await github.updateIssue(credentials, rr, issueOrPr.number, newIssue);
-    }
-    return Success;
 }
 
 function isUpperCase(message: string | undefined): boolean {
