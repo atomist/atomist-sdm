@@ -30,7 +30,6 @@ import {
 } from "@atomist/automation-client";
 import {
     allSatisfied,
-    ApproveGoalIfErrorComments,
     ExecuteGoal,
     ExecuteGoalResult,
     GoalInvocation,
@@ -52,7 +51,6 @@ import {
     DockerOptions,
     HasDockerfile,
 } from "@atomist/sdm-pack-docker";
-import { singleIssuePerCategoryManaging } from "@atomist/sdm-pack-issue";
 import {
     AddThirdPartyLicenseAutofix,
     DevelopmentEnvOptions,
@@ -61,7 +59,6 @@ import {
     nodeBuilder,
     NodeProjectIdentifier,
     NodeProjectVersioner,
-    npmAuditInspection,
     NpmNodeModulesCachePut,
     NpmNodeModulesCacheRestore,
     NpmOptions,
@@ -69,7 +66,6 @@ import {
     NpmVersionProjectListener,
     PackageLockUrlRewriteAutofix,
     TslintAutofix,
-    TslintInspection,
     TypeScriptCompileCachePut,
     TypeScriptCompileCacheRestore,
 } from "@atomist/sdm-pack-node";
@@ -109,7 +105,6 @@ import { TryToUpdateDependency } from "../transform/tryToUpdateDependency";
 import { UpdatePackageAuthor } from "../transform/updatePackageAuthor";
 import { UpdatePackageVersion } from "../transform/updatePackageVersion";
 import {
-    autoCodeInspection,
     autofix,
     build,
     dockerBuild,
@@ -173,12 +168,6 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
     })
         .withProjectListener(NpmNodeModulesCacheRestore)
         .withProjectListener(TypeScriptCompileCachePut);
-
-    autoCodeInspection.with(TslintInspection)
-        .with(npmAuditInspection())
-        .withProjectListener(NpmNodeModulesCacheRestore)
-        .withListener(singleIssuePerCategoryManaging(sdm.configuration.name, false, () => true))
-        .withListener(ApproveGoalIfErrorComments);
 
     publish.with({
         ...NodeDefaultOptions,
