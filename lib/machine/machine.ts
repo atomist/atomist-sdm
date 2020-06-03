@@ -45,7 +45,6 @@ import {
 import {
     buildAwareCodeTransforms,
 } from "@atomist/sdm-pack-build";
-import { changelogSupport } from "@atomist/sdm-pack-changelog/lib/changelog";
 import { HasDockerfile } from "@atomist/sdm-pack-docker";
 import { issueSupport } from "@atomist/sdm-pack-issue";
 import {
@@ -273,7 +272,6 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
 
     sdm.addExtensionPacks(
         k8sGoalSchedulingSupport(),
-        changelogSupport(),
         BadgeSupport,
         buildAwareCodeTransforms({
             buildGoal: build,
