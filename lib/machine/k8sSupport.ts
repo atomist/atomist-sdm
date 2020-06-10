@@ -87,15 +87,18 @@ export async function kubernetesApplicationData(
         replicas = 3;
     }
     const ingress = ingressFromGoal(name, ns);
-    const baseApp = {
+    return {
         ...app,
         name,
         ns,
         port,
-        replicas,
+        deploymentSpec: {
+            spec: {
+                replicas,
+            },
+        },
         ...ingress,
     };
-    return baseApp;
 }
 
 /**
@@ -119,14 +122,17 @@ export async function orgVisualizerJobKubernetesApplicationData(
 
     app.deploymentSpec.spec.template.spec.containers[0].env.push({ name: "ATOMIST_ORG_VISUALIZER_MODE", value: "job" });
 
-    const baseApp = {
+    return {
         ...app,
         name,
         ns,
         port,
-        replicas,
+        deploymentSpec: {
+            spec: {
+                replicas,
+            },
+        },
     };
-    return baseApp;
 }
 
 /**
@@ -167,15 +173,6 @@ function namespaceFromGoal(goalEvent: SdmGoalEvent): string {
 export function ingressFromGoal(repo: string, ns: string): Partial<KubernetesApplication> | undefined {
     let host: string;
     let path: string;
-    const ingressSpec = {
-        metadata: {
-            annotations: {
-                "kubernetes.io/ingress.class": "nginx",
-                "nginx.ingress.kubernetes.io/client-body-buffer-size": "1m",
-            },
-        },
-    };
-    const tail = (ns === "production") ? "com" : "services";
     if (repo === "card-automation") {
         host = "pusher";
         path = "/";
@@ -194,10 +191,25 @@ export function ingressFromGoal(repo: string, ns: string): Partial<KubernetesApp
     } else {
         return undefined;
     }
+    const tail = (ns === "production") ? "com" : "services";
+    host = `${host}.atomist.${tail}`;
+    const secretName = (ns === "production") ? `star-atomist-${tail}` : `atomist-${tail}-tls`;
     return {
-        host: `${host}.atomist.${tail}`,
-        ingressSpec,
+        ingressSpec: {
+            metadata: {
+                annotations: {
+                    "kubernetes.io/ingress.class": "nginx",
+                    "nginx.ingress.kubernetes.io/client-body-buffer-size": "1m",
+                },
+            },
+            spec: {
+                rules: [{ host }],
+                tls: [{
+                    hosts: [host],
+                    secretName,
+                }],
+            },
+        },
         path,
-        tlsSecret: `star-atomist-${tail}`,
     };
 }

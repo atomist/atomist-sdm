@@ -48,7 +48,11 @@ describe("k8sSupport", () => {
                 name: "rocknroll",
                 port: undefined,
                 ns: "default",
-                replicas: 1,
+                deploymentSpec: {
+                    spec: {
+                        replicas: 1,
+                    },
+                },
             };
             assert.deepStrictEqual(d, e);
         });
@@ -69,7 +73,11 @@ describe("k8sSupport", () => {
                 name: "rocknroll",
                 port: 8080,
                 ns: "default",
-                replicas: 1,
+                deploymentSpec: {
+                    spec: {
+                        replicas: 1,
+                    },
+                },
             };
             assert.deepStrictEqual(d, e);
         });
@@ -90,7 +98,11 @@ describe("k8sSupport", () => {
                 name: "rocknroll",
                 port: undefined,
                 ns: "testing",
-                replicas: 1,
+                deploymentSpec: {
+                    spec: {
+                        replicas: 1,
+                    },
+                },
             };
             assert.deepStrictEqual(d, e);
         });
@@ -111,7 +123,11 @@ describe("k8sSupport", () => {
                 name: "rocknroll",
                 port: undefined,
                 ns: "production",
-                replicas: 3,
+                deploymentSpec: {
+                    spec: {
+                        replicas: 3,
+                    },
+                },
             };
             assert.deepStrictEqual(d, e);
         });
@@ -134,7 +150,11 @@ describe("k8sSupport", () => {
                 name: "atomist-sdm",
                 port: 2866,
                 ns: "sdm",
-                replicas: 3,
+                deploymentSpec: {
+                    spec: {
+                        replicas: 3,
+                    },
+                },
             };
             assert.deepStrictEqual(d, e);
         });
@@ -157,7 +177,11 @@ describe("k8sSupport", () => {
                 name: "atomist-internal-sdm",
                 port: 2866,
                 ns: "sdm-testing",
-                replicas: 1,
+                deploymentSpec: {
+                    spec: {
+                        replicas: 1,
+                    },
+                },
             };
             assert.deepStrictEqual(d, e);
         });
@@ -180,8 +204,11 @@ describe("k8sSupport", () => {
                 name: "card-automation",
                 port: 2866,
                 ns: "testing",
-                replicas: 1,
-                host: "pusher.atomist.services",
+                deploymentSpec: {
+                    spec: {
+                        replicas: 1,
+                    },
+                },
                 ingressSpec: {
                     metadata: {
                         annotations: {
@@ -189,9 +216,15 @@ describe("k8sSupport", () => {
                             "nginx.ingress.kubernetes.io/client-body-buffer-size": "1m",
                         },
                     },
+                    spec: {
+                        rules: [{ host: "pusher.atomist.services" }],
+                        tls: [{
+                            hosts: ["pusher.atomist.services"],
+                            secretName: "atomist-services-tls",
+                        }],
+                    },
                 },
                 path: "/",
-                tlsSecret: "star-atomist-services",
             };
             assert.deepStrictEqual(d, e);
         });
@@ -214,8 +247,11 @@ describe("k8sSupport", () => {
                 name: "intercom-automation",
                 port: 2866,
                 ns: "production",
-                replicas: 3,
-                host: "intercom.atomist.com",
+                deploymentSpec: {
+                    spec: {
+                        replicas: 3,
+                    },
+                },
                 ingressSpec: {
                     metadata: {
                         annotations: {
@@ -223,9 +259,15 @@ describe("k8sSupport", () => {
                             "nginx.ingress.kubernetes.io/client-body-buffer-size": "1m",
                         },
                     },
+                    spec: {
+                        rules: [{ host: "intercom.atomist.com" }],
+                        tls: [{
+                            hosts: ["intercom.atomist.com"],
+                            secretName: "star-atomist-com",
+                        }],
+                    },
                 },
                 path: "/",
-                tlsSecret: "star-atomist-com",
             };
             assert.deepStrictEqual(d, e);
         });
@@ -238,13 +280,10 @@ describe("k8sSupport", () => {
             const r = "card-automation";
             const n = "production";
             const i = ingressFromGoal(r, n);
-            assert(i.host === "pusher.atomist.com");
             assert(i.path === "/");
-            assert(i.tlsSecret === "star-atomist-com");
             const s = { name: r, ...i };
             const e = {
                 name: r,
-                host: "pusher.atomist.com",
                 ingressSpec: {
                     metadata: {
                         annotations: {
@@ -252,9 +291,15 @@ describe("k8sSupport", () => {
                             "nginx.ingress.kubernetes.io/client-body-buffer-size": "1m",
                         },
                     },
+                    spec: {
+                        rules: [{ host: "pusher.atomist.com" }],
+                        tls: [{
+                            hosts: ["pusher.atomist.com"],
+                            secretName: "star-atomist-com",
+                        }],
+                    },
                 },
                 path: "/",
-                tlsSecret: "star-atomist-com",
             };
             assert.deepStrictEqual(s, e);
         });
@@ -263,9 +308,25 @@ describe("k8sSupport", () => {
             const r = "card-automation";
             const n = "testing";
             const i = ingressFromGoal(r, n);
-            assert(i.host === "pusher.atomist.services");
-            assert(i.path === "/");
-            assert(i.tlsSecret === "star-atomist-services");
+            const e = {
+                ingressSpec: {
+                    metadata: {
+                        annotations: {
+                            "kubernetes.io/ingress.class": "nginx",
+                            "nginx.ingress.kubernetes.io/client-body-buffer-size": "1m",
+                        },
+                    },
+                    spec: {
+                        rules: [{ host: "pusher.atomist.services" }],
+                        tls: [{
+                            hosts: ["pusher.atomist.services"],
+                            secretName: "atomist-services-tls",
+                        }],
+                    },
+                },
+                path: "/",
+            };
+            assert.deepStrictEqual(i, e);
         });
 
         it("should return undefined", () => {
@@ -283,7 +344,6 @@ describe("k8sSupport", () => {
             const n = "testing";
             const i = ingressFromGoal(r, n);
             const e = {
-                host: "intercom.atomist.services",
                 ingressSpec: {
                     metadata: {
                         annotations: {
@@ -291,9 +351,15 @@ describe("k8sSupport", () => {
                             "nginx.ingress.kubernetes.io/client-body-buffer-size": "1m",
                         },
                     },
+                    spec: {
+                        rules: [{ host: "intercom.atomist.services" }],
+                        tls: [{
+                            hosts: ["intercom.atomist.services"],
+                            secretName: "atomist-services-tls",
+                        }],
+                    },
                 },
                 path: "/",
-                tlsSecret: "star-atomist-services",
             };
             assert.deepStrictEqual(i, e);
         });
@@ -303,7 +369,6 @@ describe("k8sSupport", () => {
             const n = "production";
             const i = ingressFromGoal(r, n);
             const e = {
-                host: "intercom.atomist.com",
                 ingressSpec: {
                     metadata: {
                         annotations: {
@@ -311,9 +376,15 @@ describe("k8sSupport", () => {
                             "nginx.ingress.kubernetes.io/client-body-buffer-size": "1m",
                         },
                     },
+                    spec: {
+                        rules: [{ host: "intercom.atomist.com" }],
+                        tls: [{
+                            hosts: ["intercom.atomist.com"],
+                            secretName: "star-atomist-com",
+                        }],
+                    },
                 },
                 path: "/",
-                tlsSecret: "star-atomist-com",
             };
             assert.deepStrictEqual(i, e);
         });
@@ -323,7 +394,6 @@ describe("k8sSupport", () => {
             const n = "testing";
             const i = ingressFromGoal(r, n);
             const e = {
-                host: "badge.atomist.services",
                 ingressSpec: {
                     metadata: {
                         annotations: {
@@ -331,9 +401,15 @@ describe("k8sSupport", () => {
                             "nginx.ingress.kubernetes.io/client-body-buffer-size": "1m",
                         },
                     },
+                    spec: {
+                        rules: [{ host: "badge.atomist.services" }],
+                        tls: [{
+                            hosts: ["badge.atomist.services"],
+                            secretName: "atomist-services-tls",
+                        }],
+                    },
                 },
                 path: "/",
-                tlsSecret: "star-atomist-services",
             };
             assert.deepStrictEqual(i, e);
         });
@@ -343,7 +419,6 @@ describe("k8sSupport", () => {
             const n = "production";
             const i = ingressFromGoal(r, n);
             const e = {
-                host: "badge.atomist.com",
                 ingressSpec: {
                     metadata: {
                         annotations: {
@@ -351,9 +426,15 @@ describe("k8sSupport", () => {
                             "nginx.ingress.kubernetes.io/client-body-buffer-size": "1m",
                         },
                     },
+                    spec: {
+                        rules: [{ host: "badge.atomist.com" }],
+                        tls: [{
+                            hosts: ["badge.atomist.com"],
+                            secretName: "star-atomist-com",
+                        }],
+                    },
                 },
                 path: "/",
-                tlsSecret: "star-atomist-com",
             };
             assert.deepStrictEqual(i, e);
         });
