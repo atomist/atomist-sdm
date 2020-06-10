@@ -132,6 +132,57 @@ describe("k8sSupport", () => {
             assert.deepStrictEqual(d, e);
         });
 
+        it("should retain deployment spec", async () => {
+            const a: KubernetesApplication = {
+                deploymentSpec: {
+                    spec: {
+                        template: {
+                            spec: {
+                                containers: [
+                                    {
+                                        env: [
+                                            { name: "HOME", value: "/away" },
+                                        ],
+                                    },
+                                ],
+                            },
+                        },
+                    },
+                },
+            } as any;
+            const p: GitProject = InMemoryProject.of() as any;
+            const g: KubernetesDeploy = {} as any;
+            const v: SdmGoalEvent = {
+                environment: "testing",
+                repo: {
+                    name: "rocknroll",
+                },
+            } as any;
+            const d = await kubernetesApplicationData(a, p, g, v);
+            const e = {
+                name: "rocknroll",
+                port: undefined,
+                ns: "default",
+                deploymentSpec: {
+                    spec: {
+                        replicas: 1,
+                        template: {
+                            spec: {
+                                containers: [
+                                    {
+                                        env: [
+                                            { name: "HOME", value: "/away" },
+                                        ],
+                                    },
+                                ],
+                            },
+                        },
+                    },
+                },
+            };
+            assert.deepStrictEqual(d, e);
+        });
+
         it("should detect atomist-sdm", async () => {
             const a: KubernetesApplication = {} as any;
             const p: GitProject = InMemoryProject.of(

@@ -29,6 +29,7 @@ import {
 } from "@atomist/sdm-pack-k8s";
 import { IsAtomistAutomationClient } from "@atomist/sdm-pack-node";
 import { IsMaven } from "@atomist/sdm-pack-spring";
+import * as _ from "lodash";
 
 export const kubernetesDeployRegistrationStaging = {
     name: "@atomist/k8s-sdm_k8s-internal-staging",
@@ -86,17 +87,14 @@ export async function kubernetesApplicationData(
     } else if (ns === "sdm" && name === "atomist-sdm") {
         replicas = 3;
     }
+    const deploymentSpec = _.merge({}, app.deploymentSpec, { spec: { replicas } });
     const ingress = ingressFromGoal(name, ns);
     return {
         ...app,
         name,
         ns,
         port,
-        deploymentSpec: {
-            spec: {
-                replicas,
-            },
-        },
+        deploymentSpec,
         ...ingress,
     };
 }
@@ -120,18 +118,15 @@ export async function orgVisualizerJobKubernetesApplicationData(
         replicas = 10;
     }
 
-    app.deploymentSpec.spec.template.spec.containers[0].env.push({ name: "ATOMIST_ORG_VISUALIZER_MODE", value: "job" });
+    const deploymentSpec = _.merge({}, app.deploymentSpec, { spec: { replicas } });
+    deploymentSpec.spec.template.spec.containers[0].env.push({ name: "ATOMIST_ORG_VISUALIZER_MODE", value: "job" });
 
     return {
         ...app,
         name,
         ns,
         port,
-        deploymentSpec: {
-            spec: {
-                replicas,
-            },
-        },
+        deploymentSpec,
     };
 }
 
