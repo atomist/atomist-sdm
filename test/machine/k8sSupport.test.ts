@@ -125,7 +125,7 @@ describe("k8sSupport", () => {
                 ns: "production",
                 deploymentSpec: {
                     spec: {
-                        replicas: 3,
+                        replicas: 2,
                     },
                 },
             };
@@ -203,7 +203,7 @@ describe("k8sSupport", () => {
                 ns: "sdm",
                 deploymentSpec: {
                     spec: {
-                        replicas: 3,
+                        replicas: 1,
                     },
                 },
             };
@@ -300,7 +300,7 @@ describe("k8sSupport", () => {
                 ns: "production",
                 deploymentSpec: {
                     spec: {
-                        replicas: 3,
+                        replicas: 2,
                     },
                 },
                 ingressSpec: {

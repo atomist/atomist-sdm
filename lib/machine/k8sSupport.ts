@@ -82,10 +82,8 @@ export async function kubernetesApplicationData(
         } else if (name === "aspect-sdm") {
             replicas = 10;
         } else {
-            replicas = 3;
+            replicas = 2;
         }
-    } else if (ns === "sdm" && name === "atomist-sdm") {
-        replicas = 3;
     }
     const deploymentSpec = _.merge({}, app.deploymentSpec, { spec: { replicas } });
     const ingress = ingressFromGoal(name, ns);
