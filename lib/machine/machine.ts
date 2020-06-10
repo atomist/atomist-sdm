@@ -216,7 +216,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         // Deploy k8s-sdm to all the clusters
         whenPushSatisfies(anySatisfied(
             allSatisfied(IsNode, HasDockerfile, ToDefaultBranch, IsAtomistAutomationClient, isNamed("k8s-sdm")),
-            allSatisfied(IsGoMakeDocker, ToDefaultBranch, isNamed("k8vent")),
+            allSatisfied(IsGoMakeDocker, ToDefaultBranch, isNamed("k8svent")),
         ))
             .itMeans("Multi Cluster Deploy")
             .setGoals(MultiKubernetesDeployGoals),

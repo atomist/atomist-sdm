@@ -47,7 +47,7 @@ import (
 )
 
 const (
-	pkg     = "k8vent"
+	pkg     = "k8svent"
 	version = "0.11.0"
 )
 
@@ -72,7 +72,7 @@ GO_FLAGS = -v
 GO_ARGS = $(shell go list ./...)
 GO_BUILD_ARGS =
 
-TARGET = k8vent
+TARGET = k8svent
 DOCKER_TARGET = docker/$(TARGET)
 DOCKER_IMAGE = atomist/$(TARGET)
 DOCKER_VERSION = 0.11.0
@@ -148,7 +148,7 @@ import (
 )
 
 const (
-	pkg     = "k8vent"
+	pkg     = "k8svent"
 	version = "0.11.1"
 )
 
@@ -175,7 +175,7 @@ GO_FLAGS = -v
 GO_ARGS = $(shell go list ./...)
 GO_BUILD_ARGS =
 
-TARGET = k8vent
+TARGET = k8svent
 DOCKER_TARGET = docker/$(TARGET)
 DOCKER_IMAGE = atomist/$(TARGET)
 DOCKER_VERSION = 0.11.1
