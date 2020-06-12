@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install -y \
         bundler \
         zlib1g-dev \
         gradle \
+        docker.io \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -sfL https://dl.google.com/go/go1.14.4.linux-amd64.tar.gz | tar -C /usr/local -xzf -
