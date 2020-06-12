@@ -38,8 +38,6 @@ import { Builder } from "@atomist/sdm-pack-build";
 import {
     DockerOptions,
 } from "@atomist/sdm-pack-docker";
-import * as fs from "fs-extra";
-import * as path from "path";
 import * as semver from "semver";
 import {
     build,
@@ -158,50 +156,15 @@ export const goProjectIdentifier = async (p: Project) => {
     };
 };
 
-interface ProjectGoPath {
-    goPath: string;
-    goProjectDir: string;
-}
-
-function projectGoPath(project: GitProject): ProjectGoPath {
-    const goPath = path.join(project.baseDir, ".gosdm");
-    const goProjectDir = path.join(goPath, "src", "github.com", "atomist", project.name);
-    return { goPath, goProjectDir };
-}
-
 /**
- * Hack a GOPATH to work with the way the SDM checks projects out.
+ * Prepend Go bin to PATH.
  */
-export async function goPathHack(project: GitProject, goalInvocation: GoalInvocation): Promise<ExecuteGoalResult> {
-    const log = goalInvocation.progressLog;
-    const pgp = projectGoPath(project);
-    if (fs.existsSync(pgp.goProjectDir)) {
-        const msg = `Go project directory already exists: ${pgp.goProjectDir}`;
-        log.write(msg);
-        return { code: 0, message: msg };
-    }
-    try {
-        const projectCopyPath = project.baseDir + ".gosdm.tmp";
-        await fs.ensureDir(projectCopyPath);
-        await fs.copy(project.baseDir, projectCopyPath);
-        await fs.ensureDir(pgp.goProjectDir);
-        await fs.move(projectCopyPath, pgp.goProjectDir, { overwrite: true });
-    } catch (e) {
-        const msg = `Failed to create GOPATH directory tree for ${project.name}: ${e.message}`;
-        log.write(msg);
-        return { code: 1, message: msg };
-    }
-    const message = `Created GOPATH tree for ${project.name}: ${pgp.goProjectDir}`;
-    log.write(message);
-    return { code: 0, message };
+function goEnv(): NodeJS.ProcessEnv {
+    return {
+        ...process.env,
+        PATH: `/usr/local/go/bin:${process.env.PATH}`,
+    };
 }
-
-export const GoPathHack: GoalProjectListenerRegistration = {
-    name: "go path hack",
-    events: [GoalProjectListenerEvent.before],
-    listener: goPathHack,
-    pushTest: IsGoMake,
-};
 
 /**
  * Generic make executor for Go projects.  GoPathHack should be
@@ -210,7 +173,7 @@ export const GoPathHack: GoalProjectListenerRegistration = {
 async function goMake(p: GitProject, log: ProgressLog, args: string[] = []): Promise<SpawnLogResult> {
     const makeOptions: SpawnLogOptions = {
         cwd: p.baseDir,
-        env: { ...process.env, PATH: `/usr/local/go/bin:${process.env.PATH}` },
+        env: goEnv(),
         log,
     };
     log.write(`Running 'make' for ${p.name} in '${makeOptions.cwd}'`);
@@ -249,7 +212,7 @@ const GoBuilder: Builder = (goalInvocation: GoalInvocation, buildNo: string) => 
 const GoDockerBuild: GoalProjectListenerRegistration = {
     name: "go-make-docker",
     events: [GoalProjectListenerEvent.before],
-    listener: (p, gi) => spawnLog("make", ["docker-target"], { cwd: p.baseDir, log: gi.progressLog }),
+    listener: (p, gi) => spawnLog("make", ["docker-target"], { cwd: p.baseDir, env: goEnv(), log: gi.progressLog }),
     pushTest: IsGoMakeDocker,
 };
 
