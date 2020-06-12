@@ -210,7 +210,7 @@ export const GoPathHack: GoalProjectListenerRegistration = {
 async function goMake(p: GitProject, log: ProgressLog, args: string[] = []): Promise<SpawnLogResult> {
     const makeOptions: SpawnLogOptions = {
         cwd: p.baseDir,
-        env: { ...process.env, PATH: `/usr/local/bin/go:${process.env.PATH}` },
+        env: { ...process.env, PATH: `/usr/local/go/bin:${process.env.PATH}` },
         log,
     };
     log.write(`Running 'make' for ${p.name} in '${makeOptions.cwd}'`);
