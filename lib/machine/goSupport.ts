@@ -85,8 +85,7 @@ export function addGoSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMach
         name: "go-make-build",
         builder: GoBuilder,
         pushTest: IsGoMake,
-    })
-        .withProjectListener(GoPathHack);
+    });
 
     publish.with({
         name: "go-publish",
@@ -209,13 +208,12 @@ export const GoPathHack: GoalProjectListenerRegistration = {
  * executed before this.
  */
 async function goMake(p: GitProject, log: ProgressLog, args: string[] = []): Promise<SpawnLogResult> {
-    const pgp = projectGoPath(p);
     const makeOptions: SpawnLogOptions = {
-        cwd: pgp.goProjectDir,
-        env: { ...process.env, GOPATH: pgp.goPath },
+        cwd: p.baseDir,
+        env: { ...process.env, PATH: `/usr/local/bin/go:${process.env.PATH}` },
         log,
     };
-    log.write(`Running 'make' for ${p.name} in '${makeOptions.cwd}' with GOPATH='${makeOptions.env.GOPATH}'`);
+    log.write(`Running 'make' for ${p.name} in '${makeOptions.cwd}'`);
     const makeResult = await spawnLog("make", args, makeOptions);
     if (makeResult.code) {
         if (makeResult.error) {
@@ -224,7 +222,7 @@ async function goMake(p: GitProject, log: ProgressLog, args: string[] = []): Pro
             log.write(`Make failed for ${p.name}: ${makeResult.code}`);
         }
     } else {
-        log.write(`Successful 'make' invocation for ${p.name} in '${pgp.goProjectDir}' with GOPATH='${pgp.goPath}'`);
+        log.write(`Successful 'make' invocation for ${p.name}`);
     }
     return makeResult;
 }
