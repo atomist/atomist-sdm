@@ -166,7 +166,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             .itMeans("Node repository in local mode")
             .setGoals(LocalGoals),
 
-        whenPushSatisfies(isOrgNamed("atomisthq"), isNamed("s3-images", "web-app", "web-site"))
+        whenPushSatisfies(isOrgNamed("atomisthq"), isNamed("web-static", "web-app", "web-site"))
             .itMeans("Built by atomist-web-sdm")
             .setGoals(NoGoals),
 
