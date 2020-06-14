@@ -10,6 +10,8 @@ RUN apt-get update && apt-get install -y \
 
 RUN curl -sfL https://dl.google.com/go/go1.14.4.linux-amd64.tar.gz | tar -C /usr/local -xzf -
 
+RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | bash -s -- -b $(go env GOPATH)/bin v1.27.0
+
 ENV LEIN_ROOT true
 RUN curl -sfL -o /usr/local/bin/lein https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein \
     && chmod +x /usr/local/bin/lein
