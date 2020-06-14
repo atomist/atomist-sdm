@@ -214,10 +214,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             .setGoals(OrgVisualizerKubernetesDeployGoals),
 
         // Deploy k8s-sdm to all the clusters
-        whenPushSatisfies(anySatisfied(
-            allSatisfied(IsNode, HasDockerfile, ToDefaultBranch, IsAtomistAutomationClient, isNamed("k8s-sdm")),
-            allSatisfied(IsGoMakeDocker, ToDefaultBranch, isNamed("k8svent")),
-        ))
+        whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, IsAtomistAutomationClient, isNamed("k8s-sdm"))
             .itMeans("Multi Cluster Deploy")
             .setGoals(MultiKubernetesDeployGoals),
 
@@ -235,11 +232,11 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             .itMeans("Deploy")
             .setGoals(KubernetesDeployGoals),
 
-        whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch)
+        whenPushSatisfies(anySatisfied(IsNode, allSatisfied(IsGoMakeDocker, isNamed("k8svent"))), HasDockerfile, ToDefaultBranch)
             .itMeans("Docker Release Build")
             .setGoals(DockerReleaseGoals),
 
-        whenPushSatisfies(IsNode, HasDockerfile)
+        whenPushSatisfies(anySatisfied(IsNode, allSatisfied(IsGoMakeDocker, isNamed("k8svent"))), HasDockerfile)
             .itMeans("Docker Build")
             .setGoals(DockerGoals),
 
