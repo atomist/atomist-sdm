@@ -84,6 +84,10 @@ export async function kubernetesApplicationData(
         } else {
             replicas = 2;
         }
+    } else {
+        if (name === "lifecycle-automation") {
+            replicas = 0;
+        }
     }
     const deploymentSpec = _.merge({}, app.deploymentSpec, { spec: { replicas } });
     const ingress = ingressFromGoal(name, ns);
