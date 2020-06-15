@@ -19,8 +19,6 @@ import {
     guid,
 } from "@atomist/automation-client";
 import {
-    allSatisfied,
-    anySatisfied,
     GoalApprovalRequestVote,
     goals,
     IsDeployEnabled,
@@ -105,10 +103,6 @@ import {
     SimplifiedKubernetesDeployGoals,
     stagingDeploy,
 } from "./goals";
-import {
-    addGoSupport,
-    IsGoMakeDocker,
-} from "./goSupport";
 import { addHomebrewSupport } from "./homebrewSupport";
 import {
     kubernetesDeployRegistrationDemo,
@@ -232,11 +226,11 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             .itMeans("Deploy")
             .setGoals(KubernetesDeployGoals),
 
-        whenPushSatisfies(anySatisfied(IsNode, allSatisfied(IsGoMakeDocker, isNamed("k8svent"))), HasDockerfile, ToDefaultBranch)
+        whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch)
             .itMeans("Docker Release Build")
             .setGoals(DockerReleaseGoals),
 
-        whenPushSatisfies(anySatisfied(IsNode, allSatisfied(IsGoMakeDocker, isNamed("k8svent"))), HasDockerfile)
+        whenPushSatisfies(IsNode, HasDockerfile)
             .itMeans("Docker Build")
             .setGoals(DockerGoals),
 
@@ -265,7 +259,6 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
     addHomebrewSupport(sdm);
     addTeamPolicies(sdm);
     addFileVersionerSupport(sdm);
-    addGoSupport(sdm);
 
     sdm.addExtensionPacks(
         k8sGoalSchedulingSupport(),

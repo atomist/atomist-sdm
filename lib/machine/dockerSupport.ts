@@ -41,7 +41,6 @@ import {
     dockerBuild,
     releaseDocker,
 } from "./goals";
-import { IsGoMakeDocker } from "./goSupport";
 import {
     ProjectRegistryInfo,
     releaseOrPreRelease,
@@ -73,10 +72,7 @@ export function addDockerSupport(sdm: SoftwareDeliveryMachine): SoftwareDelivery
         .with({
             name: "docker-release",
             goalExecutor: executeReleaseDocker(sdm.configuration.sdm.docker.hub as DockerOptions),
-            pushTest: anySatisfied(
-                allSatisfied(anySatisfied(IsNode, IsMaven), HasDockerfile),
-                IsGoMakeDocker,
-            ),
+            pushTest: allSatisfied(anySatisfied(IsNode, IsMaven), HasDockerfile),
             logInterpreter: LogSuppressor,
         })
         .with({
