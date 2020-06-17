@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-    buttonForCommand,
-    guid,
-} from "@atomist/automation-client";
+import { buttonForCommand, guid } from "@atomist/automation-client";
 import {
     GoalApprovalRequestVote,
     goals,
@@ -40,40 +37,18 @@ import {
     k8sGoalSchedulingSupport,
     notificationSupport,
 } from "@atomist/sdm-core";
-import {
-    buildAwareCodeTransforms,
-} from "@atomist/sdm-pack-build";
+import { buildAwareCodeTransforms } from "@atomist/sdm-pack-build";
 import { HasDockerfile } from "@atomist/sdm-pack-docker";
 import { issueSupport } from "@atomist/sdm-pack-issue";
-import {
-    IsAtomistAutomationClient,
-    IsNode,
-} from "@atomist/sdm-pack-node";
-import {
-    IsMaven,
-    MaterialChangeToJavaRepo,
-} from "@atomist/sdm-pack-spring";
+import { IsAtomistAutomationClient, IsNode } from "@atomist/sdm-pack-node";
+import { IsMaven, MaterialChangeToJavaRepo } from "@atomist/sdm-pack-spring";
 import { isSdmEnabled } from "@atomist/sdm/lib/api-helper/pushtest/configuration/configurationTests";
-import {
-    bold,
-    channel,
-    codeLine,
-    italic,
-    url,
-} from "@atomist/slack-messages";
-import {
-    ApprovalCommand,
-    CancelApprovalCommand,
-} from "../command/approval";
+import { bold, channel, codeLine, italic, url } from "@atomist/slack-messages";
+import { ApprovalCommand, CancelApprovalCommand } from "../command/approval";
 import { BadgeSupport } from "../command/badge";
 import { GenerateChangelog } from "../command/changelog";
 import { CreateTag } from "../command/tag";
-import {
-    isNamed,
-    isOrgNamed,
-    isTeam,
-    nameMatches,
-} from "../support/identityPushTests";
+import { isNamed, isOrgNamed, isTeam, nameMatches } from "../support/identityPushTests";
 import { MaterialChangeToNodeRepo } from "../support/materialChangeToNodeRepo";
 import { addDockerSupport } from "./dockerSupport";
 import { addGithubSupport } from "./githubSupport";
@@ -99,7 +74,6 @@ import {
     orgVisualizerStagingDeploy,
     productionDeploy,
     productionDeployWithApproval,
-    SimpleDockerReleaseGoals,
     SimplifiedKubernetesDeployGoals,
     stagingDeploy,
 } from "./goals";
@@ -122,7 +96,6 @@ const AtomistHQWorkspace = "T095SFFBK";
 const AtomistCustomerWorkspace = "A62C8F8L8";
 
 export function machine(configuration: SoftwareDeliveryMachineConfiguration): SoftwareDeliveryMachine {
-
     stagingDeploy.with(kubernetesDeployRegistrationStaging);
     orgVisualizerStagingDeploy.with(orgVisualizerKubernetesDeployRegistrationStaging);
     productionDeploy.with(kubernetesDeployRegistrationProd);
@@ -133,16 +106,15 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
 
     const NoGoals = goals("No Goals");
 
-    const sdm = createSoftwareDeliveryMachine({
-        name: "Atomist Software Delivery Machine",
-        configuration,
-    },
+    const sdm = createSoftwareDeliveryMachine(
+        {
+            name: "Atomist Software Delivery Machine",
+            configuration,
+        },
 
-        whenPushSatisfies(isOrgNamed("atomist-playground"))
-            .setGoals(NoGoals),
+        whenPushSatisfies(isOrgNamed("atomist-playground")).setGoals(NoGoals),
 
-        whenPushSatisfies(isOrgNamed("atomist-skills"))
-            .setGoals(NoGoals),
+        whenPushSatisfies(isOrgNamed("atomist-skills")).setGoals(NoGoals),
 
         whenPushSatisfies(isOrgNamed("atomist-seeds"), not(nameMatches(/sdm/)))
             .itMeans("Non-Atomist seed")
@@ -152,13 +124,9 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             .itMeans("Manifesto repository")
             .setGoals(NoGoals),
 
-        whenPushSatisfies(IsReleaseCommit)
-            .itMeans("Release commit")
-            .setGoals(NoGoals),
+        whenPushSatisfies(IsReleaseCommit).itMeans("Release commit").setGoals(NoGoals),
 
-        whenPushSatisfies(IsNode, IsInLocalMode)
-            .itMeans("Node repository in local mode")
-            .setGoals(LocalGoals),
+        whenPushSatisfies(IsNode, IsInLocalMode).itMeans("Node repository in local mode").setGoals(LocalGoals),
 
         whenPushSatisfies(isOrgNamed("atomisthq"), isNamed("web-static", "web-app", "web-site"))
             .itMeans("Built by atomist-web-sdm")
@@ -182,9 +150,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             .setGoals(FixGoals),
 
         // Maven
-        whenPushSatisfies(IsMaven, not(MaterialChangeToJavaRepo))
-            .itMeans("No Material Change")
-            .setGoals(FixGoals),
+        whenPushSatisfies(IsMaven, not(MaterialChangeToJavaRepo)).itMeans("No Material Change").setGoals(FixGoals),
 
         whenPushSatisfies(IsMaven, MaterialChangeToJavaRepo, not(ToDefaultBranch))
             .itMeans("Build Java")
@@ -196,14 +162,18 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
 
         // Simplified deployment goal set for atomist-sdm, k8-automation; we are skipping
         // testing for these and deploying straight into their respective namespaces
-        whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, IsAtomistAutomationClient,
-            isNamed("atomist-sdm", "atomist-client-sdm", "atomist-web-sdm", "docs-sdm", "manifesto-sdm", "catalog-sdm"))
+        whenPushSatisfies(
+            IsNode,
+            HasDockerfile,
+            ToDefaultBranch,
+            IsAtomistAutomationClient,
+            isNamed("atomist-sdm", "atomist-client-sdm", "atomist-web-sdm", "docs-sdm", "manifesto-sdm", "catalog-sdm"),
+        )
             .itMeans("Simplified Deploy")
             .setGoals(SimplifiedKubernetesDeployGoals),
 
         // Deploy org-visualizer
-        whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, IsAtomistAutomationClient,
-            isNamed("aspect-sdm"))
+        whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, IsAtomistAutomationClient, isNamed("aspect-sdm"))
             .itMeans("Deploy")
             .setGoals(OrgVisualizerKubernetesDeployGoals),
 
@@ -213,8 +183,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             .setGoals(MultiKubernetesDeployGoals),
 
         // Deploy demo-sdm to demo cluster
-        whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, IsAtomistAutomationClient,
-            isNamed("demo-sdm"))
+        whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, IsAtomistAutomationClient, isNamed("demo-sdm"))
             .itMeans("Demo Cluster Deploy")
             .setGoals(DemoKubernetesDeployGoals),
 
@@ -230,27 +199,16 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             .itMeans("Docker Release Build")
             .setGoals(DockerReleaseGoals),
 
-        whenPushSatisfies(IsNode, HasDockerfile)
-            .itMeans("Docker Build")
-            .setGoals(DockerGoals),
-
-        whenPushSatisfies(HasDockerfile, isOrgNamed("atomist"))
-            .itMeans("Simple Docker Release Build")
-            .setGoals(SimpleDockerReleaseGoals),
+        whenPushSatisfies(IsNode, HasDockerfile).itMeans("Docker Build").setGoals(DockerGoals),
 
         whenPushSatisfies(IsNode, not(HasDockerfile), ToDefaultBranch)
             .itMeans("Release Build")
             .setGoals(BuildReleaseGoals),
 
-        whenPushSatisfies(IsNode, not(HasDockerfile))
-            .itMeans("Build")
-            .setGoals(BuildGoals),
+        whenPushSatisfies(IsNode, not(HasDockerfile)).itMeans("Build").setGoals(BuildGoals),
     );
 
-    sdm.addCommand(EnableDeploy)
-        .addCommand(DisableDeploy)
-        .addCommand(CreateTag)
-        .addCommand(GenerateChangelog);
+    sdm.addCommand(EnableDeploy).addCommand(DisableDeploy).addCommand(CreateTag).addCommand(GenerateChangelog);
 
     addGithubSupport(sdm);
     addDockerSupport(sdm);
@@ -267,7 +225,9 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             buildGoal: build,
             issueCreation: {
                 issueRouter: {
-                    raiseIssue: async () => { /* intentionally left empty */ },
+                    raiseIssue: async () => {
+                        /* intentionally left empty */
+                    },
                 },
             },
         }),
@@ -304,38 +264,39 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         }
 
         const msgId = guid();
-        const channelLink = (gi.goal.approval.channelId) ? ` \u00B7 ${channel(gi.goal.approval.channelId)}` : "";
-        const msg = slackQuestionMessage("Goal Approval", `Goal ${italic(gi.goal.url ? url(gi.goal.url, gi.goal.name) : gi.goal.name)} on ${
-            codeLine(gi.goal.sha.slice(0, 7))} of ${
-            bold(`${gi.goal.repo.owner}/${gi.goal.repo.name}/${gi.goal.branch}`)} requires your confirmation to approve`,
+        const channelLink = gi.goal.approval.channelId ? ` \u00B7 ${channel(gi.goal.approval.channelId)}` : "";
+        const msg = slackQuestionMessage(
+            "Goal Approval",
+            `Goal ${italic(gi.goal.url ? url(gi.goal.url, gi.goal.name) : gi.goal.name)} on ${codeLine(
+                gi.goal.sha.slice(0, 7),
+            )} of ${bold(
+                `${gi.goal.repo.owner}/${gi.goal.repo.name}/${gi.goal.branch}`,
+            )} requires your confirmation to approve`,
             {
-                actions: [buttonForCommand(
-                    { text: "Approve" },
-                    "ApproveSdmGoalCommand",
-                    {
+                actions: [
+                    buttonForCommand({ text: "Approve" }, "ApproveSdmGoalCommand", {
                         goalSetId: gi.goal.goalSetId,
                         goalUniqueName: gi.goal.uniqueName,
                         goalState: gi.goal.state,
                         msgId,
-                    }), buttonForCommand(
-                        { text: "Cancel" },
-                        "CancelApproveSdmGoalCommand",
-                        {
-                            goalSetId: gi.goal.goalSetId,
-                            goalUniqueName: gi.goal.uniqueName,
-                            goalState: gi.goal.state,
-                            msgId,
-                        })],
+                    }),
+                    buttonForCommand({ text: "Cancel" }, "CancelApproveSdmGoalCommand", {
+                        goalSetId: gi.goal.goalSetId,
+                        goalUniqueName: gi.goal.uniqueName,
+                        goalState: gi.goal.state,
+                        msgId,
+                    }),
+                ],
                 footer: `${slackFooter()} \u00B7 ${gi.goal.goalSetId.slice(0, 7)}${channelLink}`,
-            });
+            },
+        );
         await gi.context.messageClient.addressUsers(msg, gi.goal.approval.userId, { id: msgId });
         return {
             vote: GoalApprovalRequestVote.Abstain,
         };
     });
 
-    sdm.addCommand(ApprovalCommand)
-        .addCommand(CancelApprovalCommand);
+    sdm.addCommand(ApprovalCommand).addCommand(CancelApprovalCommand);
 
     return sdm;
 }
