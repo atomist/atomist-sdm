@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { buttonForCommand, guid } from "@atomist/automation-client";
+import {
+    buttonForCommand,
+    guid,
+} from "@atomist/automation-client";
 import {
     GoalApprovalRequestVote,
     goals,
@@ -40,15 +43,35 @@ import {
 import { buildAwareCodeTransforms } from "@atomist/sdm-pack-build";
 import { HasDockerfile } from "@atomist/sdm-pack-docker";
 import { issueSupport } from "@atomist/sdm-pack-issue";
-import { IsAtomistAutomationClient, IsNode } from "@atomist/sdm-pack-node";
-import { IsMaven, MaterialChangeToJavaRepo } from "@atomist/sdm-pack-spring";
+import {
+    IsAtomistAutomationClient,
+    IsNode,
+} from "@atomist/sdm-pack-node";
+import {
+    IsMaven,
+    MaterialChangeToJavaRepo,
+} from "@atomist/sdm-pack-spring";
 import { isSdmEnabled } from "@atomist/sdm/lib/api-helper/pushtest/configuration/configurationTests";
-import { bold, channel, codeLine, italic, url } from "@atomist/slack-messages";
-import { ApprovalCommand, CancelApprovalCommand } from "../command/approval";
+import {
+    bold,
+    channel,
+    codeLine,
+    italic,
+    url,
+} from "@atomist/slack-messages";
+import {
+    ApprovalCommand,
+    CancelApprovalCommand,
+} from "../command/approval";
 import { BadgeSupport } from "../command/badge";
 import { GenerateChangelog } from "../command/changelog";
 import { CreateTag } from "../command/tag";
-import { isNamed, isOrgNamed, isTeam, nameMatches } from "../support/identityPushTests";
+import {
+    isNamed,
+    isOrgNamed,
+    isTeam,
+    nameMatches,
+} from "../support/identityPushTests";
 import { MaterialChangeToNodeRepo } from "../support/materialChangeToNodeRepo";
 import { addDockerSupport } from "./dockerSupport";
 import { addGithubSupport } from "./githubSupport";
