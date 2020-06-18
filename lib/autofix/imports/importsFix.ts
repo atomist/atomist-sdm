@@ -15,7 +15,10 @@
  */
 
 import { projectUtils } from "@atomist/automation-client";
-import { AutofixRegistration } from "@atomist/sdm";
+import {
+    AutofixRegistration,
+    hasFile,
+} from "@atomist/sdm";
 
 /**
  * Sort and format TypeScipt imports in a standard way.
@@ -23,7 +26,9 @@ import { AutofixRegistration } from "@atomist/sdm";
  */
 export const TypeScriptImports: AutofixRegistration = {
     name: "TypeScript imports",
+    pushTest: hasFile("tslint.json"),
     transform: async p => {
+
         const regexp = new RegExp(`import\\s*?{([\\sa-zA-Z,-]*?)}\\s*from\\s*"([@\\S]*)";`, "gi");
         const files = await projectUtils.toPromise(p.streamFiles("**/*.ts"));
 
