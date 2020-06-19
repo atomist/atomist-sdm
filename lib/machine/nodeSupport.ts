@@ -43,14 +43,8 @@ import {
     SoftwareDeliveryMachine,
     spawnLog,
 } from "@atomist/sdm";
-import {
-    github,
-    ProjectIdentifier,
-} from "@atomist/sdm-core";
-import {
-    DockerOptions,
-    HasDockerfile,
-} from "@atomist/sdm-pack-docker";
+import { github, ProjectIdentifier } from "@atomist/sdm-core";
+import { DockerOptions, HasDockerfile } from "@atomist/sdm-pack-docker";
 import {
     AddThirdPartyLicenseAutofix,
     DevelopmentEnvOptions,
@@ -65,7 +59,6 @@ import {
     NpmProgressReporter,
     NpmVersionProjectListener,
     PackageLockUrlRewriteAutofix,
-    TslintAutofix,
     TypeScriptCompileCachePut,
     TypeScriptCompileCacheRestore,
 } from "@atomist/sdm-pack-node";
@@ -73,27 +66,12 @@ import { IsMaven } from "@atomist/sdm-pack-spring";
 import * as fs from "fs-extra";
 import * as path from "path";
 import { AddAtomistTypeScriptHeader } from "../autofix/addAtomistHeader";
-import { TypeScriptImports } from "../autofix/imports/importsFix";
 import { ReadmeSampleListingAutofix } from "../autofix/ReadmeSampleListingAutofix";
-import {
-    RenameTest,
-    RenameTestFix,
-} from "../autofix/test/testNamingFix";
-import {
-    UpdateSupportFilesAutofix,
-    UpdateSupportFilesTransform,
-} from "../autofix/updateSupportFiles";
+import { RenameTest, RenameTestFix } from "../autofix/test/testNamingFix";
+import { UpdateSupportFilesAutofix, UpdateSupportFilesTransform } from "../autofix/updateSupportFiles";
 import { deleteDistTagOnBranchDeletion } from "../event/deleteDistTagOnBranchDeletion";
-import {
-    executeLoggers,
-    gitExecuteLogger,
-    spawnExecuteLogger,
-    SpawnWatchCommand,
-} from "../support/executeLogger";
-import {
-    isNamed,
-    isOrgNamed,
-} from "../support/identityPushTests";
+import { executeLoggers, gitExecuteLogger, spawnExecuteLogger, SpawnWatchCommand } from "../support/executeLogger";
+import { isNamed, isOrgNamed } from "../support/identityPushTests";
 import { transformToProjectListener } from "../support/transformToProjectListener";
 import { dependenciesToPeerDependenciesTransform } from "../transform/dependenciesToPeerDependencies";
 import { RewriteImports } from "../transform/rewriteImports";
@@ -115,13 +93,7 @@ import {
     releaseVersion,
     version,
 } from "./goals";
-import {
-    executeReleaseVersion,
-    isNextVersion,
-    ProjectRegistryInfo,
-    releaseOrPreRelease,
-    rwlcVersion,
-} from "./release";
+import { executeReleaseVersion, isNextVersion, ProjectRegistryInfo, releaseOrPreRelease, rwlcVersion } from "./release";
 
 const NodeDefaultOptions = {
     pushTest: allSatisfied(IsNode, not(IsMaven)),
@@ -136,7 +108,6 @@ const NodeDefaultOptions = {
  * @return modified software delivery machine
  */
 export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMachine {
-
     version.with({
         ...NodeDefaultOptions,
         name: "npm-versioner",
@@ -144,9 +115,8 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         pushTest: IsNode,
     });
 
-    autofix.with(AddAtomistTypeScriptHeader)
-        .with(TslintAutofix)
-        .with(TypeScriptImports)
+    autofix
+        .with(AddAtomistTypeScriptHeader)
         .with(PackageLockUrlRewriteAutofix)
         .with(RenameTestFix)
         .with(AddThirdPartyLicenseAutofix)
@@ -159,62 +129,64 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
             events: [GoalProjectListenerEvent.before],
         });
 
-    build.with({
-        ...NodeDefaultOptions,
-        name: "npm-run-build",
-        // tslint:disable-next-line:deprecation
-        builder: nodeBuilder({ command: "npm", args: ["run", "compile"] }, { command: "npm", args: ["test"] }),
-        pushTest: NodeDefaultOptions.pushTest,
-    })
+    build
+        .with({
+            ...NodeDefaultOptions,
+            name: "npm-run-build",
+            // tslint:disable-next-line:deprecation
+            builder: nodeBuilder({ command: "npm", args: ["run", "compile"] }, { command: "npm", args: ["test"] }),
+            pushTest: NodeDefaultOptions.pushTest,
+        })
         .withProjectListener(NpmNodeModulesCacheRestore)
         .withProjectListener(TypeScriptCompileCachePut);
 
-    publish.with({
-        ...NodeDefaultOptions,
-        name: "npm-publish",
-        goalExecutor: executePublish(
-            NodeProjectIdentifier,
-            sdm.configuration.sdm.npm as NpmOptions,
-        ),
-    })
-        .withProjectListener(transformToProjectListener(
-            dependenciesToPeerDependenciesTransform(
-                /@atomist\/sdm.*/, /@atomist\/automation-client.*/),
-            "package.json rewrite",
-            allSatisfied(IsNode, isOrgNamed("atomist"), isNamed("uhura"))))
+    publish
+        .with({
+            ...NodeDefaultOptions,
+            name: "npm-publish",
+            goalExecutor: executePublish(NodeProjectIdentifier, sdm.configuration.sdm.npm as NpmOptions),
+        })
+        .withProjectListener(
+            transformToProjectListener(
+                dependenciesToPeerDependenciesTransform(/@atomist\/sdm.*/, /@atomist\/automation-client.*/),
+                "package.json rewrite",
+                allSatisfied(IsNode, isOrgNamed("atomist"), isNamed("uhura")),
+            ),
+        )
         .withProjectListener(NpmNodeModulesCacheRestore)
         .withProjectListener(NpmVersionProjectListener)
         .withProjectListener(TypeScriptCompileCacheRestore)
         .withProjectListener(transformToProjectListener(SourcesTransform, "package sources"));
 
-    publishWithApproval.with({
-        ...NodeDefaultOptions,
-        name: "npm-publish",
-        goalExecutor: executePublish(
-            NodeProjectIdentifier,
-            sdm.configuration.sdm.npm as NpmOptions,
-        ),
-    })
-        .withProjectListener(transformToProjectListener(
-            dependenciesToPeerDependenciesTransform(
-                /@atomist\/sdm.*/, /@atomist\/automation-client.*/),
-            "package.json rewrite",
-            allSatisfied(IsNode, isOrgNamed("atomist"), isNamed("uhura"))))
+    publishWithApproval
+        .with({
+            ...NodeDefaultOptions,
+            name: "npm-publish",
+            goalExecutor: executePublish(NodeProjectIdentifier, sdm.configuration.sdm.npm as NpmOptions),
+        })
+        .withProjectListener(
+            transformToProjectListener(
+                dependenciesToPeerDependenciesTransform(/@atomist\/sdm.*/, /@atomist\/automation-client.*/),
+                "package.json rewrite",
+                allSatisfied(IsNode, isOrgNamed("atomist"), isNamed("uhura")),
+            ),
+        )
         .withProjectListener(NpmNodeModulesCacheRestore)
         .withProjectListener(NpmVersionProjectListener)
         .withProjectListener(TypeScriptCompileCacheRestore)
         .withProjectListener(transformToProjectListener(SourcesTransform, "package sources"));
 
-    dockerBuild.with({
-        ...NodeDefaultOptions,
-        name: "npm-docker-build",
-        options: {
-            ...sdm.configuration.sdm.docker.hub as DockerOptions,
-            push: true,
-            builder: "docker",
-        },
-        pushTest: allSatisfied(IsNode, HasDockerfile),
-    })
+    dockerBuild
+        .with({
+            ...NodeDefaultOptions,
+            name: "npm-docker-build",
+            options: {
+                ...(sdm.configuration.sdm.docker.hub as DockerOptions),
+                push: true,
+                builder: "docker",
+            },
+            pushTest: allSatisfied(IsNode, HasDockerfile),
+        })
         .withProjectListener(NpmNodeModulesCacheRestore)
         .withProjectListener(NpmVersionProjectListener)
         .withProjectListener(TypeScriptCompileCacheRestore);
@@ -225,7 +197,8 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         goalExecutor: executeReleaseNpm(
             NodeProjectIdentifier,
             NpmReleasePreparations,
-            sdm.configuration.sdm.npm as NpmOptions),
+            sdm.configuration.sdm.npm as NpmOptions,
+        ),
     });
 
     releaseDocs.with({
@@ -240,9 +213,9 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         goalExecutor: executeReleaseVersion(NodeProjectIdentifier, npmIncrementPatch),
     });
 
-    sdm.addEvent(deleteDistTagOnBranchDeletion(
-        sdm.configuration.sdm.projectLoader,
-        sdm.configuration.sdm.npm as NpmOptions));
+    sdm.addEvent(
+        deleteDistTagOnBranchDeletion(sdm.configuration.sdm.projectLoader, sdm.configuration.sdm.npm as NpmOptions),
+    );
 
     sdm.addCodeTransformCommand(TryToUpdateAtomistDependencies)
         .addCodeTransformCommand(TryToUpdateDependency)
@@ -311,7 +284,7 @@ export async function downloadNpmPackage(p: GitProject, gi: GoalInvocation, v?: 
         logger.error(msg);
         throw new Error(msg);
     }
-    const pkgVersion = (v) ? v : await rwlcVersion(gi);
+    const pkgVersion = v ? v : await rwlcVersion(gi);
     const npmOptions = configurationValue<NpmOptions>("sdm.npm");
     if (!npmOptions.registry) {
         throw new Error(`No NPM registry defined in NPM options`);
@@ -321,7 +294,7 @@ export async function downloadNpmPackage(p: GitProject, gi: GoalInvocation, v?: 
         name: pj.name,
         version: pkgVersion,
     });
-    const tmpDir = path.join((process.env.TMPDIR || "/tmp"), `${p.name}-${guid()}`);
+    const tmpDir = path.join(process.env.TMPDIR || "/tmp", `${p.name}-${guid()}`);
     const tgz = path.join(tmpDir, "package.tgz");
 
     const cmds: SpawnWatchCommand[] = [
@@ -382,83 +355,78 @@ export function executeReleaseNpm(
     preparations: PrepareForGoalExecution[] = NpmReleasePreparations,
     options?: NpmOptions,
 ): ExecuteGoal {
-
     if (!options.npmrc) {
         throw new Error(`No npmrc defined in NPM options`);
     }
     return async (gi: GoalInvocation) => {
         const { configuration, credentials, id, context } = gi;
-        return configuration.sdm.projectLoader.doWithProject({
-            credentials,
-            id,
-            context,
-            readOnly: false,
-        }, async (project: GitProject) => {
-
-            if (!(await projectConfigurationValue<boolean>("npm.publish.enabled", project, true))) {
-                return {
-                    code: 0,
-                    description: "Publish disabled",
-                    state: SdmGoalState.success,
-                };
-            }
-
-            await fs.writeFile(path.join(project.baseDir, ".npmrc"), options.npmrc);
-
-            for (const preparation of preparations) {
-                const pResult = await preparation(project, gi);
-                if (pResult && pResult.code !== 0) {
-                    return pResult;
+        return configuration.sdm.projectLoader.doWithProject(
+            {
+                credentials,
+                id,
+                context,
+                readOnly: false,
+            },
+            async (project: GitProject) => {
+                if (!(await projectConfigurationValue<boolean>("npm.publish.enabled", project, true))) {
+                    return {
+                        code: 0,
+                        description: "Publish disabled",
+                        state: SdmGoalState.success,
+                    };
                 }
-            }
-            const args = [
-                "publish",
-                "--registry", options.registry,
-                "--access", options.access ? options.access : "restricted",
-            ];
-            const v = await rwlcVersion(gi);
-            const versionRelease = releaseOrPreRelease(v, gi);
-            if (isNextVersion(versionRelease)) {
-                args.push(
-                    "--tag", "next",
-                );
-            }
-            const result = await spawnLog(
-                "npm",
-                args,
-                {
+
+                await fs.writeFile(path.join(project.baseDir, ".npmrc"), options.npmrc);
+
+                for (const preparation of preparations) {
+                    const pResult = await preparation(project, gi);
+                    if (pResult && pResult.code !== 0) {
+                        return pResult;
+                    }
+                }
+                const args = [
+                    "publish",
+                    "--registry",
+                    options.registry,
+                    "--access",
+                    options.access ? options.access : "restricted",
+                ];
+                const v = await rwlcVersion(gi);
+                const versionRelease = releaseOrPreRelease(v, gi);
+                if (isNextVersion(versionRelease)) {
+                    args.push("--tag", "next");
+                }
+                const result = await spawnLog("npm", args, {
                     cwd: project.baseDir,
                     log: gi.progressLog,
                 });
-            if (result.error) {
-                return result;
-            }
+                if (result.error) {
+                    return result;
+                }
 
-            const pi = await projectIdentifier(project);
-            const url = npmPackageUrl({
-                registry: options.registry,
-                name: pi.name,
-                version: pi.version,
-            });
-            if (options.status) {
-                await github.createStatus(
-                    (credentials as TokenCredentials).token,
-                    id as GitHubRepoRef,
-                    {
+                const pi = await projectIdentifier(project);
+                const url = npmPackageUrl({
+                    registry: options.registry,
+                    name: pi.name,
+                    version: pi.version,
+                });
+                if (options.status) {
+                    await github.createStatus((credentials as TokenCredentials).token, id as GitHubRepoRef, {
                         context: "npm/atomist/package",
                         description: "NPM package",
                         target_url: url,
                         state: "success",
                     });
-            }
+                }
 
-            const egr: ExecuteGoalResult = {
-                code: result.code,
-                message: result.message,
-                targetUrl: url,
-            };
-            return egr;
-        });
+                const egr: ExecuteGoalResult = {
+                    code: result.code,
+                    message: result.message,
+                    targetUrl: url,
+                };
+                return egr;
+            },
+        );
     };
 }
 
@@ -503,50 +471,57 @@ export const DocsReleasePreparations: PrepareForGoalExecution[] = [docsReleasePr
  * Publish TypeDoc to gh-pages branch.
  */
 export function executeReleaseTypeDocs(preparations: PrepareForGoalExecution[] = DocsReleasePreparations): ExecuteGoal {
-
     return async (gi: GoalInvocation) => {
         const { configuration, credentials, id, context } = gi;
-        return configuration.sdm.projectLoader.doWithProject({
-            credentials,
-            id,
-            context,
-            readOnly: false,
-        }, async (project: GitProject) => {
-
-            for (const preparation of preparations) {
-                const pResult = await preparation(project, gi);
-                if (pResult && pResult.code !== 0) {
-                    return pResult;
+        return configuration.sdm.projectLoader.doWithProject(
+            {
+                credentials,
+                id,
+                context,
+                readOnly: false,
+            },
+            async (project: GitProject) => {
+                for (const preparation of preparations) {
+                    const pResult = await preparation(project, gi);
+                    if (pResult && pResult.code !== 0) {
+                        return pResult;
+                    }
                 }
-            }
 
-            const v = await rwlcVersion(gi);
-            const versionRelease = releaseOrPreRelease(v, gi);
-            const commitMsg = `TypeDoc: publishing for version ${versionRelease}
+                const v = await rwlcVersion(gi);
+                const versionRelease = releaseOrPreRelease(v, gi);
+                const commitMsg = `TypeDoc: publishing for version ${versionRelease}
 
 [atomist:generated]`;
-            const docDir = typedocDir(project.baseDir);
-            const els = [spawnExecuteLogger({
-                cmd: { command: "touch", args: [path.join(docDir, ".nojekyll")] },
-                cwd: project.baseDir,
-            })];
-            const docProject = await NodeFsLocalProject.fromExistingDirectory(project.id, docDir);
-            const docGitProject = GitCommandGitProject.fromProject(docProject, credentials) as GitCommandGitProject;
-            const targetUrl = `https://${docGitProject.id.owner}.github.io/${docGitProject.id.repo}`;
-            const rrr = project.id as RemoteRepoRef;
+                const docDir = typedocDir(project.baseDir);
+                const els = [
+                    spawnExecuteLogger({
+                        cmd: { command: "touch", args: [path.join(docDir, ".nojekyll")] },
+                        cwd: project.baseDir,
+                    }),
+                ];
+                const docProject = await NodeFsLocalProject.fromExistingDirectory(project.id, docDir);
+                const docGitProject = GitCommandGitProject.fromProject(docProject, credentials) as GitCommandGitProject;
+                const targetUrl = `https://${docGitProject.id.owner}.github.io/${docGitProject.id.repo}`;
+                const rrr = project.id as RemoteRepoRef;
 
-            els.push(
-                gitExecuteLogger(docGitProject, () => docGitProject.init(), "init"),
-                gitExecuteLogger(docGitProject, () => docGitProject.commit(commitMsg), "commit"),
-                gitExecuteLogger(docGitProject, () => docGitProject.createBranch("gh-pages"), "createBranch"),
-                gitExecuteLogger(docGitProject, () => docGitProject.setRemote(rrr.cloneUrl(credentials)), "setRemote"),
-                gitExecuteLogger(docGitProject, () => docGitProject.push({ force: true }), "push"),
-            );
-            const gitRes = await executeLoggers(els, gi.progressLog);
-            if (gitRes.code !== 0) {
-                return gitRes;
-            }
-            return { ...Success, targetUrl };
-        });
+                els.push(
+                    gitExecuteLogger(docGitProject, () => docGitProject.init(), "init"),
+                    gitExecuteLogger(docGitProject, () => docGitProject.commit(commitMsg), "commit"),
+                    gitExecuteLogger(docGitProject, () => docGitProject.createBranch("gh-pages"), "createBranch"),
+                    gitExecuteLogger(
+                        docGitProject,
+                        () => docGitProject.setRemote(rrr.cloneUrl(credentials)),
+                        "setRemote",
+                    ),
+                    gitExecuteLogger(docGitProject, () => docGitProject.push({ force: true }), "push"),
+                );
+                const gitRes = await executeLoggers(els, gi.progressLog);
+                if (gitRes.code !== 0) {
+                    return gitRes;
+                }
+                return { ...Success, targetUrl };
+            },
+        );
     };
 }

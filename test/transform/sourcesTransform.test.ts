@@ -15,17 +15,16 @@
  */
 
 import { InMemoryProject } from "@atomist/automation-client";
-import * as assert from "assert";
+import * as fg from "fast-glob";
 import * as fs from "fs-extra";
-import * as glob from "glob";
 import * as path from "path";
-import * as util from "util";
+import * as assert from "power-assert";
 import { SourcesTransform } from "../../lib/transform/sourcesTransform";
 
 describe("SourcesTransform", () => {
     it("should transform", async () => {
         const ignore = ["**/node_modules/**", "**/.git/**"];
-        const files = (await util.promisify(glob)("**/*", { nodir: true, ignore })).map(f => ({
+        const files = (await fg("**/*", { onlyFiles: true, ignore })).map(f => ({
             path: f,
             content: fs.readFileSync(f).toString(),
         }));
@@ -41,16 +40,16 @@ describe("SourcesTransform", () => {
         assert(!(await p.hasFile("index.ts")));
         assert(await p.hasFile(path.join("src", "index.ts")));
 
-        assert(await p.hasFile(path.join("lib", "autofix", "imports", "importsFix.js")));
-        assert(await p.hasFile(path.join("lib", "autofix", "imports", "importsFix.d.ts")));
-        assert(await p.hasFile(path.join("lib", "autofix", "imports", "importsFix.d.ts.map")));
-        assert(await p.hasFile(path.join("lib", "autofix", "imports", "importsFix.js.map")));
-        assert(await p.hasFile(path.join("src", "lib", "autofix", "imports", "importsFix.ts")));
-        assert(!(await p.hasFile(path.join("lib", "autofix", "imports", "importsFix.ts"))));
+        assert(await p.hasFile(path.join("lib", "transform", "sourcesTransform.js")));
+        assert(await p.hasFile(path.join("lib", "transform", "sourcesTransform.d.ts")));
+        assert(await p.hasFile(path.join("lib", "transform", "sourcesTransform.d.ts.map")));
+        assert(await p.hasFile(path.join("lib", "transform", "sourcesTransform.js.map")));
+        assert(await p.hasFile(path.join("src", "lib", "transform", "sourcesTransform.ts")));
+        assert(!(await p.hasFile(path.join("lib", "transform", "sourcesTransform.ts"))));
 
-        const tsMap = (await p.getFile(path.join("lib", "autofix", "imports", "importsFix.d.ts.map"))).getContentSync();
-        assert(tsMap.includes(`"../../../src/lib/autofix/imports/importsFix.ts"`));
-        const jsMap = (await p.getFile(path.join("lib", "autofix", "imports", "importsFix.js.map"))).getContentSync();
-        assert(jsMap.includes(`"../../../src/lib/autofix/imports/importsFix.ts"`));
+        const tsMap = await (await p.getFile(path.join("lib", "transform", "sourcesTransform.d.ts.map"))).getContent();
+        assert(tsMap.includes(`"../../src/lib/transform/sourcesTransform.ts"`));
+        const jsMap = await (await p.getFile(path.join("lib", "transform", "sourcesTransform.js.map"))).getContent();
+        assert(jsMap.includes(`"../../src/lib/transform/sourcesTransform.ts"`));
     });
 });
