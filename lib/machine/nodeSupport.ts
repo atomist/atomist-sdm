@@ -43,8 +43,14 @@ import {
     SoftwareDeliveryMachine,
     spawnLog,
 } from "@atomist/sdm";
-import { github, ProjectIdentifier } from "@atomist/sdm-core";
-import { DockerOptions, HasDockerfile } from "@atomist/sdm-pack-docker";
+import {
+    github,
+    ProjectIdentifier,
+} from "@atomist/sdm-core";
+import {
+    DockerOptions,
+    HasDockerfile,
+} from "@atomist/sdm-pack-docker";
 import {
     AddThirdPartyLicenseAutofix,
     DevelopmentEnvOptions,
@@ -67,11 +73,25 @@ import * as fs from "fs-extra";
 import * as path from "path";
 import { AddAtomistTypeScriptHeader } from "../autofix/addAtomistHeader";
 import { ReadmeSampleListingAutofix } from "../autofix/ReadmeSampleListingAutofix";
-import { RenameTest, RenameTestFix } from "../autofix/test/testNamingFix";
-import { UpdateSupportFilesAutofix, UpdateSupportFilesTransform } from "../autofix/updateSupportFiles";
+import {
+    RenameTest,
+    RenameTestFix,
+} from "../autofix/test/testNamingFix";
+import {
+    UpdateSupportFilesAutofix,
+    UpdateSupportFilesTransform,
+} from "../autofix/updateSupportFiles";
 import { deleteDistTagOnBranchDeletion } from "../event/deleteDistTagOnBranchDeletion";
-import { executeLoggers, gitExecuteLogger, spawnExecuteLogger, SpawnWatchCommand } from "../support/executeLogger";
-import { isNamed, isOrgNamed } from "../support/identityPushTests";
+import {
+    executeLoggers,
+    gitExecuteLogger,
+    spawnExecuteLogger,
+    SpawnWatchCommand,
+} from "../support/executeLogger";
+import {
+    isNamed,
+    isOrgNamed,
+} from "../support/identityPushTests";
 import { transformToProjectListener } from "../support/transformToProjectListener";
 import { dependenciesToPeerDependenciesTransform } from "../transform/dependenciesToPeerDependencies";
 import { RewriteImports } from "../transform/rewriteImports";
@@ -93,7 +113,13 @@ import {
     releaseVersion,
     version,
 } from "./goals";
-import { executeReleaseVersion, isNextVersion, ProjectRegistryInfo, releaseOrPreRelease, rwlcVersion } from "./release";
+import {
+    executeReleaseVersion,
+    isNextVersion,
+    ProjectRegistryInfo,
+    releaseOrPreRelease,
+    rwlcVersion,
+} from "./release";
 
 const NodeDefaultOptions = {
     pushTest: allSatisfied(IsNode, not(IsMaven)),
