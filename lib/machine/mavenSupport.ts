@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019 Atomist, Inc.
+ * Copyright © 2020 Atomist, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,35 +15,17 @@
  */
 
 import { GitProject } from "@atomist/automation-client";
-import {
-    ExecuteGoalResult,
-    LogSuppressor,
-    ProgressLog,
-    SoftwareDeliveryMachine,
-    spawnLog,
-} from "@atomist/sdm";
-import {
-    DefaultDockerImageNameCreator,
-    DockerOptions,
-} from "@atomist/sdm-pack-docker";
+import { ExecuteGoalResult, LogSuppressor, ProgressLog, SoftwareDeliveryMachine, spawnLog } from "@atomist/sdm";
+import { DefaultDockerImageNameCreator, DockerOptions } from "@atomist/sdm-pack-docker";
 import {
     IsMaven,
-    mavenBuilder,
     MavenProjectIdentifier,
     MavenProjectVersioner,
     MvnPackage,
     MvnVersion,
 } from "@atomist/sdm-pack-spring";
-import {
-    build,
-    dockerBuild,
-    noOpGoalExecutor,
-    publish,
-    release,
-    releaseDocs,
-    releaseVersion,
-    version,
-} from "./goals";
+import { executeGoalCommandsInProject } from "../support/executeGoal";
+import { build, dockerBuild, noOpGoalExecutor, publish, release, releaseDocs, releaseVersion, version } from "./goals";
 import { executeReleaseVersion } from "./release";
 
 const MavenDefaultOptions = {
@@ -58,30 +40,31 @@ const MavenDefaultOptions = {
  * @return modified software delivery machine
  */
 export function addMavenSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMachine {
-
     build.with({
         ...MavenDefaultOptions,
         name: "mvn-package",
-        builder: mavenBuilder([{ name: "skip.npm" }, { name: "skip.webpack" }]),
+        goalExecutor: executeGoalCommandsInProject([
+            { command: "mvn", args: ["-Dskip.npm", "-Dskip.webpack", "package"] },
+        ]),
     });
 
     version.with({
         ...MavenDefaultOptions,
         name: "mvn-versioner",
         versioner: MavenProjectVersioner,
-
     });
 
-    dockerBuild.with({
-        ...MavenDefaultOptions,
-        name: "mvn-docker-build",
-        imageNameCreator: DefaultDockerImageNameCreator,
-        options: {
-            ...sdm.configuration.sdm.docker.hub as DockerOptions,
-            push: true,
-            builder: "docker",
-        },
-    })
+    dockerBuild
+        .with({
+            ...MavenDefaultOptions,
+            name: "mvn-docker-build",
+            imageNameCreator: DefaultDockerImageNameCreator,
+            options: {
+                ...(sdm.configuration.sdm.docker.hub as DockerOptions),
+                push: true,
+                builder: "docker",
+            },
+        })
         .withProjectListener(MvnVersion)
         .withProjectListener(MvnPackage);
 
@@ -120,8 +103,8 @@ async function mvnIncrementPatch(p: GitProject, log: ProgressLog): Promise<Execu
     const args = [
         "build-helper:parse-version",
         "versions:set",
-        // tslint:disable-next-line:max-line-length
-        "-DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}-\${parsedVersion.qualifier}",
+        // tslint:disable-next-line:max-line-length no-invalid-template-strings
+        "-DnewVersion=${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementalVersion}-${parsedVersion.qualifier}",
         "versions:commit",
     ];
     return spawnLog("./mvnw", args, { cwd: p.baseDir, log });

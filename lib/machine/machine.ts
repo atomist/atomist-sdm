@@ -37,7 +37,6 @@ import {
     k8sGoalSchedulingSupport,
     notificationSupport,
 } from "@atomist/sdm-core";
-import { buildAwareCodeTransforms } from "@atomist/sdm-pack-build";
 import { HasDockerfile } from "@atomist/sdm-pack-docker";
 import { issueSupport } from "@atomist/sdm-pack-issue";
 import { IsAtomistAutomationClient, IsNode } from "@atomist/sdm-pack-node";
@@ -50,7 +49,6 @@ import { MaterialChangeToNodeRepo } from "../support/materialChangeToNodeRepo";
 import { addDockerSupport } from "./dockerSupport";
 import { addGithubSupport } from "./githubSupport";
 import {
-    build,
     BuildGoals,
     BuildReleaseGoals,
     CheckGoals,
@@ -215,16 +213,6 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
 
     sdm.addExtensionPacks(
         k8sGoalSchedulingSupport(),
-        buildAwareCodeTransforms({
-            buildGoal: build,
-            issueCreation: {
-                issueRouter: {
-                    raiseIssue: async () => {
-                        /* intentionally left empty */
-                    },
-                },
-            },
-        }),
         goalStateSupport({
             cancellation: {
                 enabled: true,
