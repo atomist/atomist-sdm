@@ -86,7 +86,6 @@ import {
 import { addMavenSupport } from "./mavenSupport";
 import { addNodeSupport } from "./nodeSupport";
 import { IsReleaseCommit } from "./release";
-import { addTeamPolicies } from "./teamPolicies";
 import { addFileVersionerSupport } from "./version";
 
 const AtomistHQWorkspace = "T095SFFBK";
@@ -212,7 +211,6 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
     addMavenSupport(sdm);
     addNodeSupport(sdm);
     addHomebrewSupport(sdm);
-    addTeamPolicies(sdm);
     addFileVersionerSupport(sdm);
 
     sdm.addExtensionPacks(
