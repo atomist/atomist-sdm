@@ -50,7 +50,6 @@ import {
     DevelopmentEnvOptions,
     executePublish,
     IsNode,
-    nodeBuilder,
     NodeProjectIdentifier,
     NodeProjectVersioner,
     NpmNodeModulesCachePut,
@@ -67,6 +66,7 @@ import * as fs from "fs-extra";
 import * as path from "path";
 import { RenameTest, RenameTestFix } from "../autofix/test/testNamingFix";
 import { deleteDistTagOnBranchDeletion } from "../event/deleteDistTagOnBranchDeletion";
+import { executeGoalCommandsInProject } from "../support/executeGoal";
 import { executeLoggers, gitExecuteLogger, spawnExecuteLogger, SpawnWatchCommand } from "../support/executeLogger";
 import { transformToProjectListener } from "../support/transformToProjectListener";
 import { SourcesTransform } from "../transform/sourcesTransform";
@@ -119,8 +119,10 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         .with({
             ...NodeDefaultOptions,
             name: "npm-run-build",
-            // tslint:disable-next-line:deprecation
-            builder: nodeBuilder({ command: "npm", args: ["run", "compile"] }, { command: "npm", args: ["test"] }),
+            goalExecutor: executeGoalCommandsInProject([
+                { command: "npm", args: ["run", "compile"] },
+                { command: "npm", args: ["test"] },
+            ]),
             pushTest: NodeDefaultOptions.pushTest,
         })
         .withProjectListener(NpmNodeModulesCacheRestore)
