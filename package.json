@@ -30,7 +30,6 @@
     "@atomist/sdm": "^1.8.0-master.20191102194220",
     "@atomist/sdm-core": "^1.8.0-master.20191104170555",
     "@atomist/sdm-pack-build": "1.0.7-master.20191011105702",
-    "@atomist/sdm-pack-changelog": "1.0.3-master.20190530031834",
     "@atomist/sdm-pack-docker": "^1.2.0",
     "@atomist/sdm-pack-issue": "^1.2.2",
     "@atomist/sdm-pack-k8s": "^1.10.0",

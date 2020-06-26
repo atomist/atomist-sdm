@@ -28,7 +28,6 @@ import {
     Queue,
 } from "@atomist/sdm";
 import { Tag, Version } from "@atomist/sdm-core";
-import { Changelog } from "@atomist/sdm-pack-changelog/lib/goal/Changelog";
 import { DockerBuild } from "@atomist/sdm-pack-docker";
 import { KubernetesDeploy } from "@atomist/sdm-pack-k8s";
 
@@ -74,8 +73,6 @@ export const deploymentGate = goal(
         /** Intentionally left empty */
     },
 );
-
-export const releaseChangelog = new Changelog();
 
 export const publish = new GoalWithFulfillment(
     {
@@ -155,17 +152,14 @@ export const releaseHomebrew = new GoalWithFulfillment({
     isolated: true,
 });
 
-export const releaseVersion = new GoalWithFulfillment(
-    {
-        uniqueName: "release-version",
-        environment: ProductionEnvironment,
-        displayName: "increment version",
-        workingDescription: "Incrementing version",
-        completedDescription: "Incremented version",
-        failedDescription: "Incrementing version failure",
-    },
-    releaseChangelog,
-);
+export const releaseVersion = new GoalWithFulfillment({
+    uniqueName: "release-version",
+    environment: ProductionEnvironment,
+    displayName: "increment version",
+    workingDescription: "Incrementing version",
+    completedDescription: "Incremented version",
+    failedDescription: "Incrementing version failure",
+});
 
 // GOALSET Definition
 
@@ -199,8 +193,6 @@ export const BuildReleaseGoals = goals("Build with Release")
     .after(build)
     .plan(release, releaseDocs, releaseVersion)
     .after(publishWithApproval, autoCodeInspection)
-    .plan(releaseChangelog)
-    .after(releaseVersion)
     .plan(releaseTag)
     .after(release);
 
@@ -236,8 +228,6 @@ export const DockerReleaseGoals = goals("Docker Build with Release")
     .after(build, dockerBuild)
     .plan(release, releaseDocker, releaseDocs, releaseVersion)
     .after(publishWithApproval, autoCodeInspection)
-    .plan(releaseChangelog)
-    .after(releaseVersion)
     .plan(releaseTag)
     .after(release, releaseDocker);
 
@@ -254,8 +244,6 @@ export const SimpleDockerReleaseGoals = goals("Simple Docker Build with Release"
     .after(dockerBuild)
     .plan(releaseDocker, releaseVersion)
     .after(tagWithApproval)
-    .plan(releaseChangelog)
-    .after(releaseVersion)
     .plan(releaseTag)
     .after(releaseDocker);
 
@@ -268,8 +256,6 @@ export const KubernetesDeployGoals = goals("Deploy")
     .after(stagingDeploy, autoCodeInspection)
     .plan(release, releaseDocker, releaseDocs, releaseVersion)
     .after(productionDeploy)
-    .plan(releaseChangelog)
-    .after(releaseVersion)
     .plan(releaseTag)
     .after(release, releaseDocker);
 
@@ -281,8 +267,6 @@ export const OrgVisualizerKubernetesDeployGoals = goals("Job Deploy")
     .after(stagingDeploy, autoCodeInspection)
     .plan(release, releaseDocker, releaseDocs, releaseVersion)
     .after(productionDeploy)
-    .plan(releaseChangelog)
-    .after(releaseVersion)
     .plan(releaseTag)
     .after(release, releaseDocker);
 
@@ -293,8 +277,6 @@ export const SimplifiedKubernetesDeployGoals = goals("Simplified Deploy")
     .after(dockerBuild, autoCodeInspection)
     .plan(release, releaseDocker, releaseDocs, releaseVersion)
     .after(productionDeployWithApproval)
-    .plan(releaseChangelog)
-    .after(releaseVersion)
     .plan(releaseTag)
     .after(release, releaseDocker);
 
@@ -313,8 +295,6 @@ export const MultiKubernetesDeployGoals = goals("Multiple Deploy")
     .after(stagingDeploy, autoCodeInspection)
     .plan(release, releaseDocker, releaseDocs, releaseVersion)
     .after(stagingDeploy)
-    .plan(releaseChangelog)
-    .after(releaseVersion)
     .plan(releaseTag)
     .after(release, releaseDocker);
 
