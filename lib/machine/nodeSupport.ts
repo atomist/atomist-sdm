@@ -43,14 +43,8 @@ import {
     SoftwareDeliveryMachine,
     spawnLog,
 } from "@atomist/sdm";
-import {
-    github,
-    ProjectIdentifier,
-} from "@atomist/sdm-core";
-import {
-    DockerOptions,
-    HasDockerfile,
-} from "@atomist/sdm-pack-docker";
+import { github, ProjectIdentifier } from "@atomist/sdm-core";
+import { DockerOptions, HasDockerfile } from "@atomist/sdm-pack-docker";
 import {
     AddThirdPartyLicenseAutofix,
     DevelopmentEnvOptions,
@@ -71,37 +65,12 @@ import {
 import { IsMaven } from "@atomist/sdm-pack-spring";
 import * as fs from "fs-extra";
 import * as path from "path";
-import { AddAtomistTypeScriptHeader } from "../autofix/addAtomistHeader";
-import { ReadmeSampleListingAutofix } from "../autofix/ReadmeSampleListingAutofix";
-import {
-    RenameTest,
-    RenameTestFix,
-} from "../autofix/test/testNamingFix";
-import {
-    UpdateSupportFilesAutofix,
-    UpdateSupportFilesTransform,
-} from "../autofix/updateSupportFiles";
+import { RenameTest, RenameTestFix } from "../autofix/test/testNamingFix";
 import { deleteDistTagOnBranchDeletion } from "../event/deleteDistTagOnBranchDeletion";
-import {
-    executeLoggers,
-    gitExecuteLogger,
-    spawnExecuteLogger,
-    SpawnWatchCommand,
-} from "../support/executeLogger";
-import {
-    isNamed,
-    isOrgNamed,
-} from "../support/identityPushTests";
+import { executeLoggers, gitExecuteLogger, spawnExecuteLogger, SpawnWatchCommand } from "../support/executeLogger";
 import { transformToProjectListener } from "../support/transformToProjectListener";
-import { dependenciesToPeerDependenciesTransform } from "../transform/dependenciesToPeerDependencies";
-import { RewriteImports } from "../transform/rewriteImports";
 import { SourcesTransform } from "../transform/sourcesTransform";
-import { TryToUpdateAllDependencies } from "../transform/tryToUpdateAllDependencies";
-import { TryToUpdateAtomistDependencies } from "../transform/tryToUpdateAtomistDependencies";
-import { TryToUpdateAtomistPeerDependencies } from "../transform/tryToUpdateAtomistPeerDependencies";
-import { TryToUpdateDependency } from "../transform/tryToUpdateDependency";
 import { UpdatePackageAuthor } from "../transform/updatePackageAuthor";
-import { UpdatePackageVersion } from "../transform/updatePackageVersion";
 import {
     autofix,
     build,
@@ -113,13 +82,7 @@ import {
     releaseVersion,
     version,
 } from "./goals";
-import {
-    executeReleaseVersion,
-    isNextVersion,
-    ProjectRegistryInfo,
-    releaseOrPreRelease,
-    rwlcVersion,
-} from "./release";
+import { executeReleaseVersion, isNextVersion, ProjectRegistryInfo, releaseOrPreRelease, rwlcVersion } from "./release";
 
 const NodeDefaultOptions = {
     pushTest: allSatisfied(IsNode, not(IsMaven)),
@@ -142,12 +105,9 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
     });
 
     autofix
-        .with(AddAtomistTypeScriptHeader)
         .with(PackageLockUrlRewriteAutofix)
         .with(RenameTestFix)
         .with(AddThirdPartyLicenseAutofix)
-        .with(UpdateSupportFilesAutofix)
-        .with(ReadmeSampleListingAutofix)
         .withProjectListener(NpmNodeModulesCacheRestore)
         .withProjectListener({
             // something is cleaning out the node_modules folder -> cache it early
@@ -172,13 +132,6 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
             name: "npm-publish",
             goalExecutor: executePublish(NodeProjectIdentifier, sdm.configuration.sdm.npm as NpmOptions),
         })
-        .withProjectListener(
-            transformToProjectListener(
-                dependenciesToPeerDependenciesTransform(/@atomist\/sdm.*/, /@atomist\/automation-client.*/),
-                "package.json rewrite",
-                allSatisfied(IsNode, isOrgNamed("atomist"), isNamed("uhura")),
-            ),
-        )
         .withProjectListener(NpmNodeModulesCacheRestore)
         .withProjectListener(NpmVersionProjectListener)
         .withProjectListener(TypeScriptCompileCacheRestore)
@@ -190,13 +143,6 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
             name: "npm-publish",
             goalExecutor: executePublish(NodeProjectIdentifier, sdm.configuration.sdm.npm as NpmOptions),
         })
-        .withProjectListener(
-            transformToProjectListener(
-                dependenciesToPeerDependenciesTransform(/@atomist\/sdm.*/, /@atomist\/automation-client.*/),
-                "package.json rewrite",
-                allSatisfied(IsNode, isOrgNamed("atomist"), isNamed("uhura")),
-            ),
-        )
         .withProjectListener(NpmNodeModulesCacheRestore)
         .withProjectListener(NpmVersionProjectListener)
         .withProjectListener(TypeScriptCompileCacheRestore)
@@ -243,15 +189,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         deleteDistTagOnBranchDeletion(sdm.configuration.sdm.projectLoader, sdm.configuration.sdm.npm as NpmOptions),
     );
 
-    sdm.addCodeTransformCommand(TryToUpdateAtomistDependencies)
-        .addCodeTransformCommand(TryToUpdateDependency)
-        .addCodeTransformCommand(UpdatePackageVersion)
-        .addCodeTransformCommand(TryToUpdateAtomistPeerDependencies)
-        .addCodeTransformCommand(UpdatePackageAuthor)
-        .addCodeTransformCommand(UpdateSupportFilesTransform)
-        .addCodeTransformCommand(RewriteImports)
-        .addCodeTransformCommand(RenameTest)
-        .addCodeTransformCommand(TryToUpdateAllDependencies);
+    sdm.addCodeTransformCommand(UpdatePackageAuthor).addCodeTransformCommand(RenameTest);
 
     return sdm;
 }

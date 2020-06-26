@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-import {
-    Parameter,
-    Parameters,
-    Project,
-    projectUtils,
-} from "@atomist/automation-client";
-import {
-    PushAwareParametersInvocation,
-} from "@atomist/sdm";
+import { Parameter, Parameters, Project, projectUtils } from "@atomist/automation-client";
+import { PushAwareParametersInvocation } from "@atomist/sdm";
 import * as minimatch from "minimatch";
-import { CFamilyLanguageSourceFiles } from "./GlobPatterns";
 import { RequestedCommitParameters } from "./RequestedCommitParameters";
+
+const CFamilyLanguageSourceFiles = "**/{*.ts,*.java,*.js,*.scala,*.c,*.cpp,*.kt}";
 
 /**
  * Default glob pattern matches all C family languages
  */
 @Parameters()
 export class AddHeaderParameters extends RequestedCommitParameters {
-
     @Parameter({ required: false })
     public glob: string = CFamilyLanguageSourceFiles;
 
@@ -60,7 +53,7 @@ export class AddHeaderParameters extends RequestedCommitParameters {
 }
 
 export function apacheHeader(): string {
-    const year = (new Date()).getFullYear();
+    const year = new Date().getFullYear();
     return `/*
  * Copyright © ${year} Atomist, Inc.
  *
@@ -82,15 +75,17 @@ export function apacheHeader(): string {
 /**
  * CodeTransform that upserts headers into files per [[AddHeaderParameters]].
  */
-export async function addHeaderTransform(p: Project, ci: PushAwareParametersInvocation<AddHeaderParameters>): Promise<Project> {
+export async function addHeaderTransform(
+    p: Project,
+    ci: PushAwareParametersInvocation<AddHeaderParameters>,
+): Promise<Project> {
     await projectUtils.doWithFiles(p, ci.parameters.glob, async f => {
         if (ci.parameters.excludeGlob && minimatch(f.path, ci.parameters.excludeGlob)) {
             return;
         }
 
         if (ci.parameters.onlyChangedFiles) {
-            if (ci.push.filesChanged &&
-                ci.push.filesChanged.length > 0) {
+            if (ci.push.filesChanged && ci.push.filesChanged.length > 0) {
                 if (!ci.push.filesChanged.includes(f.path)) {
                     return;
                 }
