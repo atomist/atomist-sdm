@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019 Atomist, Inc.
+ * Copyright © 2020 Atomist, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,7 @@
  */
 
 import { Configuration } from "@atomist/automation-client";
-import { configureDashboardNotifications } from "@atomist/automation-client-ext-dashboard";
-import { configureHumio } from "@atomist/automation-client-ext-humio";
-import { configureRaven } from "@atomist/automation-client-ext-raven";
-import {
-    CompressingGoalCache,
-    ConfigureOptions,
-    configureSdm,
-} from "@atomist/sdm-core";
+import { CompressingGoalCache, ConfigureOptions, configureSdm } from "@atomist/sdm-core";
 import { machine } from "./lib/machine/machine";
 import { GoogleCloudStorageGoalCacheArchiveStore } from "./lib/support/cache";
 
@@ -38,12 +31,7 @@ const machineOptions: ConfigureOptions = {
 };
 
 export const configuration: Configuration = {
-    postProcessors: [
-        configureHumio,
-        configureRaven,
-        configureDashboardNotifications,
-        configureSdm(machine, machineOptions),
-    ],
+    postProcessors: [configureSdm(machine, machineOptions)],
     sdm: {
         npm: {
             publish: {
