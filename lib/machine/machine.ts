@@ -38,7 +38,6 @@ import {
     notificationSupport,
 } from "@atomist/sdm-core";
 import { HasDockerfile } from "@atomist/sdm-pack-docker";
-import { issueSupport } from "@atomist/sdm-pack-issue";
 import { IsAtomistAutomationClient, IsNode } from "@atomist/sdm-pack-node";
 import { IsMaven, MaterialChangeToJavaRepo } from "@atomist/sdm-pack-spring";
 import { isSdmEnabled } from "@atomist/sdm/lib/api-helper/pushtest/configuration/configurationTests";
@@ -220,13 +219,6 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         }),
         githubGoalStatusSupport(),
         notificationSupport(),
-        issueSupport({
-            labelIssuesOnDeployment: true,
-            closeCodeInspectionIssuesOnBranchDeletion: {
-                enabled: true,
-                source: sdm.configuration.name,
-            },
-        }),
     );
 
     // sdm.addGoalApprovalRequestVoter(gitHubTeamVoter("atomist-automation"));
