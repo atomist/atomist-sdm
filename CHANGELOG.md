@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Removed
 
 -   Move code snippet autofix work to docs-sdm. [#197](https://github.com/atomist/atomist-sdm/issues/197)
+-   Remove automation-client push test from SDMs. [929d37a](https://github.com/atomist/atomist-sdm/commit/929d37a130b31ee69a709c1e39adefc5b3658525)
 
 ### Fixed
 
