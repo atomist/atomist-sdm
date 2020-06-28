@@ -189,8 +189,7 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             IsNode,
             HasDockerfile,
             ToDefaultBranch,
-            IsAtomistAutomationClient,
-            isNamed("atomist-sdm", "atomist-client-sdm", "atomist-web-sdm", "docs-sdm", "manifesto-sdm", "catalog-sdm"),
+            isNamed("atomist-sdm", "atomist-web-sdm", "manifesto-sdm", "catalog-sdm"),
         )
             .itMeans("Simplified Deploy")
             .setGoals(SimplifiedKubernetesDeployGoals),
