@@ -28,9 +28,9 @@ import {
     codeLine,
 } from "@atomist/slack-messages";
 import * as _ from "lodash";
-import { AddCommunityFiles } from "../autofix/addCommunityFiles";
+// import { AddCommunityFiles } from "../autofix/addCommunityFiles";
 import {
-    autofix,
+    // autofix,
     pushImpact,
 } from "./goals";
 
@@ -47,7 +47,7 @@ export function addTeamPolicies(sdm: SoftwareDeliveryMachine<SoftwareDeliveryMac
         return Success;
     });
 
-    autofix.with(AddCommunityFiles);
+    // autofix.with(AddCommunityFiles);
     // autofix.with(UpdateSupportFilesFix);
 }
 
