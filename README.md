@@ -13,7 +13,7 @@ automate delivery of Atomist automation-client projects, like SDMs.
 See the [Atomist documentation][atomist-docs] for information on how
 to configure and run SDMs like this.
 
-[atomist-docs]: https://docs.atomist.com/ (Atomist Documentation)
+[atomist-docs]: https://docs.atomist.com/ "Atomist Documentation"
 
 ## Using the SDM
 
@@ -41,10 +41,10 @@ what helps you.
 
 This SDM is able to deploy to your Kubernetes cluster, using
 [k8-automation](https://github.com/atomist/k8-automation), which you
-must run in your cluster.  See the [Atomist Kubernetes
+must run in your cluster. See the [Atomist Kubernetes
 documentation][atomist-kube] for information on how to set this up.
 
-[atomist-kube]: https://docs.atomist.com/user/kubernetes/ (Atomist Kubernetes Documentation)
+[atomist-kube]: https://docs.atomist.com/user/kubernetes/ "Atomist Kubernetes Documentation"
 
 ## Support
 
@@ -61,17 +61,17 @@ If you find a problem, please create an [issue][].
 See the [Atomist developer documentation][atomist-dev] for information
 on how to write your own SDM features and automations.
 
-[atomist-dev]: https://docs.atomist.com/developer/ (Atomist Developer Documentation)
+[atomist-dev]: https://docs.atomist.com/developer/ "Atomist Developer Documentation"
 
 ### Release
 
-Releases are handled via the SDM itself.  Just press the release
+Releases are handled via the SDM itself. Just press the release
 button in Slack or the Atomist dashboard.
 
 ---
 
 Created by [Atomist][atomist].
-Need Help?  [Join our Slack team][slack].
+Need Help? [Join our Slack team][slack].
 
-[atomist]: https://atomist.com/ (Atomist - How Teams Deliver Software)
-[slack]: https://join.atomist.com/ (Atomist Community Slack)
+[atomist]: https://atomist.com/ "Atomist - How Teams Deliver Software"
+[slack]: https://join.atomist.com/ "Atomist Community Slack"
