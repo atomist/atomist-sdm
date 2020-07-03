@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 -   Remove team policies. [db204d3](https://github.com/atomist/atomist-sdm/commit/db204d3cb7c756b4a6bf371638af334f285ca6f3)
 -   Remove build pack. [8ab3926](https://github.com/atomist/atomist-sdm/commit/8ab3926820b9776dc1a4af22fb12fe8634f5f7b1)
 -   Remove unused dependnecies and sdm-local. [91c0df0](https://github.com/atomist/atomist-sdm/commit/91c0df09b28246de3f3283ac17e4cb3843d819e3)
+-   Remove sdm-pack-changelog. [3283a56](https://github.com/atomist/atomist-sdm/commit/3283a56042d23f784bb24735b72f1fae42f72b65)
 
 ### Fixed
 
