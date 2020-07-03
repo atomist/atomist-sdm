@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 -   Remove unused dependnecies and sdm-local. [91c0df0](https://github.com/atomist/atomist-sdm/commit/91c0df09b28246de3f3283ac17e4cb3843d819e3)
 -   Remove sdm-pack-changelog. [3283a56](https://github.com/atomist/atomist-sdm/commit/3283a56042d23f784bb24735b72f1fae42f72b65)
 -   Remove client extensions. [64a6338](https://github.com/atomist/atomist-sdm/commit/64a6338f36f16caf213887220ba0e101423e0a37)
+-   Remove sdm-pack-issue. [a1cf416](https://github.com/atomist/atomist-sdm/commit/a1cf416c201a5b0ae4ca4dfa14c4e6d56ec0be8e)
 
 ### Fixed
 
