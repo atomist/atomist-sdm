@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-    buttonForCommand,
-    guid,
-} from "@atomist/automation-client";
+import { buttonForCommand, guid } from "@atomist/automation-client";
 import {
     GoalApprovalRequestVote,
     goals,
@@ -40,43 +37,17 @@ import {
     k8sGoalSchedulingSupport,
     notificationSupport,
 } from "@atomist/sdm-core";
-import { buildAwareCodeTransforms } from "@atomist/sdm-pack-build";
 import { HasDockerfile } from "@atomist/sdm-pack-docker";
-import { issueSupport } from "@atomist/sdm-pack-issue";
-import {
-    IsAtomistAutomationClient,
-    IsNode,
-} from "@atomist/sdm-pack-node";
-import {
-    IsMaven,
-    MaterialChangeToJavaRepo,
-} from "@atomist/sdm-pack-spring";
+import { IsAtomistAutomationClient, IsNode } from "@atomist/sdm-pack-node";
+import { IsMaven, MaterialChangeToJavaRepo } from "@atomist/sdm-pack-spring";
 import { isSdmEnabled } from "@atomist/sdm/lib/api-helper/pushtest/configuration/configurationTests";
-import {
-    bold,
-    channel,
-    codeLine,
-    italic,
-    url,
-} from "@atomist/slack-messages";
-import {
-    ApprovalCommand,
-    CancelApprovalCommand,
-} from "../command/approval";
-import { BadgeSupport } from "../command/badge";
-import { GenerateChangelog } from "../command/changelog";
-import { CreateTag } from "../command/tag";
-import {
-    isNamed,
-    isOrgNamed,
-    isTeam,
-    nameMatches,
-} from "../support/identityPushTests";
+import { bold, channel, codeLine, italic, url } from "@atomist/slack-messages";
+import { ApprovalCommand, CancelApprovalCommand } from "../command/approval";
+import { isNamed, isOrgNamed, isTeam, nameMatches } from "../support/identityPushTests";
 import { MaterialChangeToNodeRepo } from "../support/materialChangeToNodeRepo";
 import { addDockerSupport } from "./dockerSupport";
 import { addGithubSupport } from "./githubSupport";
 import {
-    build,
     BuildGoals,
     BuildReleaseGoals,
     CheckGoals,
@@ -112,7 +83,6 @@ import {
 import { addMavenSupport } from "./mavenSupport";
 import { addNodeSupport } from "./nodeSupport";
 import { IsReleaseCommit } from "./release";
-import { addTeamPolicies } from "./teamPolicies";
 import { addFileVersionerSupport } from "./version";
 
 const AtomistHQWorkspace = "T095SFFBK";
@@ -230,29 +200,17 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         whenPushSatisfies(IsNode, not(HasDockerfile)).itMeans("Build").setGoals(BuildGoals),
     );
 
-    sdm.addCommand(EnableDeploy).addCommand(DisableDeploy).addCommand(CreateTag).addCommand(GenerateChangelog);
+    sdm.addCommand(EnableDeploy).addCommand(DisableDeploy);
 
     addGithubSupport(sdm);
     addDockerSupport(sdm);
     addMavenSupport(sdm);
     addNodeSupport(sdm);
     addHomebrewSupport(sdm);
-    addTeamPolicies(sdm);
     addFileVersionerSupport(sdm);
 
     sdm.addExtensionPacks(
         k8sGoalSchedulingSupport(),
-        BadgeSupport,
-        buildAwareCodeTransforms({
-            buildGoal: build,
-            issueCreation: {
-                issueRouter: {
-                    raiseIssue: async () => {
-                        /* intentionally left empty */
-                    },
-                },
-            },
-        }),
         goalStateSupport({
             cancellation: {
                 enabled: true,
@@ -260,13 +218,6 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
         }),
         githubGoalStatusSupport(),
         notificationSupport(),
-        issueSupport({
-            labelIssuesOnDeployment: true,
-            closeCodeInspectionIssuesOnBranchDeletion: {
-                enabled: true,
-                source: sdm.configuration.name,
-            },
-        }),
     );
 
     // sdm.addGoalApprovalRequestVoter(gitHubTeamVoter("atomist-automation"));
