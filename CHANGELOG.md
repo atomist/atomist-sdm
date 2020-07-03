@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 -   Remove unused autofixes and transforms. [610cdd3](https://github.com/atomist/atomist-sdm/commit/610cdd32a0057005556f56ea3369eaa807571b37)
 -   Remove old commands. [a1e8edc](https://github.com/atomist/atomist-sdm/commit/a1e8edc0939fa42d966808299a618d9d2f4bd158)
 -   Remove team policies. [db204d3](https://github.com/atomist/atomist-sdm/commit/db204d3cb7c756b4a6bf371638af334f285ca6f3)
+-   Remove build pack. [8ab3926](https://github.com/atomist/atomist-sdm/commit/8ab3926820b9776dc1a4af22fb12fe8634f5f7b1)
 
 ### Fixed
 
