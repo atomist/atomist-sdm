@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 -   Add GCS goal cache support. [#201](https://github.com/atomist/atomist-sdm/issues/201)
 -   Add tsx files as a material change. [#215](https://github.com/atomist/atomist-sdm/issues/215)
+-   Use prettier to format GraphQL. [5d12d7f](https://github.com/atomist/atomist-sdm/commit/5d12d7f90885463930ded8286ee6b5f83f2aa190)
 
 ### Removed
 
