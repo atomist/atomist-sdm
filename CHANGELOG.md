@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 -   Update TypeScript deps and move to dev. [11eb3ee](https://github.com/atomist/atomist-sdm/commit/11eb3ee991602a39293ddd8530d460af46cabc6c)
 -   Do not add community files to atomist-sdm. [8014035](https://github.com/atomist/atomist-sdm/commit/8014035e580449509f03b44d4223bffc3212abb2)
+-   Make email a link in SECURITY.md. [9da81f2](https://github.com/atomist/atomist-sdm/commit/9da81f2aca6db9110d9ab60a5dedb4eed1577765)
 
 ### Removed
 
