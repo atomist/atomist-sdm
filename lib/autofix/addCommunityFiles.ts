@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-import {
-    Project,
-} from "@atomist/automation-client";
-import {
-    AutofixRegistration,
-    ToDefaultBranch,
-} from "@atomist/sdm";
+import { Project } from "@atomist/automation-client";
+import { allSatisfied, AutofixRegistration, not, ToDefaultBranch } from "@atomist/sdm";
 import * as appRoot from "app-root-path";
 import * as fs from "fs-extra";
 import * as path from "path";
+import { isNamed } from "../support/identityPushTests";
 
 /**
  * Add/update the supporting files in a project.
@@ -34,27 +30,24 @@ import * as path from "path";
 export async function addCommunityFilesToProject(p: Project): Promise<Project> {
     const communityFiles = ["CODE_OF_CONDUCT.md", "CONTRIBUTING.md", "SECURITY.md"];
     const baseDir = appRoot.path;
-    return Promise.all(communityFiles.map(src => {
-        const srcPath = path.join(baseDir, src);
-        return fs.readFile(srcPath, "utf8")
-            .then(content => {
-                return p.getFile(src)
-                    .then(destFile => {
-                        if (destFile) {
-                            return destFile.setContent(content)
-                                .then(() => p);
-                        } else {
-                            return p.addFile(src, content);
-                        }
-                    });
+    return Promise.all(
+        communityFiles.map(src => {
+            const srcPath = path.join(baseDir, src);
+            return fs.readFile(srcPath, "utf8").then(content => {
+                return p.getFile(src).then(destFile => {
+                    if (destFile) {
+                        return destFile.setContent(content).then(() => p);
+                    } else {
+                        return p.addFile(src, content);
+                    }
+                });
             });
-    }))
-        .then(() => p);
-
+        }),
+    ).then(() => p);
 }
 
 export const AddCommunityFiles: AutofixRegistration = {
     name: "Add community files",
-    pushTest: ToDefaultBranch,
+    pushTest: allSatisfied(ToDefaultBranch, not(isNamed("atomist-sdm"))),
     transform: addCommunityFilesToProject,
 };
