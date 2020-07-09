@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { buttonForCommand, guid } from "@atomist/automation-client";
 import {
     GoalApprovalRequestVote,
     goals,
@@ -27,20 +26,16 @@ import {
     ToDefaultBranch,
     whenPushSatisfies,
 } from "@atomist/sdm";
-import {
-    createSoftwareDeliveryMachine,
-    DisableDeploy,
-    EnableDeploy,
-    githubGoalStatusSupport,
-    goalStateSupport,
-    IsInLocalMode,
-    k8sGoalSchedulingSupport,
-    notificationSupport,
-} from "@atomist/sdm-core";
-import { HasDockerfile } from "@atomist/sdm-pack-docker";
-import { IsAtomistAutomationClient, IsNode } from "@atomist/sdm-pack-node";
-import { IsMaven, MaterialChangeToJavaRepo } from "@atomist/sdm-pack-spring";
 import { isSdmEnabled } from "@atomist/sdm/lib/api-helper/pushtest/configuration/configurationTests";
+import { buttonForCommand, guid } from "@atomist/sdm/lib/client";
+import { createSoftwareDeliveryMachine, DisableDeploy, EnableDeploy, IsInLocalMode } from "@atomist/sdm/lib/core";
+import { HasDockerfile } from "@atomist/sdm/lib/pack/docker";
+import { githubGoalStatusSupport } from "@atomist/sdm/lib/pack/github-goal-status";
+import { goalStateSupport } from "@atomist/sdm/lib/pack/goal-state";
+import { IsMaven, MaterialChangeToJavaRepo } from "@atomist/sdm/lib/pack/jvm";
+import { k8sGoalSchedulingSupport } from "@atomist/sdm/lib/pack/k8s";
+import { IsAtomistAutomationClient, IsNode } from "@atomist/sdm/lib/pack/node";
+import { notificationSupport } from "@atomist/sdm/lib/pack/notification";
 import { bold, channel, codeLine, italic, url } from "@atomist/slack-messages";
 import { ApprovalCommand, CancelApprovalCommand } from "../command/approval";
 import { isNamed, isOrgNamed, isTeam, nameMatches } from "../support/identityPushTests";

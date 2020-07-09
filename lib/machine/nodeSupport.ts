@@ -14,20 +14,6 @@
  * limitations under the License.
  */
 
-/* tslint:disable:max-file-line-count */
-
-import {
-    configurationValue,
-    GitCommandGitProject,
-    GitHubRepoRef,
-    GitProject,
-    guid,
-    logger,
-    NodeFsLocalProject,
-    RemoteRepoRef,
-    Success,
-    TokenCredentials,
-} from "@atomist/automation-client";
 import {
     allSatisfied,
     ExecuteGoal,
@@ -43,25 +29,37 @@ import {
     SoftwareDeliveryMachine,
     spawnLog,
 } from "@atomist/sdm";
-import { github, ProjectIdentifier } from "@atomist/sdm-core";
-import { DockerOptions, HasDockerfile } from "@atomist/sdm-pack-docker";
+import {
+    configurationValue,
+    GitCommandGitProject,
+    GitHubRepoRef,
+    GitProject,
+    guid,
+    logger,
+    NodeFsLocalProject,
+    RemoteRepoRef,
+    Success,
+    TokenCredentials,
+} from "@atomist/sdm/lib/client";
+import { github, ProjectIdentifier } from "@atomist/sdm/lib/core";
+import { DockerRegistry, HasDockerfile } from "@atomist/sdm/lib/pack/docker";
+import { IsMaven } from "@atomist/sdm/lib/pack/jvm";
 import {
     AddThirdPartyLicenseAutofix,
     DevelopmentEnvOptions,
     executePublish,
     IsNode,
     NodeProjectIdentifier,
-    NodeProjectVersioner,
     NpmNodeModulesCachePut,
     NpmNodeModulesCacheRestore,
     NpmOptions,
     NpmProgressReporter,
+    NpmVersioner,
     NpmVersionProjectListener,
     PackageLockUrlRewriteAutofix,
     TypeScriptCompileCachePut,
     TypeScriptCompileCacheRestore,
-} from "@atomist/sdm-pack-node";
-import { IsMaven } from "@atomist/sdm-pack-spring";
+} from "@atomist/sdm/lib/pack/node";
 import * as fs from "fs-extra";
 import * as path from "path";
 import { RenameTest, RenameTestFix } from "../autofix/test/testNamingFix";
@@ -100,7 +98,7 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
     version.with({
         ...NodeDefaultOptions,
         name: "npm-versioner",
-        versioner: NodeProjectVersioner,
+        versioner: NpmVersioner,
         pushTest: IsNode,
     });
 
@@ -154,11 +152,9 @@ export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMa
         .with({
             ...NodeDefaultOptions,
             name: "npm-docker-build",
-            options: {
-                ...(sdm.configuration.sdm.docker.hub as DockerOptions),
-                push: true,
-                builder: "docker",
-            },
+            registry: sdm.configuration.sdm.docker.hub as DockerRegistry,
+            push: true,
+            builder: "docker",
             pushTest: allSatisfied(IsNode, HasDockerfile),
         })
         .withProjectListener(NpmNodeModulesCacheRestore)
@@ -388,7 +384,12 @@ export function executeReleaseNpm(
                 const egr: ExecuteGoalResult = {
                     code: result.code,
                     message: result.message,
-                    targetUrl: url,
+                    externalUrls: [
+                        {
+                            label: "NPM Package",
+                            url,
+                        },
+                    ],
                 };
                 return egr;
             },

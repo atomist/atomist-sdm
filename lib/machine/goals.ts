@@ -27,9 +27,9 @@ import {
     PushImpact,
     Queue,
 } from "@atomist/sdm";
-import { Tag, Version } from "@atomist/sdm-core";
-import { DockerBuild } from "@atomist/sdm-pack-docker";
-import { KubernetesDeploy } from "@atomist/sdm-pack-k8s";
+import { Tag, Version } from "@atomist/sdm/lib/core";
+import { DockerBuild } from "@atomist/sdm/lib/pack/docker";
+import { KubernetesDeploy } from "@atomist/sdm/lib/pack/k8s";
 
 export const queue = new Queue({ concurrent: 5 });
 

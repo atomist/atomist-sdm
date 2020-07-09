@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { CodeTransform } from "@atomist/sdm";
 import {
     Project,
     projectUtils,
-} from "@atomist/automation-client";
-import { CodeTransform } from "@atomist/sdm";
+} from "@atomist/sdm/lib/client";
 import * as path from "path";
 
 /**

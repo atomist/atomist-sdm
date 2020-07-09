@@ -1,5 +1,5 @@
 /*
- * Copyright © 2018 Atomist, Inc.
+ * Copyright © 2020 Atomist, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-    EditMode,
-    editModes,
-    Parameter,
-    Parameters,
-    validationPatterns,
-} from "@atomist/automation-client";
+import { editModes, Parameter, Parameters, validationPatterns } from "@atomist/sdm/lib/client";
 
 /**
  * Allow user to specify a branch (with default master).
@@ -28,13 +22,11 @@ import {
  */
 @Parameters()
 export class RequestedCommitParameters {
-
     @Parameter({
         required: false,
         description: "Branch to use. Default is 'master'.",
         ...validationPatterns.GitBranchRegExp,
-    },
-    )
+    })
     private readonly branch: string = "master";
 
     // TODO should really be a boolean, investigate client issue
@@ -65,23 +57,17 @@ export class RequestedCommitParameters {
         if (!!this.branchUsed) {
             return this.branchUsed;
         }
-        this.branchUsed = this.newBranch === "true" ?
-            "atomist-" + new Date().getTime() :
-            this.branch;
+        this.branchUsed = this.newBranch === "true" ? "atomist-" + new Date().getTime() : this.branch;
         return this.branchUsed;
     }
 
-    get editMode(): EditMode {
+    get editMode(): editModes.EditMode {
         switch (this.presentAs) {
             case "pr":
-                return new editModes.PullRequest(
-                    this.branchToUse,
-                    this.commitMessage,
-                    this.commitMessage);
+                return new editModes.PullRequest(this.branchToUse, this.commitMessage, this.commitMessage);
             case "branch":
                 const bc: editModes.BranchCommit = { branch: this.branchToUse, message: this.commitMessage };
                 return bc;
         }
     }
-
 }

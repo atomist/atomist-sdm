@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019 Atomist, Inc.
+ * Copyright © 2020 Atomist, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,6 @@
  */
 
 import {
-    GitCommandGitProject,
-    GitHubRepoRef,
-    GitProject,
-    logger,
-    RemoteRepoRef,
-    Success,
-    TokenCredentials,
-} from "@atomist/automation-client";
-import {
     DelimitedWriteProgressLogDecorator,
     ExecuteGoal,
     ExecuteGoalResult,
@@ -34,18 +25,17 @@ import {
     SdmGoalEvent,
 } from "@atomist/sdm";
 import {
-    createGitTag,
-    github,
-    ProjectIdentifier,
-    readSdmVersion,
-} from "@atomist/sdm-core";
+    GitCommandGitProject,
+    GitHubRepoRef,
+    GitProject,
+    logger,
+    RemoteRepoRef,
+    Success,
+    TokenCredentials,
+} from "@atomist/sdm/lib/client";
+import { createGitTag, github, ProjectIdentifier, readSdmVersion } from "@atomist/sdm/lib/core";
 import * as semver from "semver";
-import {
-    ExecuteLogger,
-    executeLoggers,
-    gitExecuteLogger,
-    spawnExecuteLogger,
-} from "../support/executeLogger";
+import { ExecuteLogger, executeLoggers, gitExecuteLogger, spawnExecuteLogger } from "../support/executeLogger";
 
 async function loglog(log: ProgressLog, msg: string): Promise<void> {
     logger.debug(msg);
@@ -66,7 +56,8 @@ export async function rwlcVersion(gi: GoalInvocation): Promise<string> {
         gi.goalEvent.repo.providerId,
         gi.goalEvent.sha,
         gi.goalEvent.branch,
-        gi.context);
+        gi.context,
+    );
     return version;
 }
 
@@ -100,8 +91,8 @@ function preReleaseVersion(gi: GoalInvocation): string | undefined {
  */
 export function addBranchPreRelease(baseVersion: string, goalEvent: SdmGoalEvent): string {
     const branch = goalEvent.branch;
-    const branchSuffix = (branch === goalEvent.push.repo.defaultBranch) ? "" :
-        "branch-" + branch.replace(/[_/]/g, "-") + ".";
+    const branchSuffix =
+        branch === goalEvent.push.repo.defaultBranch ? "" : "branch-" + branch.replace(/[_/]/g, "-") + ".";
     const ts = formatDate();
     const prereleaseVersion = `${baseVersion}-${branchSuffix}${ts}`;
     return prereleaseVersion;
@@ -109,7 +100,7 @@ export function addBranchPreRelease(baseVersion: string, goalEvent: SdmGoalEvent
 
 export function isNextVersion(version: string): boolean {
     const preRelease = semver.prerelease(version);
-    return (preRelease && ["M", "RC"].includes(preRelease[0]));
+    return preRelease && ["M", "RC"].includes(preRelease[0]);
 }
 
 function releaseVersion(version: string): string {
@@ -127,7 +118,12 @@ export function executeReleaseTag(): ExecuteGoal {
             const version = await rwlcVersion(gi);
             const versionRelease = releaseOrPreRelease(version, gi);
             if (!(gi.goalEvent.push.after.tags || []).some(t => t.name === versionRelease)) {
-                await createGitTag({ project: p, message: gi.goalEvent.push.after.message, tag: versionRelease, log: gi.progressLog });
+                await createGitTag({
+                    project: p,
+                    message: gi.goalEvent.push.after.message,
+                    tag: versionRelease,
+                    log: gi.progressLog,
+                });
             }
             const commitTitle = gi.goalEvent.push.after.message.replace(/\n[\S\s]*/, "");
             const release = {
@@ -135,12 +131,17 @@ export function executeReleaseTag(): ExecuteGoal {
                 name: `${versionRelease}: ${commitTitle}`,
             };
             const rrr = p.id as RemoteRepoRef;
-            const targetUrl = `${rrr.url}/releases/tag/${versionRelease}`;
             const egr: ExecuteGoalResult = {
                 ...Success,
-                targetUrl,
+                externalUrls: [
+                    {
+                        label: "GitHub Release",
+                        url: `${rrr.url}/releases/tag/${versionRelease}`,
+                    },
+                ],
             };
-            return github.createRelease((credentials as TokenCredentials).token, id as GitHubRepoRef, release)
+            return github
+                .createRelease((credentials as TokenCredentials).token, id as GitHubRepoRef, release)
                 .then(() => egr);
         });
     };
@@ -151,8 +152,10 @@ export type IncrementPatchCommand = (p: GitProject, log: ProgressLog) => Promise
 /**
  * Increment patch level in project version.
  */
-export function executeReleaseVersion(projectIdentifier: ProjectIdentifier, incrementPatchCmd: IncrementPatchCommand): ExecuteGoal {
-
+export function executeReleaseVersion(
+    projectIdentifier: ProjectIdentifier,
+    incrementPatchCmd: IncrementPatchCommand,
+): ExecuteGoal {
     return async (gi: GoalInvocation): Promise<ExecuteGoalResult> => {
         const { configuration, credentials, id, context } = gi;
 
@@ -178,7 +181,8 @@ export function executeReleaseVersion(projectIdentifier: ProjectIdentifier, incr
 
             const pi = await projectIdentifier(p);
             if (pi.version !== versionRelease) {
-                const message = `current master version (${pi.version}) seems to have already been ` +
+                const message =
+                    `current master version (${pi.version}) seems to have already been ` +
                     `incremented after ${releaseVersion} release`;
                 await loglog(log, message);
                 return { ...Success, message };
@@ -190,9 +194,14 @@ export function executeReleaseVersion(projectIdentifier: ProjectIdentifier, incr
             }
 
             const postEls: ExecuteLogger[] = [
-                gitExecuteLogger(gp, () => gp.commit(`Version: increment after ${versionRelease} release
+                gitExecuteLogger(
+                    gp,
+                    () =>
+                        gp.commit(`Version: increment after ${versionRelease} release
 
-[atomist:generated]`), "commit"),
+[atomist:generated]`),
+                    "commit",
+                ),
                 gitExecuteLogger(gp, () => gp.push(), "push"),
             ];
             await loglog(log, `Incrementing version and committing for ${slug}`);

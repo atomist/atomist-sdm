@@ -15,11 +15,6 @@
  */
 
 import {
-    GitProject,
-    NoParameters,
-    Project,
-} from "@atomist/automation-client";
-import {
     allSatisfied,
     AutofixRegistration,
     CodeTransform,
@@ -29,8 +24,13 @@ import {
     StringCapturingProgressLog,
     ToDefaultBranch,
 } from "@atomist/sdm";
-import { IsInLocalMode } from "@atomist/sdm-core";
-import { IsNode } from "@atomist/sdm-pack-node";
+import {
+    GitProject,
+    NoParameters,
+    Project,
+} from "@atomist/sdm/lib/client";
+import { IsInLocalMode } from "@atomist/sdm/lib/core";
+import { IsNode } from "@atomist/sdm/lib/pack/node";
 import * as fs from "fs-extra";
 import * as lc from "license-checker";
 import * as _ from "lodash";
@@ -103,7 +103,7 @@ export function addThirdPartyLicenseTransform(): CodeTransform<NoParameters> {
                 if (licenses.startsWith("(") && licenses.endsWith(")")) {
                     licenses = licenses.slice(1, -1);
                 }
-                licenses = [...(licenses as string).split(" OR ")];
+                licenses = [...(licenses).split(" OR ")];
             }
 
             licenses.forEach(l => {

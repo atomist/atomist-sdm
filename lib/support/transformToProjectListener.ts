@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Success } from "@atomist/automation-client";
 import {
     AnyPush,
     CodeTransform,
@@ -24,6 +23,7 @@ import {
     TransformResult,
     TransformReturnable,
 } from "@atomist/sdm";
+import { Success } from "@atomist/sdm/lib/client";
 
 /**
  * Convert a CodeTransform to a GoalProjectListener

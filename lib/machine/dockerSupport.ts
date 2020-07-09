@@ -23,29 +23,13 @@ import {
     not,
     SoftwareDeliveryMachine,
 } from "@atomist/sdm";
-import {
-    DockerOptions,
-    HasDockerfile,
-} from "@atomist/sdm-pack-docker";
-import { IsNode } from "@atomist/sdm-pack-node";
-import { IsMaven } from "@atomist/sdm-pack-spring";
-import {
-    executeLoggers,
-    spawnExecuteLogger,
-    SpawnWatchCommand,
-} from "../support/executeLogger";
-import {
-    isOrgNamed,
-} from "../support/identityPushTests";
-import {
-    dockerBuild,
-    releaseDocker,
-} from "./goals";
-import {
-    ProjectRegistryInfo,
-    releaseOrPreRelease,
-    rwlcVersion,
-} from "./release";
+import { DockerRegistry, HasDockerfile } from "@atomist/sdm/lib/pack/docker";
+import { IsMaven } from "@atomist/sdm/lib/pack/jvm";
+import { IsNode } from "@atomist/sdm/lib/pack/node";
+import { executeLoggers, spawnExecuteLogger, SpawnWatchCommand } from "../support/executeLogger";
+import { isOrgNamed } from "../support/identityPushTests";
+import { dockerBuild, releaseDocker } from "./goals";
+import { ProjectRegistryInfo, releaseOrPreRelease, rwlcVersion } from "./release";
 
 /**
  * Add Docker implementations of goals to SDM.
@@ -54,16 +38,13 @@ import {
  * @return modified software delivery machine
  */
 export function addDockerSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMachine {
-
     const simpleDockerPushTest = allSatisfied(HasDockerfile, not(IsNode), not(IsMaven), isOrgNamed("atomist"));
 
     dockerBuild.with({
         name: "simple-docker-build",
-        options: {
-            ...sdm.configuration.sdm.docker.hub as DockerOptions,
-            push: true,
-            builder: "docker",
-        },
+        registry: sdm.configuration.sdm.docker.hub as DockerRegistry,
+        push: true,
+        builder: "docker",
         logInterpreter: LogSuppressor,
         pushTest: simpleDockerPushTest,
     });
@@ -71,13 +52,13 @@ export function addDockerSupport(sdm: SoftwareDeliveryMachine): SoftwareDelivery
     releaseDocker
         .with({
             name: "docker-release",
-            goalExecutor: executeReleaseDocker(sdm.configuration.sdm.docker.hub as DockerOptions),
+            goalExecutor: executeReleaseDocker(sdm.configuration.sdm.docker.hub as DockerRegistry),
             pushTest: allSatisfied(anySatisfied(IsNode, IsMaven), HasDockerfile),
             logInterpreter: LogSuppressor,
         })
         .with({
             name: "simple-docker-release",
-            goalExecutor: executeReleaseDocker(sdm.configuration.sdm.docker.hub as DockerOptions),
+            goalExecutor: executeReleaseDocker(sdm.configuration.sdm.docker.hub as DockerRegistry),
             pushTest: simpleDockerPushTest,
             logInterpreter: LogSuppressor,
         });
@@ -92,28 +73,35 @@ function dockerImage(p: ProjectRegistryInfo): string {
 /**
  * Pull, tag, and push docker image.
  */
-function executeReleaseDocker(options?: DockerOptions): ExecuteGoal {
+function executeReleaseDocker(dockerRegistry?: DockerRegistry): ExecuteGoal {
     return async (gi: GoalInvocation) => {
-        if (!options.registry) {
+        if (!dockerRegistry.registry) {
             throw new Error(`No registry defined in Docker options`);
         }
         const version = await rwlcVersion(gi);
         const image = dockerImage({
-            registry: options.registry,
+            registry: dockerRegistry.registry,
             name: gi.goalEvent.repo.name,
             version,
         });
 
         const loginArgs = [];
-        if (/[^A-Za-z0-9]/.test(options.registry)) {
-            loginArgs.push(options.registry);
+        if (/[^A-Za-z0-9]/.test(dockerRegistry.registry)) {
+            loginArgs.push(dockerRegistry.registry);
         }
 
         const loginCmds: SpawnWatchCommand[] = [
             {
                 cmd: {
                     command: "docker",
-                    args: ["login", "--username", options.user, "--password", options.password, ...loginArgs],
+                    args: [
+                        "login",
+                        "--username",
+                        dockerRegistry.user,
+                        "--password",
+                        dockerRegistry.password,
+                        ...loginArgs,
+                    ],
                 },
             },
             {
@@ -128,7 +116,7 @@ function executeReleaseDocker(options?: DockerOptions): ExecuteGoal {
 
         const versionRelease = releaseOrPreRelease(version, gi);
         const tag = dockerImage({
-            registry: options.registry,
+            registry: dockerRegistry.registry,
             name: gi.goalEvent.repo.name,
             version: versionRelease,
         });

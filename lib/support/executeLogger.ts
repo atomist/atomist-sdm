@@ -15,11 +15,6 @@
  */
 
 import {
-    GitCommandGitProject,
-    logger,
-    Success,
-} from "@atomist/automation-client";
-import {
     DelimitedWriteProgressLogDecorator,
     ExecuteGoalResult,
     ProgressLog,
@@ -27,6 +22,11 @@ import {
     SpawnLogCommand,
     SpawnLogOptions,
 } from "@atomist/sdm";
+import {
+    GitCommandGitProject,
+    logger,
+    Success,
+} from "@atomist/sdm/lib/client";
 
 export async function loglog(log: ProgressLog, msg: string): Promise<void> {
     logger.debug(msg);

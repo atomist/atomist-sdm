@@ -20,7 +20,7 @@ import {
     hasFileContaining,
     PushTest,
 } from "@atomist/sdm";
-import { IsTypeScript } from "@atomist/sdm-pack-node";
+import { IsTypeScript } from "@atomist/sdm/lib/pack/node";
 import {
     AddHeaderParameters,
     addHeaderTransform,

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { InMemoryProject } from "@atomist/automation-client";
 import { PushAwareParametersInvocation } from "@atomist/sdm";
+import { InMemoryProject } from "@atomist/sdm/lib/client";
 import * as minimatch from "minimatch";
 import * as assert from "power-assert";
 import {

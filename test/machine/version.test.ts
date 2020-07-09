@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { InMemoryProject } from "@atomist/automation-client";
 import { ProgressLog } from "@atomist/sdm";
+import { InMemoryProject } from "@atomist/sdm/lib/client";
 import * as assert from "power-assert";
 import { fileIncrementPatch } from "../../lib/machine/version";
 

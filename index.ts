@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { Configuration } from "@atomist/automation-client";
-import { CompressingGoalCache, ConfigureOptions, configureSdm } from "@atomist/sdm-core";
+import { Configuration } from "@atomist/sdm/lib/client";
+import { CompressingGoalCache, ConfigureOptions, configureSdm } from "@atomist/sdm/lib/core";
+import { GoogleCloudStorageGoalCacheArchiveStore } from "@atomist/sdm/lib/pack/gcp/cache";
 import { machine } from "./lib/machine/machine";
-import { GoogleCloudStorageGoalCacheArchiveStore } from "./lib/support/cache";
 
 const machineOptions: ConfigureOptions = {
     requiredConfigurationValues: [

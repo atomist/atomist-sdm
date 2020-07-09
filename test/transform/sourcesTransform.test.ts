@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { InMemoryProject } from "@atomist/automation-client";
+import { InMemoryProject } from "@atomist/sdm/lib/client";
 import * as fg from "fast-glob";
 import * as fs from "fs-extra";
 import * as path from "path";

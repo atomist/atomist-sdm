@@ -16,7 +16,7 @@
 
 import {
     InMemoryProject,
-} from "@atomist/automation-client";
+} from "@atomist/sdm/lib/client";
 import * as appRoot from "app-root-path";
 import * as fs from "fs-extra";
 import * as path from "path";

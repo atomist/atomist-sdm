@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Project } from "@atomist/automation-client";
 import {
     ExecuteGoalResult,
     LogSuppressor,
@@ -23,10 +22,11 @@ import {
     SdmGoalEvent,
     SoftwareDeliveryMachine,
 } from "@atomist/sdm";
+import { Project } from "@atomist/sdm/lib/client";
 import {
     ProjectIdentifier,
     ProjectVersionerRegistration,
-} from "@atomist/sdm-core";
+} from "@atomist/sdm/lib/core";
 import * as semver from "semver";
 import {
     releaseVersion,

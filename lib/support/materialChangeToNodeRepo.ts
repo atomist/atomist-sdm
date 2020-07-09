@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { logger } from "@atomist/automation-client";
 import {
     anyFileChangedSuchThat,
     anyFileChangedWithExtension,
@@ -22,6 +21,7 @@ import {
     pushTest,
     PushTest,
 } from "@atomist/sdm";
+import { logger } from "@atomist/sdm/lib/client";
 
 const FilesWithExtensionToWatch = ["ts", "tsx", "json", "graphql", "yaml", "yml"];
 const FilesToWatch = [

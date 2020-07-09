@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { logger } from "@atomist/automation-client";
 import {
     pushTest,
     PushTest,
 } from "@atomist/sdm";
+import { logger } from "@atomist/sdm/lib/client";
 
 export function isNamed(...names: string[]): PushTest {
     return pushTest(`Project name is one of these '${names.join(", ")}'`, async pci => {

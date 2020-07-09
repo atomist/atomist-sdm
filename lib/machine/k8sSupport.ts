@@ -14,21 +14,11 @@
  * limitations under the License.
  */
 
-import {
-    GitProject,
-    logger,
-} from "@atomist/automation-client";
-import {
-    ProductionEnvironment,
-    SdmGoalEvent,
-    StagingEnvironment,
-} from "@atomist/sdm";
-import {
-    KubernetesApplication,
-    KubernetesDeploy,
-} from "@atomist/sdm-pack-k8s";
-import { IsAtomistAutomationClient } from "@atomist/sdm-pack-node";
-import { IsMaven } from "@atomist/sdm-pack-spring";
+import { ProductionEnvironment, SdmGoalEvent, StagingEnvironment } from "@atomist/sdm";
+import { GitProject, logger } from "@atomist/sdm/lib/client";
+import { IsMaven } from "@atomist/sdm/lib/pack/jvm";
+import { KubernetesApplication, KubernetesDeploy } from "@atomist/sdm/lib/pack/k8s";
+import { IsAtomistAutomationClient } from "@atomist/sdm/lib/pack/node";
 import * as _ from "lodash";
 
 export const kubernetesDeployRegistrationStaging = {
@@ -66,7 +56,6 @@ export async function kubernetesApplicationData(
     goal: KubernetesDeploy,
     goalEvent: SdmGoalEvent,
 ): Promise<KubernetesApplication> {
-
     const name = goalEvent.repo.name;
     const ns = namespaceFromGoal(goalEvent);
     let port: number;
@@ -111,7 +100,6 @@ export async function orgVisualizerJobKubernetesApplicationData(
     goal: KubernetesDeploy,
     goalEvent: SdmGoalEvent,
 ): Promise<KubernetesApplication> {
-
     const name = `${goalEvent.repo.name}-job`;
     const ns = namespaceFromGoal(goalEvent);
     const port = 2866;
@@ -188,9 +176,9 @@ export function ingressFromGoal(repo: string, ns: string): Partial<KubernetesApp
     } else {
         return undefined;
     }
-    const tail = (ns === "production") ? "com" : "services";
+    const tail = ns === "production" ? "com" : "services";
     host = `${host}.atomist.${tail}`;
-    const secretName = (ns === "production") ? `star-atomist-${tail}` : `atomist-${tail}-tls`;
+    const secretName = ns === "production" ? `star-atomist-${tail}` : `atomist-${tail}-tls`;
     return {
         ingressSpec: {
             metadata: {
@@ -201,10 +189,12 @@ export function ingressFromGoal(repo: string, ns: string): Partial<KubernetesApp
             },
             spec: {
                 rules: [{ host }],
-                tls: [{
-                    hosts: [host],
-                    secretName,
-                }],
+                tls: [
+                    {
+                        hosts: [host],
+                        secretName,
+                    },
+                ],
             },
         },
         path,

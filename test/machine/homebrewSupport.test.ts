@@ -15,11 +15,11 @@
  */
 
 import {
-    InMemoryProject,
-} from "@atomist/automation-client";
-import {
     PushListenerInvocation,
 } from "@atomist/sdm";
+import {
+    InMemoryProject,
+} from "@atomist/sdm/lib/client";
 import * as appRoot from "app-root-path";
 import * as path from "path";
 import * as assert from "power-assert";

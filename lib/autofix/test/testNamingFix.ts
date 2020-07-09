@@ -15,16 +15,16 @@
  */
 
 import {
-    astUtils,
-    projectUtils,
-    TypeScriptES6FileParser,
-} from "@atomist/automation-client";
-import {
     AutofixRegistration,
     CodeTransform,
     CodeTransformRegistration,
 } from "@atomist/sdm";
-import { IsNode } from "@atomist/sdm-pack-node";
+import {
+    astUtils,
+    projectUtils,
+    TypeScriptES6FileParser,
+} from "@atomist/sdm/lib/client";
+import { IsNode } from "@atomist/sdm/lib/pack/node";
 
 /**
  * CodeTransform that renames tests

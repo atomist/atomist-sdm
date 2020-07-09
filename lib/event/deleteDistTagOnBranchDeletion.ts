@@ -15,6 +15,10 @@
  */
 
 import {
+    EventHandlerRegistration,
+    ProjectLoader,
+} from "@atomist/sdm";
+import {
     GitHubRepoRef,
     GraphQL,
     OnEvent,
@@ -22,15 +26,11 @@ import {
     Secret,
     Secrets,
     Success,
-} from "@atomist/automation-client";
-import {
-    EventHandlerRegistration,
-    ProjectLoader,
-} from "@atomist/sdm";
+} from "@atomist/sdm/lib/client";
 import {
     deleteBranchTag,
     NpmOptions,
-} from "@atomist/sdm-pack-node";
+} from "@atomist/sdm/lib/pack/node";
 
 import { OnDeletedBranch } from "../typings/types";
 

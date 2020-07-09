@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Project } from "@atomist/automation-client";
 import { allSatisfied, AutofixRegistration, not, ToDefaultBranch } from "@atomist/sdm";
+import { Project } from "@atomist/sdm/lib/client";
 import * as appRoot from "app-root-path";
 import * as fs from "fs-extra";
 import * as path from "path";

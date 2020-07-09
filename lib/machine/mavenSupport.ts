@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { GitProject } from "@atomist/automation-client";
 import { ExecuteGoalResult, LogSuppressor, ProgressLog, SoftwareDeliveryMachine, spawnLog } from "@atomist/sdm";
-import { DefaultDockerImageNameCreator, DockerOptions } from "@atomist/sdm-pack-docker";
+import { GitProject } from "@atomist/sdm/lib/client";
+import { DefaultDockerImageNameCreator, DockerRegistry } from "@atomist/sdm/lib/pack/docker";
 import {
     IsMaven,
     MavenProjectIdentifier,
     MavenProjectVersioner,
     MvnPackage,
     MvnVersion,
-} from "@atomist/sdm-pack-spring";
+} from "@atomist/sdm/lib/pack/jvm";
 import { executeGoalCommandsInProject } from "../support/executeGoal";
 import { build, dockerBuild, noOpGoalExecutor, publish, release, releaseDocs, releaseVersion, version } from "./goals";
 import { executeReleaseVersion } from "./release";
@@ -58,12 +58,10 @@ export function addMavenSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryM
         .with({
             ...MavenDefaultOptions,
             name: "mvn-docker-build",
-            imageNameCreator: DefaultDockerImageNameCreator,
-            options: {
-                ...(sdm.configuration.sdm.docker.hub as DockerOptions),
-                push: true,
-                builder: "docker",
-            },
+            dockerImageNameCreator: DefaultDockerImageNameCreator,
+            registry: sdm.configuration.sdm.docker.hub as DockerRegistry,
+            push: true,
+            builder: "docker",
         })
         .withProjectListener(MvnVersion)
         .withProjectListener(MvnPackage);

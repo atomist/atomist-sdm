@@ -22,15 +22,7 @@
     "url": "https://github.com/atomist/atomist-sdm/issues"
   },
   "dependencies": {
-    "@atomist/automation-client": "1.8.0-master.20191011121753",
-    "@atomist/microgrammar": "^1.2.1",
-    "@atomist/sdm": "^1.8.0-master.20191102194220",
-    "@atomist/sdm-core": "^1.8.0-master.20191104170555",
-    "@atomist/sdm-pack-build": "1.0.7-master.20191011105702",
-    "@atomist/sdm-pack-docker": "^1.2.0",
-    "@atomist/sdm-pack-k8s": "^1.10.0",
-    "@atomist/sdm-pack-node": "1.2.0-master.20190921230202",
-    "@atomist/sdm-pack-spring": "^2.0.1",
+    "@atomist/sdm": "2.0.0-master.20200713202453",
     "@atomist/slack-messages": "^1.1.1",
     "@google-cloud/storage": "^3.0.2",
     "@types/app-root-path": "^1.2.4",

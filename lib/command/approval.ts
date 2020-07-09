@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019 Atomist, Inc.
+ * Copyright © 2020 Atomist, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,36 +14,20 @@
  * limitations under the License.
  */
 
+import { CommandHandlerRegistration, slackFooter, slackSuccessMessage, slackWarningMessage } from "@atomist/sdm";
 import {
     addressEvent,
     AutomationContextAware,
     Parameter,
     Parameters,
     QueryNoCacheOptions,
-} from "@atomist/automation-client";
-import {
-    CommandHandlerRegistration,
-    slackFooter,
-    slackSuccessMessage,
-    slackWarningMessage,
-} from "@atomist/sdm";
-import { GoalRootType } from "@atomist/sdm/lib/api/goal/SdmGoalMessage";
-import {
-    bold,
-    channel,
-    codeLine,
-    italic,
-    url,
-} from "@atomist/slack-messages";
+} from "@atomist/sdm/lib/client";
+import { bold, channel, codeLine, italic, url } from "@atomist/slack-messages";
 import * as _ from "lodash";
-import {
-    SdmGoal,
-    SdmGoalState,
-} from "../typings/types";
+import { SdmGoal, SdmGoalState } from "../typings/types";
 
 @Parameters()
 class ApprovalParameters {
-
     @Parameter({ displayable: false, required: true })
     public goalSetId: string;
 
@@ -55,7 +39,6 @@ class ApprovalParameters {
 
     @Parameter({ required: false })
     public msgId: string;
-
 }
 
 export const ApprovalCommand: CommandHandlerRegistration<ApprovalParameters> = {
@@ -63,16 +46,17 @@ export const ApprovalCommand: CommandHandlerRegistration<ApprovalParameters> = {
     intent: [],
     paramsMaker: ApprovalParameters,
     listener: async ci => {
-
-        const goal = (await ci.context.graphClient.query<SdmGoal.Query, SdmGoal.Variables>({
-            name: "SdmGoal",
-            variables: {
-                goalSetId: [ci.parameters.goalSetId],
-                state: [ci.parameters.goalState],
-                uniqueName: [ci.parameters.goalUniqueName],
-            },
-            options: QueryNoCacheOptions,
-        })).SdmGoal[0];
+        const goal = (
+            await ci.context.graphClient.query<SdmGoal.Query, SdmGoal.Variables>({
+                name: "SdmGoal",
+                variables: {
+                    goalSetId: [ci.parameters.goalSetId],
+                    state: [ci.parameters.goalState],
+                    uniqueName: [ci.parameters.goalUniqueName],
+                },
+                options: QueryNoCacheOptions,
+            })
+        ).SdmGoal[0];
 
         const updatedGoal = _.cloneDeep(goal);
         updatedGoal.ts = Date.now();
@@ -90,19 +74,24 @@ export const ApprovalCommand: CommandHandlerRegistration<ApprovalParameters> = {
 
         updatedGoal.data = JSON.stringify({ approved: true });
 
-        await ci.context.messageClient.send(updatedGoal, addressEvent(GoalRootType));
+        await ci.context.messageClient.send(updatedGoal, addressEvent("SdmGoal"));
         await ci.context.messageClient.respond(
             slackSuccessMessage(
                 "Approve Goal",
-                `Successfully approved goal ${italic(goal.url ? url(goal.url, goal.name) : goal.name)} on ${
-                codeLine(goal.sha.slice(0, 7))} of ${bold(`${goal.repo.owner}/${goal.repo.name}/${goal.branch}`)}`,
+                `Successfully approved goal ${italic(goal.url ? url(goal.url, goal.name) : goal.name)} on ${codeLine(
+                    goal.sha.slice(0, 7),
+                )} of ${bold(`${goal.repo.owner}/${goal.repo.name}/${goal.branch}`)}`,
                 {
-                    footer: `${slackFooter()} \u00B7 ${goal.goalSet.toLowerCase()} \u00B7 ${goal.goalSetId.slice(0, 7)} \u00B7 ${
-                        channel(goal.approval.channelId)}`,
-                }),
+                    footer: `${slackFooter()} \u00B7 ${goal.goalSet.toLowerCase()} \u00B7 ${goal.goalSetId.slice(
+                        0,
+                        7,
+                    )} \u00B7 ${channel(goal.approval.channelId)}`,
+                },
+            ),
             {
                 id: ci.parameters.msgId,
-            });
+            },
+        );
     },
 };
 
@@ -111,22 +100,23 @@ export const CancelApprovalCommand: CommandHandlerRegistration<ApprovalParameter
     intent: [],
     paramsMaker: ApprovalParameters,
     listener: async ci => {
-
-        const goal = (await ci.context.graphClient.query<SdmGoal.Query, SdmGoal.Variables>({
-            name: "SdmGoal",
-            variables: {
-                goalSetId: [ci.parameters.goalSetId],
-                state: [ci.parameters.goalState],
-                uniqueName: [ci.parameters.goalUniqueName],
-            },
-            options: QueryNoCacheOptions,
-        })).SdmGoal[0];
+        const goal = (
+            await ci.context.graphClient.query<SdmGoal.Query, SdmGoal.Variables>({
+                name: "SdmGoal",
+                variables: {
+                    goalSetId: [ci.parameters.goalSetId],
+                    state: [ci.parameters.goalState],
+                    uniqueName: [ci.parameters.goalUniqueName],
+                },
+                options: QueryNoCacheOptions,
+            })
+        ).SdmGoal[0];
 
         const updatedGoal = _.cloneDeep(goal);
         updatedGoal.ts = Date.now();
         updatedGoal.version = updatedGoal.version + 1;
 
-        const actx = ci.context as any as AutomationContextAware;
+        const actx = (ci.context as any) as AutomationContextAware;
         const prov: SdmGoal.Provenance = {
             name: actx.context.operation,
             registration: actx.context.name,
@@ -144,19 +134,26 @@ export const CancelApprovalCommand: CommandHandlerRegistration<ApprovalParameter
             updatedGoal.preApproval = undefined;
         }
 
-        await ci.context.messageClient.send(updatedGoal, addressEvent(GoalRootType));
+        await ci.context.messageClient.send(updatedGoal, addressEvent("SdmGoal"));
         await ci.context.messageClient.respond(
             slackWarningMessage(
                 "Approve Goal",
-                `Successfully canceled approval of goal ${italic(goal.url ? url(goal.url, goal.name) : goal.name)} on ${
-                codeLine(goal.sha.slice(0, 7))} of ${bold(`${goal.repo.owner}/${goal.repo.name}/${goal.branch}`)} \u00B7 ${
-                    channel(goal.approval.channelId)}`,
+                `Successfully canceled approval of goal ${italic(
+                    goal.url ? url(goal.url, goal.name) : goal.name,
+                )} on ${codeLine(goal.sha.slice(0, 7))} of ${bold(
+                    `${goal.repo.owner}/${goal.repo.name}/${goal.branch}`,
+                )} \u00B7 ${channel(goal.approval.channelId)}`,
                 ci.context,
                 {
-                    footer: `${slackFooter()} \u00B7 ${goal.goalSet.toLowerCase()} \u00B7 ${goal.goalSetId.slice(0, 7)}`,
-                }),
+                    footer: `${slackFooter()} \u00B7 ${goal.goalSet.toLowerCase()} \u00B7 ${goal.goalSetId.slice(
+                        0,
+                        7,
+                    )}`,
+                },
+            ),
             {
                 id: ci.parameters.msgId,
-            });
+            },
+        );
     },
 };

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Parameter, Parameters, Project, projectUtils } from "@atomist/automation-client";
 import { PushAwareParametersInvocation } from "@atomist/sdm";
+import { Parameter, Parameters, Project, projectUtils } from "@atomist/sdm/lib/client";
 import * as minimatch from "minimatch";
 import { RequestedCommitParameters } from "./RequestedCommitParameters";
 

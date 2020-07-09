@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { SdmGoalEvent } from "@atomist/sdm";
 import {
     GitProject,
     InMemoryProject,
-} from "@atomist/automation-client";
-import { SdmGoalEvent } from "@atomist/sdm";
+} from "@atomist/sdm/lib/client";
 import {
     KubernetesApplication,
     KubernetesDeploy,
-} from "@atomist/sdm-pack-k8s";
+} from "@atomist/sdm/lib/pack/k8s";
 import * as assert from "power-assert";
 import {
     ingressFromGoal,
