@@ -22,7 +22,7 @@
     "url": "https://github.com/atomist/atomist-sdm/issues"
   },
   "dependencies": {
-    "@atomist/sdm": "2.0.0-master.20200714021215",
+    "@atomist/sdm": "^2.0.0-sync-repo-github-app.20200312140329",
     "@atomist/slack-messages": "^1.1.1",
     "@google-cloud/storage": "^3.0.2",
     "@types/app-root-path": "^1.2.4",
@@ -35,7 +35,7 @@
     "fs-extra": "^8.0.1",
     "json-stringify-safe": "^5.0.1",
     "license-checker": "^25.0.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "minimatch": "^3.0.4",
     "semver": "^6.1.0",
     "spdx-license-list": "^6.0.0"
