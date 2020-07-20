@@ -34,7 +34,7 @@ import { githubGoalStatusSupport } from "@atomist/sdm/lib/pack/github-goal-statu
 import { goalStateSupport } from "@atomist/sdm/lib/pack/goal-state";
 import { IsMaven, MaterialChangeToJavaRepo } from "@atomist/sdm/lib/pack/jvm";
 import { k8sGoalSchedulingSupport } from "@atomist/sdm/lib/pack/k8s";
-import { IsAtomistAutomationClient, IsNode } from "@atomist/sdm/lib/pack/node";
+import { IsNode } from "@atomist/sdm/lib/pack/node";
 import { notificationSupport } from "@atomist/sdm/lib/pack/notification";
 import { bold, channel, codeLine, italic, url } from "@atomist/slack-messages";
 import { ApprovalCommand, CancelApprovalCommand } from "../command/approval";
@@ -160,17 +160,17 @@ export function machine(configuration: SoftwareDeliveryMachineConfiguration): So
             .setGoals(SimplifiedKubernetesDeployGoals),
 
         // Deploy org-visualizer
-        whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, IsAtomistAutomationClient, isNamed("aspect-sdm"))
+        whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, isNamed("aspect-sdm"))
             .itMeans("Deploy")
             .setGoals(OrgVisualizerKubernetesDeployGoals),
 
         // Deploy k8s-sdm to all the clusters
-        whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, IsAtomistAutomationClient, isNamed("k8s-sdm"))
+        whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, isNamed("k8s-sdm"))
             .itMeans("Multi Cluster Deploy")
             .setGoals(MultiKubernetesDeployGoals),
 
         // Deploy demo-sdm to demo cluster
-        whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, IsAtomistAutomationClient, isNamed("demo-sdm"))
+        whenPushSatisfies(IsNode, HasDockerfile, ToDefaultBranch, isNamed("demo-sdm"))
             .itMeans("Demo Cluster Deploy")
             .setGoals(DemoKubernetesDeployGoals),
 

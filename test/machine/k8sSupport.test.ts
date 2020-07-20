@@ -186,7 +186,7 @@ describe("k8sSupport", () => {
         it("should detect atomist-sdm", async () => {
             const a: KubernetesApplication = {} as any;
             const p: GitProject = InMemoryProject.of(
-                { path: "package.json", content: '{"dependencies":{"@atomist/automation-client":"*"}}' },
+                { path: "package.json", content: '{"dependencies":{"@atomist/sdm":"^2.0.0"}}' },
             ) as any;
             const g: KubernetesDeploy = {} as any;
             const v: SdmGoalEvent = {
@@ -201,33 +201,6 @@ describe("k8sSupport", () => {
                 name: "atomist-sdm",
                 port: 2866,
                 ns: "sdm",
-                deploymentSpec: {
-                    spec: {
-                        replicas: 1,
-                    },
-                },
-            };
-            assert.deepStrictEqual(d, e);
-        });
-
-        it("should detect atomist-internal-sdm", async () => {
-            const a: KubernetesApplication = {} as any;
-            const p: GitProject = InMemoryProject.of(
-                { path: "package.json", content: '{"dependencies":{"@atomist/automation-client":"*"}}' },
-            ) as any;
-            const g: KubernetesDeploy = {} as any;
-            const v: SdmGoalEvent = {
-                environment: "1-staging",
-                repo: {
-                    name: "atomist-internal-sdm",
-                },
-            } as any;
-            const d = await kubernetesApplicationData(a, p, g, v);
-            assert(d);
-            const e = {
-                name: "atomist-internal-sdm",
-                port: 2866,
-                ns: "sdm-testing",
                 deploymentSpec: {
                     spec: {
                         replicas: 1,
