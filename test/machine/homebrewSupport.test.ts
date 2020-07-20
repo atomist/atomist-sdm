@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019 Atomist, Inc.
+ * Copyright © 2020 Atomist, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,85 +14,89 @@
  * limitations under the License.
  */
 
-import {
-    PushListenerInvocation,
-} from "@atomist/sdm";
-import {
-    InMemoryProject,
-} from "@atomist/sdm/lib/client";
+import { PushListenerInvocation } from "@atomist/sdm";
+import { InMemoryProject } from "@atomist/sdm/lib/client";
 import * as appRoot from "app-root-path";
 import * as path from "path";
 import * as assert from "power-assert";
 import {
-    fileSha256,
-    HasHomebrewFormula,
-    restoreBottles,
+	fileSha256,
+	HasHomebrewFormula,
+	restoreBottles,
 } from "../../lib/machine/homebrewSupport";
 
 describe("homebrewSupport", () => {
+	describe("HasHomeBrewFormula", () => {
+		it("should not find a formula in an empty project", async () => {
+			const p = InMemoryProject.of();
+			const pi: PushListenerInvocation = { project: p } as any;
+			const r = await HasHomebrewFormula.mapping(pi);
+			assert(!r);
+		});
 
-    describe("HasHomeBrewFormula", () => {
+		it("should not find a formula in a project without one", async () => {
+			const p = InMemoryProject.of(
+				{ path: "package.json", content: "{}" },
+				{ path: "README.md", content: "# Nothing to see here\n" },
+				{ path: "src/stuff.rb", content: "# Nothing to see here\n" },
+			);
+			const pi: PushListenerInvocation = { project: p } as any;
+			const r = await HasHomebrewFormula.mapping(pi);
+			assert(!r);
+		});
 
-        it("should not find a formula in an empty project", async () => {
-            const p = InMemoryProject.of();
-            const pi: PushListenerInvocation = { project: p } as any;
-            const r = await HasHomebrewFormula.mapping(pi);
-            assert(!r);
-        });
+		it("should find a formula", async () => {
+			const p = InMemoryProject.of(
+				{ path: "package.json", content: "{}" },
+				{
+					path: ".atomist/homebrew/cli.rb",
+					content: "# Nothing to see here\n",
+				},
+				{ path: "README.md", content: "# Nothing to see here\n" },
+			);
+			const pi: PushListenerInvocation = { project: p } as any;
+			const r = await HasHomebrewFormula.mapping(pi);
+			assert(r);
+		});
 
-        it("should not find a formula in a project without one", async () => {
-            const p = InMemoryProject.of(
-                { path: "package.json", content: "{}" },
-                { path: "README.md", content: "# Nothing to see here\n" },
-                { path: "src/stuff.rb", content: "# Nothing to see here\n" },
-            );
-            const pi: PushListenerInvocation = { project: p } as any;
-            const r = await HasHomebrewFormula.mapping(pi);
-            assert(!r);
-        });
+		it("should return true if multiple formula exist", async () => {
+			const p = InMemoryProject.of(
+				{ path: "package.json", content: "{}" },
+				{
+					path: ".atomist/homebrew/cli.rb",
+					content: "# Nothing to see here\n",
+				},
+				{ path: "README.md", content: "# Nothing to see here\n" },
+				{ path: "src/stuff.rb", content: "# Nothing to see here\n" },
+				{
+					path: ".atomist/homebrew/other.rb",
+					content: "# Nothing to see here\n",
+				},
+			);
+			const pi: PushListenerInvocation = { project: p } as any;
+			const r = await HasHomebrewFormula.mapping(pi);
+			assert(r);
+		});
+	});
 
-        it("should find a formula", async () => {
-            const p = InMemoryProject.of(
-                { path: "package.json", content: "{}" },
-                { path: ".atomist/homebrew/cli.rb", content: "# Nothing to see here\n" },
-                { path: "README.md", content: "# Nothing to see here\n" },
-            );
-            const pi: PushListenerInvocation = { project: p } as any;
-            const r = await HasHomebrewFormula.mapping(pi);
-            assert(r);
-        });
+	describe("fileSha256", () => {
+		it("should compute the proper hash", async () => {
+			const sha = await fileSha256(path.join(appRoot.path, "LICENSE"));
+			const e =
+				"cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30";
+			assert(sha === e);
+		});
+	});
 
-        it("should return true if multiple formula exist", async () => {
-            const p = InMemoryProject.of(
-                { path: "package.json", content: "{}" },
-                { path: ".atomist/homebrew/cli.rb", content: "# Nothing to see here\n" },
-                { path: "README.md", content: "# Nothing to see here\n" },
-                { path: "src/stuff.rb", content: "# Nothing to see here\n" },
-                { path: ".atomist/homebrew/other.rb", content: "# Nothing to see here\n" },
-            );
-            const pi: PushListenerInvocation = { project: p } as any;
-            const r = await HasHomebrewFormula.mapping(pi);
-            assert(r);
-        });
+	describe("restoreBottles", () => {
+		const l: any = {
+			write: () => {
+				return;
+			},
+		};
 
-    });
-
-    describe("fileSha256", () => {
-
-        it("should compute the proper hash", async () => {
-            const sha = await fileSha256(path.join(appRoot.path, "LICENSE"));
-            const e = "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30";
-            assert(sha === e);
-        });
-
-    });
-
-    describe("restoreBottles", () => {
-
-        const l: any = { write: () => { } };
-
-        it("should remove bottle section if no bottles", () => {
-            const u = `require "language/node"
+		it("should remove bottle section if no bottles", () => {
+			const u = `require "language/node"
 
 class AtomistCli < Formula
   desc "The Atomist CLI"
@@ -115,11 +119,11 @@ class AtomistCli < Formula
     assert_predicate bin/"atomist", :exist?
     assert_predicate bin/"atomist", :executable?
     skill_output = shell_output("#{bin}/atomist show skills")
-    assert_match(/\d+ commands are available from \d+ connected SDMs/, skill_output)
+    assert_match(/\\d+ commands are available from \\d+ connected SDMs/, skill_output)
   end
 end
 `;
-            const b = `require "language/node"
+			const b = `require "language/node"
 
 class AtomistCli < Formula
   desc "The Atomist CLI"
@@ -139,12 +143,12 @@ class AtomistCli < Formula
     assert_predicate bin/"atomist", :exist?
     assert_predicate bin/"atomist", :executable?
     skill_output = shell_output("#{bin}/atomist show skills")
-    assert_match(/\d+ commands are available from \d+ connected SDMs/, skill_output)
+    assert_match(/\\d+ commands are available from \\d+ connected SDMs/, skill_output)
   end
 end
 `;
-            const n = restoreBottles(u, b, l);
-            const e = `require "language/node"
+			const n = restoreBottles(u, b, l);
+			const e = `require "language/node"
 
 class AtomistCli < Formula
   desc "The Atomist CLI"
@@ -164,15 +168,15 @@ class AtomistCli < Formula
     assert_predicate bin/"atomist", :exist?
     assert_predicate bin/"atomist", :executable?
     skill_output = shell_output("#{bin}/atomist show skills")
-    assert_match(/\d+ commands are available from \d+ connected SDMs/, skill_output)
+    assert_match(/\\d+ commands are available from \\d+ connected SDMs/, skill_output)
   end
 end
 `;
-            assert(n === e);
-        });
+			assert(n === e);
+		});
 
-        it("should handle surrounding lines properly", () => {
-            const u = `require "language/node"
+		it("should handle surrounding lines properly", () => {
+			const u = `require "language/node"
 
 class AtomistCli < Formula
   desc "The Atomist CLI"
@@ -194,11 +198,11 @@ class AtomistCli < Formula
     assert_predicate bin/"atomist", :exist?
     assert_predicate bin/"atomist", :executable?
     skill_output = shell_output("#{bin}/atomist show skills")
-    assert_match(/\d+ commands are available from \d+ connected SDMs/, skill_output)
+    assert_match(/\\d+ commands are available from \\d+ connected SDMs/, skill_output)
   end
 end
 `;
-            const b = `require "language/node"
+			const b = `require "language/node"
 
 class AtomistCli < Formula
   desc "The Atomist CLI"
@@ -218,12 +222,12 @@ class AtomistCli < Formula
     assert_predicate bin/"atomist", :exist?
     assert_predicate bin/"atomist", :executable?
     skill_output = shell_output("#{bin}/atomist show skills")
-    assert_match(/\d+ commands are available from \d+ connected SDMs/, skill_output)
+    assert_match(/\\d+ commands are available from \\d+ connected SDMs/, skill_output)
   end
 end
 `;
-            const n = restoreBottles(u, b, l);
-            const e = `require "language/node"
+			const n = restoreBottles(u, b, l);
+			const e = `require "language/node"
 
 class AtomistCli < Formula
   desc "The Atomist CLI"
@@ -243,15 +247,15 @@ class AtomistCli < Formula
     assert_predicate bin/"atomist", :exist?
     assert_predicate bin/"atomist", :executable?
     skill_output = shell_output("#{bin}/atomist show skills")
-    assert_match(/\d+ commands are available from \d+ connected SDMs/, skill_output)
+    assert_match(/\\d+ commands are available from \\d+ connected SDMs/, skill_output)
   end
 end
 `;
-            assert(n === e);
-        });
+			assert(n === e);
+		});
 
-        it("should restore bottles", () => {
-            const u = `require "language/node"
+		it("should restore bottles", () => {
+			const u = `require "language/node"
 
 class AtomistCli < Formula
   desc "The Atomist CLI"
@@ -274,11 +278,11 @@ class AtomistCli < Formula
     assert_predicate bin/"atomist", :exist?
     assert_predicate bin/"atomist", :executable?
     skill_output = shell_output("#{bin}/atomist show skills")
-    assert_match(/\d+ commands are available from \d+ connected SDMs/, skill_output)
+    assert_match(/\\d+ commands are available from \\d+ connected SDMs/, skill_output)
   end
 end
 `;
-            const b = `require "language/node"
+			const b = `require "language/node"
 
 class AtomistCli < Formula
   desc "The Atomist CLI"
@@ -304,12 +308,12 @@ class AtomistCli < Formula
     assert_predicate bin/"atomist", :exist?
     assert_predicate bin/"atomist", :executable?
     skill_output = shell_output("#{bin}/atomist show skills")
-    assert_match(/\d+ commands are available from \d+ connected SDMs/, skill_output)
+    assert_match(/\\d+ commands are available from \\d+ connected SDMs/, skill_output)
   end
 end
 `;
-            const n = restoreBottles(u, b, l);
-            const e = `require "language/node"
+			const n = restoreBottles(u, b, l);
+			const e = `require "language/node"
 
 class AtomistCli < Formula
   desc "The Atomist CLI"
@@ -335,13 +339,11 @@ class AtomistCli < Formula
     assert_predicate bin/"atomist", :exist?
     assert_predicate bin/"atomist", :executable?
     skill_output = shell_output("#{bin}/atomist show skills")
-    assert_match(/\d+ commands are available from \d+ connected SDMs/, skill_output)
+    assert_match(/\\d+ commands are available from \\d+ connected SDMs/, skill_output)
   end
 end
 `;
-            assert(n === e);
-        });
-
-    });
-
+			assert(n === e);
+		});
+	});
 });

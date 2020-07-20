@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-    LogSuppressor,
-    SoftwareDeliveryMachine,
-} from "@atomist/sdm";
+import { LogSuppressor, SoftwareDeliveryMachine } from "@atomist/sdm";
 import { releaseTag } from "./goals";
 import { executeReleaseTag } from "./release";
 
@@ -27,13 +24,14 @@ import { executeReleaseTag } from "./release";
  * @param sdm Software Delivery machine to modify
  * @return modified software delivery machine
  */
-export function addGithubSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMachine {
+export function addGithubSupport(
+	sdm: SoftwareDeliveryMachine,
+): SoftwareDeliveryMachine {
+	releaseTag.with({
+		name: "tag-release",
+		goalExecutor: executeReleaseTag(),
+		logInterpreter: LogSuppressor,
+	});
 
-    releaseTag.with({
-        name: "tag-release",
-        goalExecutor: executeReleaseTag(),
-        logInterpreter: LogSuppressor,
-    });
-
-    return sdm;
+	return sdm;
 }

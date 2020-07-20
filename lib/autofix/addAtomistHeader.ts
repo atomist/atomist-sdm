@@ -15,33 +15,38 @@
  */
 
 import {
-    allSatisfied,
-    AutofixRegistration,
-    hasFileContaining,
-    PushTest,
+	allSatisfied,
+	AutofixRegistration,
+	hasFileContaining,
+	PushTest,
 } from "@atomist/sdm";
 import { IsTypeScript } from "@atomist/sdm/lib/pack/node";
-import {
-    AddHeaderParameters,
-    addHeaderTransform,
-} from "./addHeader";
+import { AddHeaderParameters, addHeaderTransform } from "./addHeader";
 
 export const LicenseFilename = "LICENSE";
-export const AddAtomistTypeScriptHeader: AutofixRegistration =
-    addAtomistHeader("TypeScript header", "**/*.ts", IsTypeScript);
+export const AddAtomistTypeScriptHeader: AutofixRegistration = addAtomistHeader(
+	"TypeScript header",
+	"**/*.ts",
+	IsTypeScript,
+);
 
-export function addAtomistHeader(name: string,
-                                 glob: string,
-                                 pushTest: PushTest): AutofixRegistration<AddHeaderParameters> {
-    const parametersInstance = new AddHeaderParameters();
-    parametersInstance.glob = glob;
-    parametersInstance.excludeGlob = "**/*.d.ts";
-    parametersInstance.onlyChangedFiles = true;
-    return {
-        name,
-        pushTest: allSatisfied(pushTest, hasFileContaining(LicenseFilename, /Apache License/)),
-        // Ignored any parameters passed in, which will be undefined in an autofix, and provide predefined parameters
-        transform: addHeaderTransform,
-        parametersInstance,
-    };
+export function addAtomistHeader(
+	name: string,
+	glob: string,
+	pushTest: PushTest,
+): AutofixRegistration<AddHeaderParameters> {
+	const parametersInstance = new AddHeaderParameters();
+	parametersInstance.glob = glob;
+	parametersInstance.excludeGlob = "**/*.d.ts";
+	parametersInstance.onlyChangedFiles = true;
+	return {
+		name,
+		pushTest: allSatisfied(
+			pushTest,
+			hasFileContaining(LicenseFilename, /Apache License/),
+		),
+		// Ignored any parameters passed in, which will be undefined in an autofix, and provide predefined parameters
+		transform: addHeaderTransform,
+		parametersInstance,
+	};
 }

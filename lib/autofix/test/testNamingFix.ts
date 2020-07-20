@@ -15,14 +15,14 @@
  */
 
 import {
-    AutofixRegistration,
-    CodeTransform,
-    CodeTransformRegistration,
+	AutofixRegistration,
+	CodeTransform,
+	CodeTransformRegistration,
 } from "@atomist/sdm";
 import {
-    astUtils,
-    projectUtils,
-    TypeScriptES6FileParser,
+	astUtils,
+	projectUtils,
+	TypeScriptES6FileParser,
 } from "@atomist/sdm/lib/client";
 import { IsNode } from "@atomist/sdm/lib/pack/node";
 
@@ -30,27 +30,30 @@ import { IsNode } from "@atomist/sdm/lib/pack/node";
  * CodeTransform that renames tests
  */
 const RenameTestsTransform: CodeTransform = async project => {
-    await astUtils.doWithAllMatches(project, TypeScriptES6FileParser,
-        "test/**/*.ts",
-        "//ImportDeclaration//StringLiteral",
-        m => {
-            if (!m.$value.includes("/lib")) {
-                m.$value = m.$value.replace(/Test$/, ".test");
-            }
-        });
-    return projectUtils.doWithFiles(project, "test/**/*.ts", async f => {
-        return f.setPath(f.path.replace(/Test\.ts$/, ".test.ts"));
-    });
+	await astUtils.doWithAllMatches(
+		project,
+		TypeScriptES6FileParser,
+		"test/**/*.ts",
+		"//ImportDeclaration//StringLiteral",
+		m => {
+			if (!m.$value.includes("/lib")) {
+				m.$value = m.$value.replace(/Test$/, ".test");
+			}
+		},
+	);
+	return projectUtils.doWithFiles(project, "test/**/*.ts", async f => {
+		return f.setPath(f.path.replace(/Test\.ts$/, ".test.ts"));
+	});
 };
 
 export const RenameTestFix: AutofixRegistration = {
-    name: "TypeScript tests",
-    pushTest: IsNode,
-    transform: RenameTestsTransform,
+	name: "TypeScript tests",
+	pushTest: IsNode,
+	transform: RenameTestsTransform,
 };
 
 export const RenameTest: CodeTransformRegistration = {
-    name: "RenameTest",
-    intent: "rename tests",
-    transform: RenameTestsTransform,
+	name: "RenameTest",
+	intent: "rename tests",
+	transform: RenameTestsTransform,
 };

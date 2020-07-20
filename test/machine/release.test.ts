@@ -14,65 +14,59 @@
  * limitations under the License.
  */
 
-import {
-    GoalInvocation,
-    SdmGoalEvent,
-} from "@atomist/sdm";
+import { GoalInvocation, SdmGoalEvent } from "@atomist/sdm";
 import * as assert from "assert";
 import { releaseOrPreRelease } from "../../lib/machine/release";
 
 describe("release", () => {
+	describe("releaseOrPreRelease", () => {
+		it("should correctly find milestone tag", () => {
+			const goal: SdmGoalEvent = ({
+				push: {
+					after: {
+						tags: [
+							{ name: "1.0.0-201812921239323" },
+							{ name: "1.0.0-M.1" },
+						],
+					},
+				},
+			} as any) as SdmGoalEvent;
+			const gi: GoalInvocation = ({
+				goalEvent: goal,
+			} as any) as GoalInvocation;
 
-    describe("releaseOrPreRelease", () => {
+			const version = releaseOrPreRelease("1.0.0", gi);
+			assert.strictEqual(version, "1.0.0-M.1");
+		});
 
-        it("should correctly find milestone tag", () => {
-            const goal: SdmGoalEvent = {
-                push: {
-                    after: {
-                        tags: [{ name: "1.0.0-201812921239323" }, { name: "1.0.0-M.1"} ],
-                    },
-                },
-            } as any as SdmGoalEvent;
-            const gi: GoalInvocation = {
-                goalEvent: goal,
-            } as any as GoalInvocation;
+		it("should correctly find rc tag", () => {
+			const goal: SdmGoalEvent = ({
+				push: {
+					after: {
+						tags: [{ name: "1.0.0-RC.1" }],
+					},
+				},
+			} as any) as SdmGoalEvent;
+			const gi: GoalInvocation = ({
+				goalEvent: goal,
+			} as any) as GoalInvocation;
 
-            const version = releaseOrPreRelease("1.0.0", gi);
-            assert.strictEqual(version, "1.0.0-M.1");
+			const version = releaseOrPreRelease("1.0.0", gi);
+			assert.strictEqual(version, "1.0.0-RC.1");
+		});
 
-        });
+		it("should correctly calculate project version", () => {
+			const goal: SdmGoalEvent = ({
+				push: {
+					after: {},
+				},
+			} as any) as SdmGoalEvent;
+			const gi: GoalInvocation = ({
+				goalEvent: goal,
+			} as any) as GoalInvocation;
 
-        it("should correctly find rc tag", () => {
-            const goal: SdmGoalEvent = {
-                push: {
-                    after: {
-                        tags: [{ name: "1.0.0-RC.1"} ],
-                    },
-                },
-            } as any as SdmGoalEvent;
-            const gi: GoalInvocation = {
-                goalEvent: goal,
-            } as any as GoalInvocation;
-
-            const version = releaseOrPreRelease("1.0.0", gi);
-            assert.strictEqual(version, "1.0.0-RC.1");
-
-        });
-
-        it("should correctly calculate project version", () => {
-            const goal: SdmGoalEvent = {
-                push: {
-                    after: {
-                    },
-                },
-            } as any as SdmGoalEvent;
-            const gi: GoalInvocation = {
-                goalEvent: goal,
-            } as any as GoalInvocation;
-
-            const version = releaseOrPreRelease("1.0.0", gi);
-            assert.strictEqual(version, "1.0.0");
-
-        });
-    });
+			const version = releaseOrPreRelease("1.0.0", gi);
+			assert.strictEqual(version, "1.0.0");
+		});
+	});
 });

@@ -43,6 +43,11 @@
   "devDependencies": {
     "@types/mocha": "^7.0.2",
     "@types/power-assert": "^1.4.29",
+    "@typescript-eslint/eslint-plugin": "^3.7.0",
+    "@typescript-eslint/parser": "^3.7.0",
+    "eslint": "^7.5.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
     "espower-typescript": "^9.0.2",
     "fast-glob": "^3.2.4",
     "mocha": "^8.0.1",
@@ -52,9 +57,8 @@
     "rimraf": "^2.6.2",
     "supervisor": "^0.12.0",
     "ts-node": "^8.10.2",
-    "tslint": "^6.1.2",
-    "typedoc": "^0.17.7",
-    "typescript": "^3.9.5"
+    "typedoc": "^0.17.8",
+    "typescript": "^3.9.7"
   },
   "directories": {
     "test": "test"
@@ -78,7 +82,7 @@
     "lint": "run-p lint:gql lint:ts",
     "lint:fix": "run-p fmt:gql lint:ts:fix",
     "lint:gql": "prettier --list-different \"lib/graphql/**/*.graphql\"",
-    "lint:ts": "tslint --config tslint.json --format verbose --project .",
+    "lint:ts": "eslint --ext .ts .",
     "lint:ts:fix": "npm run lint:ts -- --fix",
     "start": "atm-start",
     "test": "mocha --require espower-typescript/guess \"test/**/*.test.ts\"",

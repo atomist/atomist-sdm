@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { editModes, Parameter, Parameters, validationPatterns } from "@atomist/sdm/lib/client";
+import {
+	editModes,
+	Parameter,
+	Parameters,
+	validationPatterns,
+} from "@atomist/sdm/lib/client";
 
 /**
  * Allow user to specify a branch (with default master).
@@ -22,52 +27,62 @@ import { editModes, Parameter, Parameters, validationPatterns } from "@atomist/s
  */
 @Parameters()
 export class RequestedCommitParameters {
-    @Parameter({
-        required: false,
-        description: "Branch to use. Default is 'master'.",
-        ...validationPatterns.GitBranchRegExp,
-    })
-    private readonly branch: string = "master";
+	@Parameter({
+		required: false,
+		description: "Branch to use. Default is 'master'.",
+		...validationPatterns.GitBranchRegExp,
+	})
+	private readonly branch: string = "master";
 
-    // TODO should really be a boolean, investigate client issue
-    @Parameter({ required: false, pattern: /(true|false)/ })
-    private readonly newBranch: string = "false";
+	// TODO should really be a boolean, investigate client issue
+	@Parameter({ required: false, pattern: /(true|false)/ })
+	private readonly newBranch: string = "false";
 
-    @Parameter({ required: false })
-    // tslint gets the following variable declaration wrong, producing a compile error
-    // tslint:disable-next-line:prefer-readonly
-    private commitMessage: string = "Command handler commit from Atomist";
+	@Parameter({ required: false })
+	// tslint gets the following variable declaration wrong, producing a compile error
+	// tslint:disable-next-line:prefer-readonly
+	private commitMessage = "Command handler commit from Atomist";
 
-    private branchUsed: string;
+	private branchUsed: string;
 
-    @Parameter({
-        required: false,
-        pattern: /^(pr|branch)$/,
-        validInput: "How to present commit: 'pr' or 'branch', defaults to 'branch'",
-    })
-    public presentAs: "pr" | "branch" = "branch";
+	@Parameter({
+		required: false,
+		pattern: /^(pr|branch)$/,
+		validInput:
+			"How to present commit: 'pr' or 'branch', defaults to 'branch'",
+	})
+	public presentAs: "pr" | "branch" = "branch";
 
-    constructor(commitMessage?: string) {
-        if (!!commitMessage) {
-            this.commitMessage = commitMessage;
-        }
-    }
+	constructor(commitMessage?: string) {
+		if (commitMessage) {
+			this.commitMessage = commitMessage;
+		}
+	}
 
-    get branchToUse(): string {
-        if (!!this.branchUsed) {
-            return this.branchUsed;
-        }
-        this.branchUsed = this.newBranch === "true" ? "atomist-" + new Date().getTime() : this.branch;
-        return this.branchUsed;
-    }
+	get branchToUse(): string {
+		if (this.branchUsed) {
+			return this.branchUsed;
+		}
+		this.branchUsed =
+			this.newBranch === "true"
+				? "atomist-" + new Date().getTime()
+				: this.branch;
+		return this.branchUsed;
+	}
 
-    get editMode(): editModes.EditMode {
-        switch (this.presentAs) {
-            case "pr":
-                return new editModes.PullRequest(this.branchToUse, this.commitMessage, this.commitMessage);
-            case "branch":
-                const bc: editModes.BranchCommit = { branch: this.branchToUse, message: this.commitMessage };
-                return bc;
-        }
-    }
+	get editMode(): editModes.EditMode {
+		switch (this.presentAs) {
+			case "pr":
+				return new editModes.PullRequest(
+					this.branchToUse,
+					this.commitMessage,
+					this.commitMessage,
+				);
+			case "branch":
+				return {
+					branch: this.branchToUse,
+					message: this.commitMessage,
+				} as editModes.BranchCommit;
+		}
+	}
 }

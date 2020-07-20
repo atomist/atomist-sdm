@@ -17,43 +17,45 @@
 import { CodeTransform, CodeTransformRegistration } from "@atomist/sdm";
 import { editModes, logger } from "@atomist/sdm/lib/client";
 
-const UpdatePackageAuthorTransform: CodeTransform = async (p, ctx, params) => {
-    try {
-        const packageJsonFile = await p.getFile("package.json");
-        const packageJson = JSON.parse(await packageJsonFile.getContent());
-        const author = {
-            name: "Atomist",
-            email: "support@atomist.com",
-            url: "https://atomist.com/",
-        };
-        packageJson.author = author;
-        await packageJsonFile.setContent(`${JSON.stringify(packageJson, undefined, 2)}\n`);
-        return p;
-    } catch (e) {
-        await ctx.context.messageClient.respond(
-            `:atomist_build_failed: Updating atomist author in package.json failed`,
-        );
-        logger.error(`Updating author in package.json failed: ${e.message}`);
-        return p;
-    }
+const UpdatePackageAuthorTransform: CodeTransform = async (p, ctx) => {
+	try {
+		const packageJsonFile = await p.getFile("package.json");
+		const packageJson = JSON.parse(await packageJsonFile.getContent());
+		const author = {
+			name: "Atomist",
+			email: "support@atomist.com",
+			url: "https://atomist.com/",
+		};
+		packageJson.author = author;
+		await packageJsonFile.setContent(
+			`${JSON.stringify(packageJson, undefined, 2)}\n`,
+		);
+		return p;
+	} catch (e) {
+		await ctx.context.messageClient.respond(
+			`:atomist_build_failed: Updating atomist author in package.json failed`,
+		);
+		logger.error(`Updating author in package.json failed: ${e.message}`);
+		return p;
+	}
 };
 
 export const UpdatePackageAuthor: CodeTransformRegistration = {
-    transform: UpdatePackageAuthorTransform,
-    name: "UpdatePackageAuthor",
-    description: `Update NPM Package author`,
-    intent: ["update package author"],
-    transformPresentation: () => {
-        return new MasterCommit();
-    },
+	transform: UpdatePackageAuthorTransform,
+	name: "UpdatePackageAuthor",
+	description: `Update NPM Package author`,
+	intent: ["update package author"],
+	transformPresentation: () => {
+		return new MasterCommit();
+	},
 };
 
 class MasterCommit implements editModes.EditMode {
-    get message(): string {
-        return `Update NPM package author to Atomist`;
-    }
+	get message(): string {
+		return `Update NPM package author to Atomist`;
+	}
 
-    get branch(): string {
-        return "master";
-    }
+	get branch(): string {
+		return "master";
+	}
 }

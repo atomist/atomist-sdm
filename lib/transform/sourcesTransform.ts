@@ -15,47 +15,51 @@
  */
 
 import { CodeTransform } from "@atomist/sdm";
-import {
-    Project,
-    projectUtils,
-} from "@atomist/sdm/lib/client";
+import { Project, projectUtils } from "@atomist/sdm/lib/client";
 import * as path from "path";
 
 /**
  * CodeTransform to prepare a project to package TS files in the final NPM archive.
  */
 export const SourcesTransform: CodeTransform = async p => {
+	const files = await projectUtils.gatherFromFiles(
+		p,
+		["**/!(*.d).ts{,x}"],
+		async f => f,
+	);
 
-    const files = (await projectUtils.gatherFromFiles(p, ["**/!(*.d).ts{,x}"], async f => f));
+	if (files.length > 0) {
+		// Make sure the src path exists and we can move files into
+		await p.addDirectory("src");
 
-    if (files.length > 0) {
-        // Make sure the src path exists and we can move files into
-        await p.addDirectory("src");
+		for (const file of files) {
+			// Get both map files
+			const basePath = file.path;
+			const base = file.path.slice(0, -path.extname(basePath).length);
+			const tsMap = `${base}.d.ts.map`;
+			const jsMap = `${base}.js.map`;
 
-        for (const file of files) {
-            // Get both map files
-            const basePath = file.path;
-            const base = file.path.slice(0, -path.extname(basePath).length);
-            const tsMap = `${base}.d.ts.map`;
-            const jsMap = `${base}.js.map`;
+			// Move the ts file out of the way
+			await p.moveFile(file.path, path.join("src", file.path));
 
-            // Move the ts file out of the way
-            await p.moveFile(file.path, path.join("src", file.path));
-
-            await updateSourceMap(tsMap, p, basePath);
-            await updateSourceMap(jsMap, p, basePath);
-        }
-    }
+			await updateSourceMap(tsMap, p, basePath);
+			await updateSourceMap(jsMap, p, basePath);
+		}
+	}
 };
 
-async function updateSourceMap(mapPath: string, p: Project, basePath: string): Promise<void> {
-    const segments = `..${path.sep}`.repeat(basePath.split(path.sep).length - 1);
-    if (await p.hasFile(mapPath)) {
-        const mapFile = await p.getFile(mapPath);
-        const sourceMap = JSON.parse(await mapFile.getContent());
-        sourceMap.sources = [
-            `${segments}src${path.sep}${basePath}`,
-        ];
-        await mapFile.setContent(JSON.stringify(sourceMap));
-    }
+async function updateSourceMap(
+	mapPath: string,
+	p: Project,
+	basePath: string,
+): Promise<void> {
+	const segments = `..${path.sep}`.repeat(
+		basePath.split(path.sep).length - 1,
+	);
+	if (await p.hasFile(mapPath)) {
+		const mapFile = await p.getFile(mapPath);
+		const sourceMap = JSON.parse(await mapFile.getContent());
+		sourceMap.sources = [`${segments}src${path.sep}${basePath}`];
+		await mapFile.setContent(JSON.stringify(sourceMap));
+	}
 }

@@ -15,77 +15,88 @@
  */
 
 import {
-    allSatisfied,
-    ExecuteGoal,
-    ExecuteGoalResult,
-    GoalInvocation,
-    GoalProjectListenerEvent,
-    LogSuppressor,
-    not,
-    PrepareForGoalExecution,
-    ProgressLog,
-    projectConfigurationValue,
-    SdmGoalState,
-    SoftwareDeliveryMachine,
-    spawnLog,
+	allSatisfied,
+	ExecuteGoal,
+	ExecuteGoalResult,
+	GoalInvocation,
+	GoalProjectListenerEvent,
+	LogSuppressor,
+	not,
+	PrepareForGoalExecution,
+	ProgressLog,
+	projectConfigurationValue,
+	SdmGoalState,
+	SoftwareDeliveryMachine,
+	spawnLog,
 } from "@atomist/sdm";
 import {
-    configurationValue,
-    GitCommandGitProject,
-    GitHubRepoRef,
-    GitProject,
-    guid,
-    logger,
-    NodeFsLocalProject,
-    RemoteRepoRef,
-    Success,
-    TokenCredentials,
+	configurationValue,
+	GitCommandGitProject,
+	GitHubRepoRef,
+	GitProject,
+	guid,
+	logger,
+	NodeFsLocalProject,
+	RemoteRepoRef,
+	Success,
+	TokenCredentials,
 } from "@atomist/sdm/lib/client";
 import { github, ProjectIdentifier } from "@atomist/sdm/lib/core";
 import { DockerRegistry, HasDockerfile } from "@atomist/sdm/lib/pack/docker";
 import { IsMaven } from "@atomist/sdm/lib/pack/jvm";
 import {
-    AddThirdPartyLicenseAutofix,
-    DevelopmentEnvOptions,
-    executePublish,
-    IsNode,
-    NodeProjectIdentifier,
-    NpmNodeModulesCachePut,
-    NpmNodeModulesCacheRestore,
-    NpmOptions,
-    NpmProgressReporter,
-    NpmVersioner,
-    NpmVersionProjectListener,
-    PackageLockUrlRewriteAutofix,
-    TypeScriptCompileCachePut,
-    TypeScriptCompileCacheRestore,
+	AddThirdPartyLicenseAutofix,
+	DevelopmentEnvOptions,
+	executePublish,
+	IsNode,
+	NodeProjectIdentifier,
+	NpmNodeModulesCachePut,
+	NpmNodeModulesCacheRestore,
+	NpmOptions,
+	NpmProgressReporter,
+	NpmVersioner,
+	NpmVersionProjectListener,
+	PackageLockUrlRewriteAutofix,
+	TypeScriptCompileCachePut,
+	TypeScriptCompileCacheRestore,
 } from "@atomist/sdm/lib/pack/node";
 import * as fs from "fs-extra";
 import * as path from "path";
 import { RenameTest, RenameTestFix } from "../autofix/test/testNamingFix";
 import { deleteDistTagOnBranchDeletion } from "../event/deleteDistTagOnBranchDeletion";
 import { executeGoalCommandsInProject } from "../support/executeGoal";
-import { executeLoggers, gitExecuteLogger, spawnExecuteLogger, SpawnWatchCommand } from "../support/executeLogger";
+import {
+	executeLoggers,
+	gitExecuteLogger,
+	spawnExecuteLogger,
+	SpawnWatchCommand,
+} from "../support/executeLogger";
 import { transformToProjectListener } from "../support/transformToProjectListener";
 import { SourcesTransform } from "../transform/sourcesTransform";
 import { UpdatePackageAuthor } from "../transform/updatePackageAuthor";
 import {
-    autofix,
-    build,
-    dockerBuild,
-    publish,
-    publishWithApproval,
-    release,
-    releaseDocs,
-    releaseVersion,
-    version,
+	autofix,
+	build,
+	dockerBuild,
+	publish,
+	publishWithApproval,
+	release,
+	releaseDocs,
+	releaseVersion,
+	version,
 } from "./goals";
-import { executeReleaseVersion, isNextVersion, ProjectRegistryInfo, releaseOrPreRelease, rwlcVersion } from "./release";
+import {
+	executeReleaseVersion,
+	isNextVersion,
+	ProjectRegistryInfo,
+	releaseOrPreRelease,
+	rwlcVersion,
+} from "./release";
 
 const NodeDefaultOptions = {
-    pushTest: allSatisfied(IsNode, not(IsMaven)),
-    logInterpreter: LogSuppressor,
-    progressReporter: NpmProgressReporter,
+	pushTest: allSatisfied(IsNode, not(IsMaven)),
+	logInterpreter: LogSuppressor,
+	progressReporter: NpmProgressReporter,
 };
 
 /**
@@ -94,125 +105,151 @@ const NodeDefaultOptions = {
  * @param sdm Software Delivery machine to modify
  * @return modified software delivery machine
  */
-export function addNodeSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMachine {
-    version.with({
-        ...NodeDefaultOptions,
-        name: "npm-versioner",
-        versioner: NpmVersioner,
-        pushTest: IsNode,
-    });
+export function addNodeSupport(
+	sdm: SoftwareDeliveryMachine,
+): SoftwareDeliveryMachine {
+	version.with({
+		...NodeDefaultOptions,
+		name: "npm-versioner",
+		versioner: NpmVersioner,
+		pushTest: IsNode,
+	});
 
-    autofix
-        .with(PackageLockUrlRewriteAutofix)
-        .with(RenameTestFix)
-        .with(AddThirdPartyLicenseAutofix)
-        .withProjectListener(NpmNodeModulesCacheRestore)
-        .withProjectListener({
-            // something is cleaning out the node_modules folder -> cache it early
-            ...NpmNodeModulesCachePut,
-            events: [GoalProjectListenerEvent.before],
-        });
+	autofix
+		.with(PackageLockUrlRewriteAutofix)
+		.with(RenameTestFix)
+		.with(AddThirdPartyLicenseAutofix)
+		.withProjectListener(NpmNodeModulesCacheRestore)
+		.withProjectListener({
+			// something is cleaning out the node_modules folder -> cache it early
+			...NpmNodeModulesCachePut,
+			events: [GoalProjectListenerEvent.before],
+		});
 
-    build
-        .with({
-            ...NodeDefaultOptions,
-            name: "npm-run-build",
-            goalExecutor: executeGoalCommandsInProject([
-                { command: "npm", args: ["run", "compile"] },
-                { command: "npm", args: ["test"] },
-            ]),
-            pushTest: NodeDefaultOptions.pushTest,
-        })
-        .withProjectListener(NpmNodeModulesCacheRestore)
-        .withProjectListener(TypeScriptCompileCachePut);
+	build
+		.with({
+			...NodeDefaultOptions,
+			name: "npm-run-build",
+			goalExecutor: executeGoalCommandsInProject([
+				{ command: "npm", args: ["run", "compile"] },
+				{ command: "npm", args: ["test"] },
+			]),
+			pushTest: NodeDefaultOptions.pushTest,
+		})
+		.withProjectListener(NpmNodeModulesCacheRestore)
+		.withProjectListener(TypeScriptCompileCachePut);
 
-    publish
-        .with({
-            ...NodeDefaultOptions,
-            name: "npm-publish",
-            goalExecutor: executePublish(NodeProjectIdentifier, sdm.configuration.sdm.npm as NpmOptions),
-        })
-        .withProjectListener(NpmNodeModulesCacheRestore)
-        .withProjectListener(NpmVersionProjectListener)
-        .withProjectListener(TypeScriptCompileCacheRestore)
-        .withProjectListener(transformToProjectListener(SourcesTransform, "package sources"));
+	publish
+		.with({
+			...NodeDefaultOptions,
+			name: "npm-publish",
+			goalExecutor: executePublish(
+				NodeProjectIdentifier,
+				sdm.configuration.sdm.npm as NpmOptions,
+			),
+		})
+		.withProjectListener(NpmNodeModulesCacheRestore)
+		.withProjectListener(NpmVersionProjectListener)
+		.withProjectListener(TypeScriptCompileCacheRestore)
+		.withProjectListener(
+			transformToProjectListener(SourcesTransform, "package sources"),
+		);
 
-    publishWithApproval
-        .with({
-            ...NodeDefaultOptions,
-            name: "npm-publish",
-            goalExecutor: executePublish(NodeProjectIdentifier, sdm.configuration.sdm.npm as NpmOptions),
-        })
-        .withProjectListener(NpmNodeModulesCacheRestore)
-        .withProjectListener(NpmVersionProjectListener)
-        .withProjectListener(TypeScriptCompileCacheRestore)
-        .withProjectListener(transformToProjectListener(SourcesTransform, "package sources"));
+	publishWithApproval
+		.with({
+			...NodeDefaultOptions,
+			name: "npm-publish",
+			goalExecutor: executePublish(
+				NodeProjectIdentifier,
+				sdm.configuration.sdm.npm as NpmOptions,
+			),
+		})
+		.withProjectListener(NpmNodeModulesCacheRestore)
+		.withProjectListener(NpmVersionProjectListener)
+		.withProjectListener(TypeScriptCompileCacheRestore)
+		.withProjectListener(
+			transformToProjectListener(SourcesTransform, "package sources"),
+		);
 
-    dockerBuild
-        .with({
-            ...NodeDefaultOptions,
-            name: "npm-docker-build",
-            registry: sdm.configuration.sdm.docker.hub as DockerRegistry,
-            push: true,
-            builder: "docker",
-            pushTest: allSatisfied(IsNode, HasDockerfile),
-        })
-        .withProjectListener(NpmNodeModulesCacheRestore)
-        .withProjectListener(NpmVersionProjectListener)
-        .withProjectListener(TypeScriptCompileCacheRestore);
+	dockerBuild
+		.with({
+			...NodeDefaultOptions,
+			name: "npm-docker-build",
+			registry: sdm.configuration.sdm.docker.hub as DockerRegistry,
+			push: true,
+			builder: "docker",
+			pushTest: allSatisfied(IsNode, HasDockerfile),
+		})
+		.withProjectListener(NpmNodeModulesCacheRestore)
+		.withProjectListener(NpmVersionProjectListener)
+		.withProjectListener(TypeScriptCompileCacheRestore);
 
-    release.with({
-        ...NodeDefaultOptions,
-        name: "npm-release",
-        goalExecutor: executeReleaseNpm(
-            NodeProjectIdentifier,
-            NpmReleasePreparations,
-            sdm.configuration.sdm.npm as NpmOptions,
-        ),
-    });
+	release.with({
+		...NodeDefaultOptions,
+		name: "npm-release",
+		goalExecutor: executeReleaseNpm(
+			NodeProjectIdentifier,
+			NpmReleasePreparations,
+			sdm.configuration.sdm.npm as NpmOptions,
+		),
+	});
 
-    releaseDocs.with({
-        ...NodeDefaultOptions,
-        name: "npm-docs-release",
-        goalExecutor: executeReleaseTypeDocs(DocsReleasePreparations),
-    });
+	releaseDocs.with({
+		...NodeDefaultOptions,
+		name: "npm-docs-release",
+		goalExecutor: executeReleaseTypeDocs(DocsReleasePreparations),
+	});
 
-    releaseVersion.with({
-        ...NodeDefaultOptions,
-        name: "npm-release-version",
-        goalExecutor: executeReleaseVersion(NodeProjectIdentifier, npmIncrementPatch),
-    });
+	releaseVersion.with({
+		...NodeDefaultOptions,
+		name: "npm-release-version",
+		goalExecutor: executeReleaseVersion(
+			NodeProjectIdentifier,
+			npmIncrementPatch,
+		),
+	});
 
-    sdm.addEvent(
-        deleteDistTagOnBranchDeletion(sdm.configuration.sdm.projectLoader, sdm.configuration.sdm.npm as NpmOptions),
-    );
+	sdm.addEvent(
+		deleteDistTagOnBranchDeletion(
+			sdm.configuration.sdm.projectLoader,
+			sdm.configuration.sdm.npm as NpmOptions,
+		),
+	);
 
-    sdm.addCodeTransformCommand(UpdatePackageAuthor).addCodeTransformCommand(RenameTest);
+	sdm.addCodeTransformCommand(UpdatePackageAuthor).addCodeTransformCommand(
+		RenameTest,
+	);
 
-    return sdm;
+	return sdm;
 }
 
 /**
  * Increment the patch version of a Node project managed by NPM.
  */
-async function npmIncrementPatch(p: GitProject, log: ProgressLog): Promise<ExecuteGoalResult> {
-    return spawnLog("npm", ["version", "--no-git-tag-version", "patch"], { cwd: p.baseDir, log });
+async function npmIncrementPatch(
+	p: GitProject,
+	log: ProgressLog,
+): Promise<ExecuteGoalResult> {
+	return spawnLog("npm", ["version", "--no-git-tag-version", "patch"], {
+		cwd: p.baseDir,
+		log,
+	});
 }
 
 function npmPackageUrl(p: ProjectRegistryInfo): string {
-    return `${p.registry}/${p.name}/-/${p.name}-${p.version}.tgz`;
+	return `${p.registry}/${p.name}/-/${p.name}-${p.version}.tgz`;
 }
 
 /**
  * Information about local NPM package tgz file.
  */
 export interface NpmPackageInfo {
-    /** Local file system path to package tgz */
-    path: string;
-    /** URL where package was downloaded from */
-    url: string;
-    /** Version of package */
-    version: string;
+	/** Local file system path to package tgz */
+	path: string;
+	/** URL where package was downloaded from */
+	url: string;
+	/** Version of package */
+	version: string;
 }
 
 /**
@@ -225,55 +262,74 @@ export interface NpmPackageInfo {
  * @param gi Download package generated by this goal invocation
  * @return information about the NPM package
  */
-export async function downloadNpmPackage(p: GitProject, gi: GoalInvocation, v?: string): Promise<NpmPackageInfo> {
-    const pjFile = await p.getFile("package.json");
-    if (!pjFile) {
-        const msg = `NPM project does not have a package.json`;
-        logger.error(msg);
-        throw new Error(msg);
-    }
-    const pjContents = await pjFile.getContent();
-    let pj: { name: string };
-    try {
-        pj = JSON.parse(pjContents);
-    } catch (e) {
-        e.message = `Unable to parse package.json '${pjContents}': ${e.message}`;
-        logger.error(e.message);
-        throw e;
-    }
-    if (!pj.name) {
-        const msg = `Unable to get NPM package name from package.json '${pjContents}'`;
-        logger.error(msg);
-        throw new Error(msg);
-    }
-    const pkgVersion = v ? v : await rwlcVersion(gi);
-    const npmOptions = configurationValue<NpmOptions>("sdm.npm");
-    if (!npmOptions.registry) {
-        throw new Error(`No NPM registry defined in NPM options`);
-    }
-    const pkgUrl = npmPackageUrl({
-        registry: npmOptions.registry,
-        name: pj.name,
-        version: pkgVersion,
-    });
-    const tmpDir = path.join(process.env.TMPDIR || "/tmp", `${p.name}-${guid()}`);
-    const tgz = path.join(tmpDir, "package.tgz");
+export async function downloadNpmPackage(
+	p: GitProject,
+	gi: GoalInvocation,
+	v?: string,
+): Promise<NpmPackageInfo> {
+	const pjFile = await p.getFile("package.json");
+	if (!pjFile) {
+		const msg = `NPM project does not have a package.json`;
+		logger.error(msg);
+		throw new Error(msg);
+	}
+	const pjContents = await pjFile.getContent();
+	let pj: { name: string };
+	try {
+		pj = JSON.parse(pjContents);
+	} catch (e) {
+		e.message = `Unable to parse package.json '${pjContents}': ${e.message}`;
+		logger.error(e.message);
+		throw e;
+	}
+	if (!pj.name) {
+		const msg = `Unable to get NPM package name from package.json '${pjContents}'`;
+		logger.error(msg);
+		throw new Error(msg);
+	}
+	const pkgVersion = v ? v : await rwlcVersion(gi);
+	const npmOptions = configurationValue<NpmOptions>("sdm.npm");
+	if (!npmOptions.registry) {
+		throw new Error(`No NPM registry defined in NPM options`);
+	}
+	const pkgUrl = npmPackageUrl({
+		registry: npmOptions.registry,
+		name: pj.name,
+		version: pkgVersion,
+	});
+	const tmpDir = path.join(
+		process.env.TMPDIR || "/tmp",
+		`${p.name}-${guid()}`,
+	);
+	const tgz = path.join(tmpDir, "package.tgz");
 
-    const cmds: SpawnWatchCommand[] = [
-        {
-            cmd: { command: "curl", args: ["--output", tgz, "--silent", "--fail", "--create-dirs", pkgUrl] },
-        },
-    ];
-    const els = cmds.map(spawnExecuteLogger);
-    const result = await executeLoggers(els, gi.progressLog);
-    if (result.code !== 0) {
-        throw new Error(`Failed to download NPM package ${pkgUrl}: ${result.message}`);
-    }
-    return {
-        path: tgz,
-        url: pkgUrl,
-        version: pkgVersion,
-    };
+	const cmds: SpawnWatchCommand[] = [
+		{
+			cmd: {
+				command: "curl",
+				args: [
+					"--output",
+					tgz,
+					"--silent",
+					"--fail",
+					"--create-dirs",
+					pkgUrl,
+				],
+			},
+		},
+	];
+	const els = cmds.map(spawnExecuteLogger);
+	const result = await executeLoggers(els, gi.progressLog);
+	if (result.code !== 0) {
+		throw new Error(
+			`Failed to download NPM package ${pkgUrl}: ${result.message}`,
+		);
+	}
+	return {
+		path: tgz,
+		url: pkgUrl,
+		version: pkgVersion,
+	};
 }
 
 /**
@@ -281,214 +337,268 @@ export async function downloadNpmPackage(p: GitProject, gi: GoalInvocation, v?: 
  * project with the contents of the package, and set the version to
  * the release version.
  */
-export async function npmReleasePreparation(p: GitProject, gi: GoalInvocation): Promise<ExecuteGoalResult> {
-    const pkgInfo = await downloadNpmPackage(p, gi);
-    const versionRelease = releaseOrPreRelease(pkgInfo.version, gi);
-    const tmpDir = path.dirname(pkgInfo.path);
-    const cmds: SpawnWatchCommand[] = [
-        {
-            cmd: { command: "tar", args: ["-x", "-z", "-f", pkgInfo.path] },
-            cwd: tmpDir,
-        },
-        {
-            cmd: { command: "bash", args: ["-c", "rm -r *"] },
-            cwd: p.baseDir,
-        },
-        {
-            cmd: { command: "cp", args: ["-r", "package/.", p.baseDir] },
-            cwd: tmpDir,
-        },
-        {
-            cmd: { command: "npm", args: ["--no-git-tag-version", "version", versionRelease] },
-            cwd: p.baseDir,
-        },
-        {
-            cmd: { command: "rm", args: ["-rf", tmpDir] },
-        },
-    ];
-    const els = cmds.map(spawnExecuteLogger);
-    return executeLoggers(els, gi.progressLog);
+export async function npmReleasePreparation(
+	p: GitProject,
+	gi: GoalInvocation,
+): Promise<ExecuteGoalResult> {
+	const pkgInfo = await downloadNpmPackage(p, gi);
+	const versionRelease = releaseOrPreRelease(pkgInfo.version, gi);
+	const tmpDir = path.dirname(pkgInfo.path);
+	const cmds: SpawnWatchCommand[] = [
+		{
+			cmd: { command: "tar", args: ["-x", "-z", "-f", pkgInfo.path] },
+			cwd: tmpDir,
+		},
+		{
+			cmd: { command: "bash", args: ["-c", "rm -r *"] },
+			cwd: p.baseDir,
+		},
+		{
+			cmd: { command: "cp", args: ["-r", "package/.", p.baseDir] },
+			cwd: tmpDir,
+		},
+		{
+			cmd: {
+				command: "npm",
+				args: ["--no-git-tag-version", "version", versionRelease],
+			},
+			cwd: p.baseDir,
+		},
+		{
+			cmd: { command: "rm", args: ["-rf", tmpDir] },
+		},
+	];
+	const els = cmds.map(spawnExecuteLogger);
+	return executeLoggers(els, gi.progressLog);
 }
 
-export const NpmReleasePreparations: PrepareForGoalExecution[] = [npmReleasePreparation];
+export const NpmReleasePreparations: PrepareForGoalExecution[] = [
+	npmReleasePreparation,
+];
 
 export function executeReleaseNpm(
-    projectIdentifier: ProjectIdentifier,
-    preparations: PrepareForGoalExecution[] = NpmReleasePreparations,
-    options?: NpmOptions,
+	projectIdentifier: ProjectIdentifier,
+	preparations: PrepareForGoalExecution[] = NpmReleasePreparations,
+	options?: NpmOptions,
 ): ExecuteGoal {
-    if (!options.npmrc) {
-        throw new Error(`No npmrc defined in NPM options`);
-    }
-    return async (gi: GoalInvocation) => {
-        const { configuration, credentials, id, context } = gi;
-        return configuration.sdm.projectLoader.doWithProject(
-            {
-                credentials,
-                id,
-                context,
-                readOnly: false,
-            },
-            async (project: GitProject) => {
-                if (!(await projectConfigurationValue<boolean>("npm.publish.enabled", project, true))) {
-                    return {
-                        code: 0,
-                        description: "Publish disabled",
-                        state: SdmGoalState.success,
-                    };
-                }
+	if (!options.npmrc) {
+		throw new Error(`No npmrc defined in NPM options`);
+	}
+	return async (gi: GoalInvocation) => {
+		const { configuration, credentials, id, context } = gi;
+		return configuration.sdm.projectLoader.doWithProject(
+			{
+				credentials,
+				id,
+				context,
+				readOnly: false,
+			},
+			async (project: GitProject) => {
+				if (
+					!(await projectConfigurationValue<boolean>(
+						"npm.publish.enabled",
+						project,
+						true,
+					))
+				) {
+					return {
+						code: 0,
+						description: "Publish disabled",
+						state: SdmGoalState.success,
+					};
+				}
 
-                await fs.writeFile(path.join(project.baseDir, ".npmrc"), options.npmrc);
+				await fs.writeFile(
+					path.join(project.baseDir, ".npmrc"),
+					options.npmrc,
+				);
 
-                for (const preparation of preparations) {
-                    const pResult = await preparation(project, gi);
-                    if (pResult && pResult.code !== 0) {
-                        return pResult;
-                    }
-                }
-                const args = [
-                    "publish",
-                    "--registry",
-                    options.registry,
-                    "--access",
-                    options.access ? options.access : "restricted",
-                ];
-                const v = await rwlcVersion(gi);
-                const versionRelease = releaseOrPreRelease(v, gi);
-                if (isNextVersion(versionRelease)) {
-                    args.push("--tag", "next");
-                }
-                const result = await spawnLog("npm", args, {
-                    cwd: project.baseDir,
-                    log: gi.progressLog,
-                });
-                if (result.error) {
-                    return result;
-                }
+				for (const preparation of preparations) {
+					const pResult = await preparation(project, gi);
+					if (pResult && pResult.code !== 0) {
+						return pResult;
+					}
+				}
+				const args = [
+					"publish",
+					"--registry",
+					options.registry,
+					"--access",
+					options.access ? options.access : "restricted",
+				];
+				const v = await rwlcVersion(gi);
+				const versionRelease = releaseOrPreRelease(v, gi);
+				if (isNextVersion(versionRelease)) {
+					args.push("--tag", "next");
+				}
+				const result = await spawnLog("npm", args, {
+					cwd: project.baseDir,
+					log: gi.progressLog,
+				});
+				if (result.error) {
+					return result;
+				}
 
-                const pi = await projectIdentifier(project);
-                const url = npmPackageUrl({
-                    registry: options.registry,
-                    name: pi.name,
-                    version: pi.version,
-                });
-                if (options.status) {
-                    await github.createStatus((credentials as TokenCredentials).token, id as GitHubRepoRef, {
-                        context: "npm/atomist/package",
-                        description: "NPM package",
-                        target_url: url,
-                        state: "success",
-                    });
-                }
+				const pi = await projectIdentifier(project);
+				const url = npmPackageUrl({
+					registry: options.registry,
+					name: pi.name,
+					version: pi.version,
+				});
+				if (options.status) {
+					await github.createStatus(
+						(credentials as TokenCredentials).token,
+						id as GitHubRepoRef,
+						{
+							context: "npm/atomist/package",
+							description: "NPM package",
+							target_url: url,
+							state: "success",
+						},
+					);
+				}
 
-                const egr: ExecuteGoalResult = {
-                    code: result.code,
-                    message: result.message,
-                    externalUrls: [
-                        {
-                            label: "NPM Package",
-                            url,
-                        },
-                    ],
-                };
-                return egr;
-            },
-        );
-    };
+				const egr: ExecuteGoalResult = {
+					code: result.code,
+					message: result.message,
+					externalUrls: [
+						{
+							label: "NPM Package",
+							url,
+						},
+					],
+				};
+				return egr;
+			},
+		);
+	};
 }
 
 function typedocDir(baseDir: string): string {
-    const oldDir = path.join(baseDir, "build", "typedoc");
-    const dir = path.join(baseDir, "doc");
-    if (fs.existsSync(oldDir)) {
-        return oldDir;
-    }
-    return dir;
+	const oldDir = path.join(baseDir, "build", "typedoc");
+	const dir = path.join(baseDir, "doc");
+	if (fs.existsSync(oldDir)) {
+		return oldDir;
+	}
+	return dir;
 }
 
-export async function docsReleasePreparation(p: GitProject, gi: GoalInvocation): Promise<ExecuteGoalResult> {
-    const cmds: SpawnWatchCommand[] = [
-        {
-            cmd: {
-                command: "npm",
-                args: ["ci"],
-                options: {
-                    ...DevelopmentEnvOptions,
-                    log: gi.progressLog,
-                },
-            },
-            cwd: p.baseDir,
-        },
-        {
-            cmd: { command: "npm", args: ["run", "compile"] },
-            cwd: p.baseDir,
-        },
-        {
-            cmd: { command: "npm", args: ["run", "doc"] },
-            cwd: p.baseDir,
-        },
-    ];
-    const els = cmds.map(spawnExecuteLogger);
-    return executeLoggers(els, gi.progressLog);
+export async function docsReleasePreparation(
+	p: GitProject,
+	gi: GoalInvocation,
+): Promise<ExecuteGoalResult> {
+	const cmds: SpawnWatchCommand[] = [
+		{
+			cmd: {
+				command: "npm",
+				args: ["ci"],
+				options: {
+					...DevelopmentEnvOptions,
+					log: gi.progressLog,
+				},
+			},
+			cwd: p.baseDir,
+		},
+		{
+			cmd: { command: "npm", args: ["run", "compile"] },
+			cwd: p.baseDir,
+		},
+		{
+			cmd: { command: "npm", args: ["run", "doc"] },
+			cwd: p.baseDir,
+		},
+	];
+	const els = cmds.map(spawnExecuteLogger);
+	return executeLoggers(els, gi.progressLog);
 }
 
-export const DocsReleasePreparations: PrepareForGoalExecution[] = [docsReleasePreparation];
+export const DocsReleasePreparations: PrepareForGoalExecution[] = [
+	docsReleasePreparation,
+];
 
 /**
  * Publish TypeDoc to gh-pages branch.
  */
-export function executeReleaseTypeDocs(preparations: PrepareForGoalExecution[] = DocsReleasePreparations): ExecuteGoal {
-    return async (gi: GoalInvocation) => {
-        const { configuration, credentials, id, context } = gi;
-        return configuration.sdm.projectLoader.doWithProject(
-            {
-                credentials,
-                id,
-                context,
-                readOnly: false,
-            },
-            async (project: GitProject) => {
-                for (const preparation of preparations) {
-                    const pResult = await preparation(project, gi);
-                    if (pResult && pResult.code !== 0) {
-                        return pResult;
-                    }
-                }
+export function executeReleaseTypeDocs(
+	preparations: PrepareForGoalExecution[] = DocsReleasePreparations,
+): ExecuteGoal {
+	return async (gi: GoalInvocation) => {
+		const { configuration, credentials, id, context } = gi;
+		return configuration.sdm.projectLoader.doWithProject(
+			{
+				credentials,
+				id,
+				context,
+				readOnly: false,
+			},
+			async (project: GitProject) => {
+				for (const preparation of preparations) {
+					const pResult = await preparation(project, gi);
+					if (pResult && pResult.code !== 0) {
+						return pResult;
+					}
+				}
 
-                const v = await rwlcVersion(gi);
-                const versionRelease = releaseOrPreRelease(v, gi);
-                const commitMsg = `TypeDoc: publishing for version ${versionRelease}
+				const v = await rwlcVersion(gi);
+				const versionRelease = releaseOrPreRelease(v, gi);
+				const commitMsg = `TypeDoc: publishing for version ${versionRelease}
 
 [atomist:generated]`;
-                const docDir = typedocDir(project.baseDir);
-                const els = [
-                    spawnExecuteLogger({
-                        cmd: { command: "touch", args: [path.join(docDir, ".nojekyll")] },
-                        cwd: project.baseDir,
-                    }),
-                ];
-                const docProject = await NodeFsLocalProject.fromExistingDirectory(project.id, docDir);
-                const docGitProject = GitCommandGitProject.fromProject(docProject, credentials) as GitCommandGitProject;
-                const targetUrl = `https://${docGitProject.id.owner}.github.io/${docGitProject.id.repo}`;
-                const rrr = project.id as RemoteRepoRef;
+				const docDir = typedocDir(project.baseDir);
+				const els = [
+					spawnExecuteLogger({
+						cmd: {
+							command: "touch",
+							args: [path.join(docDir, ".nojekyll")],
+						},
+						cwd: project.baseDir,
+					}),
+				];
+				const docProject = await NodeFsLocalProject.fromExistingDirectory(
+					project.id,
+					docDir,
+				);
+				const docGitProject = GitCommandGitProject.fromProject(
+					docProject,
+					credentials,
+				) as GitCommandGitProject;
+				const targetUrl = `https://${docGitProject.id.owner}.github.io/${docGitProject.id.repo}`;
+				const rrr = project.id as RemoteRepoRef;
 
-                els.push(
-                    gitExecuteLogger(docGitProject, () => docGitProject.init(), "init"),
-                    gitExecuteLogger(docGitProject, () => docGitProject.commit(commitMsg), "commit"),
-                    gitExecuteLogger(docGitProject, () => docGitProject.createBranch("gh-pages"), "createBranch"),
-                    gitExecuteLogger(
-                        docGitProject,
-                        () => docGitProject.setRemote(rrr.cloneUrl(credentials)),
-                        "setRemote",
-                    ),
-                    gitExecuteLogger(docGitProject, () => docGitProject.push({ force: true }), "push"),
-                );
-                const gitRes = await executeLoggers(els, gi.progressLog);
-                if (gitRes.code !== 0) {
-                    return gitRes;
-                }
-                return { ...Success, targetUrl };
-            },
-        );
-    };
+				els.push(
+					gitExecuteLogger(
+						docGitProject,
+						() => docGitProject.init(),
+						"init",
+					),
+					gitExecuteLogger(
+						docGitProject,
+						() => docGitProject.commit(commitMsg),
+						"commit",
+					),
+					gitExecuteLogger(
+						docGitProject,
+						() => docGitProject.createBranch("gh-pages"),
+						"createBranch",
+					),
+					gitExecuteLogger(
+						docGitProject,
+						() =>
+							docGitProject.setRemote(rrr.cloneUrl(credentials)),
+						"setRemote",
+					),
+					gitExecuteLogger(
+						docGitProject,
+						() => docGitProject.push({ force: true }),
+						"push",
+					),
+				);
+				const gitRes = await executeLoggers(els, gi.progressLog);
+				if (gitRes.code !== 0) {
+					return gitRes;
+				}
+				return { ...Success, targetUrl };
+			},
+		);
+	};
 }

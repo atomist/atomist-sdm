@@ -15,41 +15,47 @@
  */
 
 import { Configuration } from "@atomist/sdm/lib/client";
-import { CompressingGoalCache, ConfigureOptions, configureSdm } from "@atomist/sdm/lib/core";
+import {
+	CompressingGoalCache,
+	ConfigureOptions,
+	configureSdm,
+} from "@atomist/sdm/lib/core";
 import { GoogleCloudStorageGoalCacheArchiveStore } from "@atomist/sdm/lib/pack/gcp/cache";
 import { machine } from "./lib/machine/machine";
 
 const machineOptions: ConfigureOptions = {
-    requiredConfigurationValues: [
-        "sdm.npm.npmrc",
-        "sdm.npm.registry",
-        "sdm.npm.access",
-        "sdm.docker.hub.registry",
-        "sdm.docker.hub.user",
-        "sdm.docker.hub.password",
-    ],
+	requiredConfigurationValues: [
+		"sdm.npm.npmrc",
+		"sdm.npm.registry",
+		"sdm.npm.access",
+		"sdm.docker.hub.registry",
+		"sdm.docker.hub.user",
+		"sdm.docker.hub.password",
+	],
 };
 
 export const configuration: Configuration = {
-    postProcessors: [configureSdm(machine, machineOptions)],
-    sdm: {
-        npm: {
-            publish: {
-                tag: {
-                    defaultBranch: true,
-                },
-            },
-        },
-        k8s: {
-            job: {
-                cleanupInterval: 1000 * 60 * 10,
-            },
-        },
-        cache: {
-            bucket: "atm-atomist-sdm-goal-cache-production",
-            enabled: true,
-            path: "atomist-sdm-cache",
-            store: new CompressingGoalCache(new GoogleCloudStorageGoalCacheArchiveStore()),
-        },
-    },
+	postProcessors: [configureSdm(machine, machineOptions)],
+	sdm: {
+		npm: {
+			publish: {
+				tag: {
+					defaultBranch: true,
+				},
+			},
+		},
+		k8s: {
+			job: {
+				cleanupInterval: 1000 * 60 * 10,
+			},
+		},
+		cache: {
+			bucket: "atm-atomist-sdm-goal-cache-production",
+			enabled: true,
+			path: "atomist-sdm-cache",
+			store: new CompressingGoalCache(
+				new GoogleCloudStorageGoalCacheArchiveStore(),
+			),
+		},
+	},
 };

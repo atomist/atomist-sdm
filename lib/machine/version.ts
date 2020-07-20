@@ -15,97 +15,105 @@
  */
 
 import {
-    ExecuteGoalResult,
-    LogSuppressor,
-    ProgressLog,
-    PushTest,
-    SdmGoalEvent,
-    SoftwareDeliveryMachine,
+	ExecuteGoalResult,
+	LogSuppressor,
+	ProgressLog,
+	PushTest,
+	SdmGoalEvent,
+	SoftwareDeliveryMachine,
 } from "@atomist/sdm";
 import { Project } from "@atomist/sdm/lib/client";
 import {
-    ProjectIdentifier,
-    ProjectVersionerRegistration,
+	ProjectIdentifier,
+	ProjectVersionerRegistration,
 } from "@atomist/sdm/lib/core";
 import * as semver from "semver";
-import {
-    releaseVersion,
-    version,
-} from "./goals";
-import {
-    addBranchPreRelease,
-    executeReleaseVersion,
-} from "./release";
+import { releaseVersion, version } from "./goals";
+import { addBranchPreRelease, executeReleaseVersion } from "./release";
 
 /**
  * Version projects based on the value in the file `VERSION`.
  */
-export async function fileVersioner(sdmGoal: SdmGoalEvent, p: Project, log: ProgressLog): Promise<string> {
-    const baseVersion: string = (await fileProjectIdentifier(p)).version;
-    log.write(`Using base version '${baseVersion}'`);
-    const prereleaseVersion = addBranchPreRelease(baseVersion, sdmGoal);
-    log.write(`Calculated pre-release version '${prereleaseVersion}'`);
-    return prereleaseVersion;
+export async function fileVersioner(
+	sdmGoal: SdmGoalEvent,
+	p: Project,
+	log: ProgressLog,
+): Promise<string> {
+	const baseVersion: string = (await fileProjectIdentifier(p)).version;
+	log.write(`Using base version '${baseVersion}'`);
+	const prereleaseVersion = addBranchPreRelease(baseVersion, sdmGoal);
+	log.write(`Calculated pre-release version '${prereleaseVersion}'`);
+	return prereleaseVersion;
 }
 
 export const HasFileVersion: PushTest = {
-    name: "HasFileVersion",
-    mapping: inv => inv.project.hasFile("VERSION"),
+	name: "HasFileVersion",
+	mapping: inv => inv.project.hasFile("VERSION"),
 };
 
 export const FileVersionerRegistration: ProjectVersionerRegistration = {
-    name: "file-versioner",
-    versioner: fileVersioner,
-    logInterpreter: LogSuppressor,
-    pushTest: HasFileVersion,
+	name: "file-versioner",
+	versioner: fileVersioner,
+	logInterpreter: LogSuppressor,
+	pushTest: HasFileVersion,
 };
 
 /**
  * Command for incrementing the patch value in `VERSION`.
  */
-export async function fileIncrementPatch(p: Project, log: ProgressLog): Promise<ExecuteGoalResult> {
-    const vPath = "VERSION";
-    const vFile = await p.getFile(vPath);
-    if (!vFile) {
-        const msg = `Project does not have '${vPath}' file`;
-        log.write(msg);
-        return { code: 1, message: msg };
-    }
-    const currentVersion = (await vFile.getContent()).trim();
-    if (!currentVersion) {
-        const msg = `Failed to extract version from '${vPath}' file`;
-        log.write(msg);
-        return { code: 1, message: msg };
-    }
-    const newVersion = semver.inc(currentVersion, "patch");
-    if (!newVersion || newVersion === currentVersion) {
-        const msg = `Failed to increment patch in version '${currentVersion}' from '${vPath}' file`;
-        log.write(msg);
-        return { code: 1, message: msg };
-    }
-    await vFile.setContent(newVersion + "\n");
-    const message = `Incremented patch level in '${vPath}' file: ${currentVersion} => ${newVersion}`;
-    log.write(message);
-    return { code: 0, message };
+export async function fileIncrementPatch(
+	p: Project,
+	log: ProgressLog,
+): Promise<ExecuteGoalResult> {
+	const vPath = "VERSION";
+	const vFile = await p.getFile(vPath);
+	if (!vFile) {
+		const msg = `Project does not have '${vPath}' file`;
+		log.write(msg);
+		return { code: 1, message: msg };
+	}
+	const currentVersion = (await vFile.getContent()).trim();
+	if (!currentVersion) {
+		const msg = `Failed to extract version from '${vPath}' file`;
+		log.write(msg);
+		return { code: 1, message: msg };
+	}
+	const newVersion = semver.inc(currentVersion, "patch");
+	if (!newVersion || newVersion === currentVersion) {
+		const msg = `Failed to increment patch in version '${currentVersion}' from '${vPath}' file`;
+		log.write(msg);
+		return { code: 1, message: msg };
+	}
+	await vFile.setContent(newVersion + "\n");
+	const message = `Incremented patch level in '${vPath}' file: ${currentVersion} => ${newVersion}`;
+	log.write(message);
+	return { code: 0, message };
 }
 
 /**
  * Project identifier for projects storing the version in `VERSION`.
  */
 export const fileProjectIdentifier: ProjectIdentifier = async p => {
-    const versionFile = await p.getFile("VERSION");
-    const versionContents = (versionFile) ? await versionFile.getContent() : "0.0.0";
-    const v = versionContents.trim();
-    return { name: p.name, version: v };
+	const versionFile = await p.getFile("VERSION");
+	const versionContents = versionFile
+		? await versionFile.getContent()
+		: "0.0.0";
+	const v = versionContents.trim();
+	return { name: p.name, version: v };
 };
 
-export function addFileVersionerSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMachine {
-    version.with(FileVersionerRegistration);
-    releaseVersion.with({
-        name: "file-release-version",
-        goalExecutor: executeReleaseVersion(fileProjectIdentifier, fileIncrementPatch),
-        logInterpreter: LogSuppressor,
-        pushTest: HasFileVersion,
-    });
-    return sdm;
+export function addFileVersionerSupport(
+	sdm: SoftwareDeliveryMachine,
+): SoftwareDeliveryMachine {
+	version.with(FileVersionerRegistration);
+	releaseVersion.with({
+		name: "file-release-version",
+		goalExecutor: executeReleaseVersion(
+			fileProjectIdentifier,
+			fileIncrementPatch,
+		),
+		logInterpreter: LogSuppressor,
+		pushTest: HasFileVersion,
+	});
+	return sdm;
 }

@@ -14,44 +14,58 @@
  * limitations under the License.
  */
 
-import { ExecuteGoal, ExecuteGoalResult, GoalInvocation, spawnLog } from "@atomist/sdm";
+import {
+	ExecuteGoal,
+	ExecuteGoalResult,
+	GoalInvocation,
+	spawnLog,
+} from "@atomist/sdm";
 
 /** Simple executable interface */
 export interface GoalProjectCommand {
-    /** Executable */
-    command: string;
-    /** Arguments to executable */
-    args?: string[];
+	/** Executable */
+	command: string;
+	/** Arguments to executable */
+	args?: string[];
 }
 
 /**
  * Execute provided commands in project.
  */
-export function executeGoalCommandsInProject(cmds: GoalProjectCommand[]): ExecuteGoal {
-    return async (gi: GoalInvocation): Promise<ExecuteGoalResult> => {
-        const { configuration, credentials, id, context } = gi;
+export function executeGoalCommandsInProject(
+	cmds: GoalProjectCommand[],
+): ExecuteGoal {
+	return async (gi: GoalInvocation): Promise<ExecuteGoalResult> => {
+		const { configuration, credentials, id, context } = gi;
 
-        return configuration.sdm.projectLoader.doWithProject({ credentials, id, context, readOnly: true }, async p => {
-            const opts = {
-                cwd: p.baseDir,
-                log: gi.progressLog,
-            };
-            let res: ExecuteGoalResult;
-            for (const cmd of cmds) {
-                try {
-                    res = await spawnLog(cmd.command, cmd.args, opts);
-                } catch (e) {
-                    res = {
-                        code: -1,
-                        message: `Failed to spawn command ${cmd.command} ${cmd.args.join(" ")}: ${e.message}`,
-                    };
-                }
-                if (res.code !== 0) {
-                    break;
-                }
-            }
-            gi.progressLog.write(`Goal commands complete, returning ${JSON.stringify(res)}`);
-            return res;
-        });
-    };
+		return configuration.sdm.projectLoader.doWithProject(
+			{ credentials, id, context, readOnly: true },
+			async p => {
+				const opts = {
+					cwd: p.baseDir,
+					log: gi.progressLog,
+				};
+				let res: ExecuteGoalResult;
+				for (const cmd of cmds) {
+					try {
+						res = await spawnLog(cmd.command, cmd.args, opts);
+					} catch (e) {
+						res = {
+							code: -1,
+							message: `Failed to spawn command ${
+								cmd.command
+							} ${cmd.args.join(" ")}: ${e.message}`,
+						};
+					}
+					if (res.code !== 0) {
+						break;
+					}
+				}
+				gi.progressLog.write(
+					`Goal commands complete, returning ${JSON.stringify(res)}`,
+				);
+				return res;
+			},
+		);
+	};
 }

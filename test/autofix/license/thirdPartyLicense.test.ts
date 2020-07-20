@@ -21,24 +21,28 @@ import * as appRoot from "app-root-path";
 import { addThirdPartyLicenseTransform } from "../../../lib/autofix/license/thirdPartyLicense";
 
 describe("thirdPartyLicense", () => {
-
-    it.skip("should create license file", () => {
-        let fc: string;
-        return addThirdPartyLicenseTransform()({
-            baseDir: appRoot.path,
-            addFile: (name: string, content: string) => { fc = content; },
-            getFile: (name: string) => {
-                if (name === ".gitattributes") {
-                    return false;
-                }
-                return true;
-            },
-            deleteDirectory: () => "",
-            hasDirectory: async () => true,
-        } as any as Project, undefined)
-            .then(() => {
-                // tslint:disable:max-line-length
-                assert(fc.startsWith(`# \`@atomist/atomist-sdm\`
+	it.skip("should create license file", () => {
+		let fc: string;
+		return addThirdPartyLicenseTransform()(
+			({
+				baseDir: appRoot.path,
+				addFile: (name: string, content: string) => {
+					fc = content;
+				},
+				getFile: (name: string) => {
+					if (name === ".gitattributes") {
+						return false;
+					}
+					return true;
+				},
+				deleteDirectory: () => "",
+				hasDirectory: async () => true,
+			} as any) as Project,
+			undefined,
+		).then(() => {
+			// tslint:disable:max-line-length
+			assert(
+				fc.startsWith(`# \`@atomist/atomist-sdm\`
 
 \`@atomist/atomist-sdm\` is licensed under Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
@@ -50,8 +54,10 @@ This page details all runtime OSS dependencies of \`@atomist/atomist-sdm\`.
 
 | License | Count |
 |---------|-------|
-`));
-                assert(fc.endsWith(`
+`),
+			);
+			assert(
+				fc.endsWith(`
 ## Contact
 
 Please send any questions or inquires to [oss@atomist.com](mailto:oss@atomist.com).
@@ -63,8 +69,8 @@ Need Help?  [Join our Slack team][slack].
 
 [atomist]: https://atomist.com/ (Atomist - Development Automation)
 [slack]: https://join.atomist.com/ (Atomist Community Slack)
-`));
-            });
-    }).timeout(1000 * 20);
-
+`),
+			);
+		});
+	}).timeout(1000 * 20);
 });

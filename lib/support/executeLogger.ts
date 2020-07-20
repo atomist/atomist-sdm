@@ -15,30 +15,26 @@
  */
 
 import {
-    DelimitedWriteProgressLogDecorator,
-    ExecuteGoalResult,
-    ProgressLog,
-    spawnLog,
-    SpawnLogCommand,
-    SpawnLogOptions,
+	DelimitedWriteProgressLogDecorator,
+	ExecuteGoalResult,
+	ProgressLog,
+	spawnLog,
+	SpawnLogCommand,
+	SpawnLogOptions,
 } from "@atomist/sdm";
-import {
-    GitCommandGitProject,
-    logger,
-    Success,
-} from "@atomist/sdm/lib/client";
+import { GitCommandGitProject, logger, Success } from "@atomist/sdm/lib/client";
 
 export async function loglog(log: ProgressLog, msg: string): Promise<void> {
-    logger.debug(msg);
-    log.write(`${msg}\n`);
-    await log.flush();
+	logger.debug(msg);
+	log.write(`${msg}\n`);
+	await log.flush();
 }
 
 export type ExecuteLogger = (l: ProgressLog) => Promise<ExecuteGoalResult>;
 
 export interface SpawnWatchCommand {
-    cmd: SpawnLogCommand;
-    cwd?: string;
+	cmd: SpawnLogCommand;
+	cwd?: string;
 }
 
 /**
@@ -50,33 +46,36 @@ export interface SpawnWatchCommand {
  * the returned code is guaranteed to be non-zero.
  */
 export function spawnExecuteLogger(swc: SpawnWatchCommand): ExecuteLogger {
-
-    return async (log: ProgressLog) => {
-        const opts: SpawnLogOptions = {
-            ...swc.cmd.options,
-            log,
-        };
-        if (swc.cwd) {
-            opts.cwd = swc.cwd;
-        }
-        let res;
-        try {
-            res = await spawnLog(swc.cmd.command, swc.cmd.args, opts);
-        } catch (e) {
-            res = {
-                code: -1,
-                message: `Spawned command errored: ${swc.cmd.command} ${swc.cmd.args.join(" ")}: ${e.message}`,
-            };
-        }
-        if (res.error) {
-            if (!res.message) {
-                res.message = `Spawned command failed (status:${res.code}): ${swc.cmd.command} ${swc.cmd.args.join(" ")}`;
-            }
-            logger.error(res.message);
-            log.write(res.message);
-        }
-        return res;
-    };
+	return async (log: ProgressLog) => {
+		const opts: SpawnLogOptions = {
+			...swc.cmd.options,
+			log,
+		};
+		if (swc.cwd) {
+			opts.cwd = swc.cwd;
+		}
+		let res;
+		try {
+			res = await spawnLog(swc.cmd.command, swc.cmd.args, opts);
+		} catch (e) {
+			res = {
+				code: -1,
+				message: `Spawned command errored: ${
+					swc.cmd.command
+				} ${swc.cmd.args.join(" ")}: ${e.message}`,
+			};
+		}
+		if (res.error) {
+			if (!res.message) {
+				res.message = `Spawned command failed (status:${res.code}): ${
+					swc.cmd.command
+				} ${swc.cmd.args.join(" ")}`;
+			}
+			logger.error(res.message);
+			log.write(res.message);
+		}
+		return res;
+	};
 }
 
 /**
@@ -90,28 +89,27 @@ export function spawnExecuteLogger(swc: SpawnWatchCommand): ExecuteLogger {
  * non-zero.
  */
 export function gitExecuteLogger(
-    gp: GitCommandGitProject,
-    op: () => Promise<GitCommandGitProject>,
-    name: string,
+	gp: GitCommandGitProject,
+	op: () => Promise<GitCommandGitProject>,
+	name: string,
 ): ExecuteLogger {
-
-    return async (log: ProgressLog) => {
-        log.write(`Running: git ${name}`);
-        try {
-            await op();
-            log.write(`Success: git ${name}`);
-            return { code: 0 };
-        } catch (e) {
-            log.write(e.stdout);
-            log.write(e.stderr);
-            const message = `Failure: git ${name}: ${e.message}`;
-            log.write(message);
-            return {
-                code: e.code,
-                message,
-            };
-        }
-    };
+	return async (log: ProgressLog) => {
+		log.write(`Running: git ${name}`);
+		try {
+			await op();
+			log.write(`Success: git ${name}`);
+			return { code: 0 };
+		} catch (e) {
+			log.write(e.stdout);
+			log.write(e.stderr);
+			const message = `Failure: git ${name}: ${e.message}`;
+			log.write(message);
+			return {
+				code: e.code,
+				message,
+			};
+		}
+	};
 }
 
 /**
@@ -120,14 +118,17 @@ export function gitExecuteLogger(
  * it at the end.  If any command fails, bail out and return the
  * failure result.  Otherwise return Success.
  */
-export async function executeLoggers(els: ExecuteLogger[], progressLog: ProgressLog): Promise<ExecuteGoalResult> {
-    const log = new DelimitedWriteProgressLogDecorator(progressLog, "\n");
-    for (const cmd of els) {
-        const res = await cmd(log);
-        await log.flush();
-        if (res.code !== 0) {
-            return res;
-        }
-    }
-    return Success;
+export async function executeLoggers(
+	els: ExecuteLogger[],
+	progressLog: ProgressLog,
+): Promise<ExecuteGoalResult> {
+	const log = new DelimitedWriteProgressLogDecorator(progressLog, "\n");
+	for (const cmd of els) {
+		const res = await cmd(log);
+		await log.flush();
+		if (res.code !== 0) {
+			return res;
+		}
+	}
+	return Success;
 }

@@ -14,63 +14,64 @@
  * limitations under the License.
  */
 
+import { EventHandlerRegistration, ProjectLoader } from "@atomist/sdm";
 import {
-    EventHandlerRegistration,
-    ProjectLoader,
-} from "@atomist/sdm";
-import {
-    GitHubRepoRef,
-    GraphQL,
-    OnEvent,
-    Parameters,
-    Secret,
-    Secrets,
-    Success,
+	GitHubRepoRef,
+	GraphQL,
+	OnEvent,
+	Parameters,
+	Secret,
+	Secrets,
+	Success,
 } from "@atomist/sdm/lib/client";
-import {
-    deleteBranchTag,
-    NpmOptions,
-} from "@atomist/sdm/lib/pack/node";
+import { deleteBranchTag, NpmOptions } from "@atomist/sdm/lib/pack/node";
 
 import { OnDeletedBranch } from "../typings/types";
 
 @Parameters()
 export class TokenParameters {
-
-    @Secret(Secrets.OrgToken)
-    public readonly token: string;
+	@Secret(Secrets.OrgToken)
+	public readonly token: string;
 }
 
 function deleteDistTagOnBranchDeletionHandle(
-    projectLoader: ProjectLoader,
-    options: NpmOptions): OnEvent<OnDeletedBranch.Subscription, TokenParameters> {
+	projectLoader: ProjectLoader,
+	options: NpmOptions,
+): OnEvent<OnDeletedBranch.Subscription, TokenParameters> {
+	return async (e, context, params) => {
+		const repo = e.data.DeletedBranch[0].repo;
+		const branch = e.data.DeletedBranch[0].name;
+		const id = GitHubRepoRef.from({
+			owner: repo.owner,
+			repo: repo.name,
+			branch: repo.defaultBranch,
+		});
 
-    return async (e, context, params) => {
-
-        const repo = e.data.DeletedBranch[0].repo;
-        const branch = e.data.DeletedBranch[0].name;
-        const id = GitHubRepoRef.from({ owner: repo.owner, repo: repo.name, branch: repo.defaultBranch });
-
-        return projectLoader.doWithProject(
-            { credentials: { token: params.token }, context, readOnly: true, id },
-            async p => {
-                await deleteBranchTag(branch, p, options);
-                return Success;
-            });
-    };
+		return projectLoader.doWithProject(
+			{
+				credentials: { token: params.token },
+				context,
+				readOnly: true,
+				id,
+			},
+			async p => {
+				await deleteBranchTag(branch, p, options);
+				return Success;
+			},
+		);
+	};
 }
 
 export function deleteDistTagOnBranchDeletion(
-    projectLoader: ProjectLoader,
-    options: NpmOptions,
+	projectLoader: ProjectLoader,
+	options: NpmOptions,
 ): EventHandlerRegistration<OnDeletedBranch.Subscription, TokenParameters> {
-
-    return {
-        name: "DeleteDistTagOnBranchDeletion",
-        description: "Delete a NPM dist-tag when a branch gets deleted",
-        tags: ["branch", "npm", "dist-tag"],
-        paramsMaker: TokenParameters,
-        listener: deleteDistTagOnBranchDeletionHandle(projectLoader, options),
-        subscription: GraphQL.subscription("onDeletedBranch"),
-    };
+	return {
+		name: "DeleteDistTagOnBranchDeletion",
+		description: "Delete a NPM dist-tag when a branch gets deleted",
+		tags: ["branch", "npm", "dist-tag"],
+		paramsMaker: TokenParameters,
+		listener: deleteDistTagOnBranchDeletionHandle(projectLoader, options),
+		subscription: GraphQL.subscription("onDeletedBranch"),
+	};
 }

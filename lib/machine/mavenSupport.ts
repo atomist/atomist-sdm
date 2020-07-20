@@ -14,23 +14,41 @@
  * limitations under the License.
  */
 
-import { ExecuteGoalResult, LogSuppressor, ProgressLog, SoftwareDeliveryMachine, spawnLog } from "@atomist/sdm";
-import { GitProject } from "@atomist/sdm/lib/client";
-import { DefaultDockerImageNameCreator, DockerRegistry } from "@atomist/sdm/lib/pack/docker";
 import {
-    IsMaven,
-    MavenProjectIdentifier,
-    MavenProjectVersioner,
-    MvnPackage,
-    MvnVersion,
+	ExecuteGoalResult,
+	LogSuppressor,
+	ProgressLog,
+	SoftwareDeliveryMachine,
+	spawnLog,
+} from "@atomist/sdm";
+import { GitProject } from "@atomist/sdm/lib/client";
+import {
+	DefaultDockerImageNameCreator,
+	DockerRegistry,
+} from "@atomist/sdm/lib/pack/docker";
+import {
+	IsMaven,
+	MavenProjectIdentifier,
+	MavenProjectVersioner,
+	MvnPackage,
+	MvnVersion,
 } from "@atomist/sdm/lib/pack/jvm";
 import { executeGoalCommandsInProject } from "../support/executeGoal";
-import { build, dockerBuild, noOpGoalExecutor, publish, release, releaseDocs, releaseVersion, version } from "./goals";
+import {
+	build,
+	dockerBuild,
+	noOpGoalExecutor,
+	publish,
+	release,
+	releaseDocs,
+	releaseVersion,
+	version,
+} from "./goals";
 import { executeReleaseVersion } from "./release";
 
 const MavenDefaultOptions = {
-    pushTest: IsMaven,
-    logInterpreter: LogSuppressor,
+	pushTest: IsMaven,
+	logInterpreter: LogSuppressor,
 };
 
 /**
@@ -39,71 +57,82 @@ const MavenDefaultOptions = {
  * @param sdm Software Delivery machine to modify
  * @return modified software delivery machine
  */
-export function addMavenSupport(sdm: SoftwareDeliveryMachine): SoftwareDeliveryMachine {
-    build.with({
-        ...MavenDefaultOptions,
-        name: "mvn-package",
-        goalExecutor: executeGoalCommandsInProject([
-            { command: "mvn", args: ["-Dskip.npm", "-Dskip.webpack", "package"] },
-        ]),
-    });
+export function addMavenSupport(
+	sdm: SoftwareDeliveryMachine,
+): SoftwareDeliveryMachine {
+	build.with({
+		...MavenDefaultOptions,
+		name: "mvn-package",
+		goalExecutor: executeGoalCommandsInProject([
+			{
+				command: "mvn",
+				args: ["-Dskip.npm", "-Dskip.webpack", "package"],
+			},
+		]),
+	});
 
-    version.with({
-        ...MavenDefaultOptions,
-        name: "mvn-versioner",
-        versioner: MavenProjectVersioner,
-    });
+	version.with({
+		...MavenDefaultOptions,
+		name: "mvn-versioner",
+		versioner: MavenProjectVersioner,
+	});
 
-    dockerBuild
-        .with({
-            ...MavenDefaultOptions,
-            name: "mvn-docker-build",
-            dockerImageNameCreator: DefaultDockerImageNameCreator,
-            registry: sdm.configuration.sdm.docker.hub as DockerRegistry,
-            push: true,
-            builder: "docker",
-        })
-        .withProjectListener(MvnVersion)
-        .withProjectListener(MvnPackage);
+	dockerBuild
+		.with({
+			...MavenDefaultOptions,
+			name: "mvn-docker-build",
+			dockerImageNameCreator: DefaultDockerImageNameCreator,
+			registry: sdm.configuration.sdm.docker.hub as DockerRegistry,
+			push: true,
+			builder: "docker",
+		})
+		.withProjectListener(MvnVersion)
+		.withProjectListener(MvnPackage);
 
-    releaseVersion.with({
-        ...MavenDefaultOptions,
-        name: "mvn-release-version",
-        goalExecutor: executeReleaseVersion(MavenProjectIdentifier, mvnIncrementPatch),
-    });
+	releaseVersion.with({
+		...MavenDefaultOptions,
+		name: "mvn-release-version",
+		goalExecutor: executeReleaseVersion(
+			MavenProjectIdentifier,
+			mvnIncrementPatch,
+		),
+	});
 
-    publish.with({
-        ...MavenDefaultOptions,
-        name: "mvn-publish",
-        goalExecutor: noOpGoalExecutor,
-    });
+	publish.with({
+		...MavenDefaultOptions,
+		name: "mvn-publish",
+		goalExecutor: noOpGoalExecutor,
+	});
 
-    releaseDocs.with({
-        ...MavenDefaultOptions,
-        name: "mvn-docs-release",
-        goalExecutor: noOpGoalExecutor,
-    });
+	releaseDocs.with({
+		...MavenDefaultOptions,
+		name: "mvn-docs-release",
+		goalExecutor: noOpGoalExecutor,
+	});
 
-    // No need to release npm for a Maven project. Maybe make this a more generic goal.
-    release.with({
-        ...MavenDefaultOptions,
-        name: "mvn-release",
-        goalExecutor: noOpGoalExecutor,
-    });
+	// No need to release npm for a Maven project. Maybe make this a more generic goal.
+	release.with({
+		...MavenDefaultOptions,
+		name: "mvn-release",
+		goalExecutor: noOpGoalExecutor,
+	});
 
-    return sdm;
+	return sdm;
 }
 
 /**
  * Increment the patch version of a JVM project managed by Maven.
  */
-async function mvnIncrementPatch(p: GitProject, log: ProgressLog): Promise<ExecuteGoalResult> {
-    const args = [
-        "build-helper:parse-version",
-        "versions:set",
-        // tslint:disable-next-line:max-line-length no-invalid-template-strings
-        "-DnewVersion=${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementalVersion}-${parsedVersion.qualifier}",
-        "versions:commit",
-    ];
-    return spawnLog("./mvnw", args, { cwd: p.baseDir, log });
+async function mvnIncrementPatch(
+	p: GitProject,
+	log: ProgressLog,
+): Promise<ExecuteGoalResult> {
+	const args = [
+		"build-helper:parse-version",
+		"versions:set",
+		// tslint:disable-next-line:max-line-length no-invalid-template-strings
+		"-DnewVersion=${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementalVersion}-${parsedVersion.qualifier}",
+		"versions:commit",
+	];
+	return spawnLog("./mvnw", args, { cwd: p.baseDir, log });
 }
