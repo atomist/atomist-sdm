@@ -56,7 +56,6 @@ import {
 	BuildGoals,
 	BuildReleaseGoals,
 	CheckGoals,
-	DemoKubernetesDeployGoals,
 	demoProductionDeploy,
 	DockerGoals,
 	DockerReleaseAndHomebrewGoals,
@@ -191,7 +190,7 @@ export function machine(
 			.itMeans("Maven Docker Release Build")
 			.setGoals(MavenDockerReleaseGoals),
 
-		// Simplified deployment goal set for atomist-sdm, k8-automation; we are skipping
+		// Simplified deployment goal set for some SDMs; we are skipping
 		// testing for these and deploying straight into their respective namespaces
 		whenPushSatisfies(
 			IsNode,
@@ -226,16 +225,6 @@ export function machine(
 		)
 			.itMeans("Multi Cluster Deploy")
 			.setGoals(MultiKubernetesDeployGoals),
-
-		// Deploy demo-sdm to demo cluster
-		whenPushSatisfies(
-			IsNode,
-			HasDockerfile,
-			ToDefaultBranch,
-			isNamed("demo-sdm"),
-		)
-			.itMeans("Demo Cluster Deploy")
-			.setGoals(DemoKubernetesDeployGoals),
 
 		whenPushSatisfies(isNamed("cli"), IsNode, ToDefaultBranch)
 			.itMeans("CLI Release Build")

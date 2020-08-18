@@ -313,12 +313,6 @@ export const SimplifiedKubernetesDeployGoals = goals("Simplified Deploy")
 	.plan(releaseTag)
 	.after(release, releaseDocker);
 
-// Docker build and testing and demo kubernetes deploy, no release
-export const DemoKubernetesDeployGoals = goals("Demo Deploy")
-	.plan(DockerGoals)
-	.plan(demoProductionDeploy)
-	.after(dockerBuild, autoCodeInspection);
-
 // Docker build and testing and multiple production kubernetes deploys
 export const MultiKubernetesDeployGoals = goals("Multiple Deploy")
 	.plan(DockerGoals)
