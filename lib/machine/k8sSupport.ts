@@ -44,14 +44,6 @@ export const orgVisualizerKubernetesDeployRegistrationProd = {
 	name: "@atomist/k8s-sdm_k8s-internal-production",
 	applicationData: orgVisualizerJobKubernetesApplicationData,
 };
-export const kubernetesDeployRegistrationDemo = {
-	name: "@atomist/k8s-sdm_k8s-internal-demo",
-	applicationData: kubernetesApplicationData,
-};
-export const kubernetesDeployRegistrationIntegration = {
-	name: "@atomist/k8s-sdm_k8s-internal-integration",
-	applicationData: kubernetesApplicationData,
-};
 
 /**
  * Augment default Kubernetes application object with specifics for

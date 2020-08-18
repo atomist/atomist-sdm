@@ -56,17 +56,14 @@ import {
 	BuildGoals,
 	BuildReleaseGoals,
 	CheckGoals,
-	demoProductionDeploy,
 	DockerGoals,
 	DockerReleaseAndHomebrewGoals,
 	DockerReleaseGoals,
 	FixGoals,
-	integrationProductionDeploy,
 	KubernetesDeployGoals,
 	LocalGoals,
 	MavenBuildGoals,
 	MavenDockerReleaseGoals,
-	MultiKubernetesDeployGoals,
 	OrgVisualizerKubernetesDeployGoals,
 	orgVisualizerProductionDeploy,
 	orgVisualizerStagingDeploy,
@@ -77,8 +74,6 @@ import {
 } from "./goals";
 import { addHomebrewSupport } from "./homebrewSupport";
 import {
-	kubernetesDeployRegistrationDemo,
-	kubernetesDeployRegistrationIntegration,
 	kubernetesDeployRegistrationProd,
 	kubernetesDeployRegistrationStaging,
 	orgVisualizerKubernetesDeployRegistrationProd,
@@ -104,8 +99,6 @@ export function machine(
 		orgVisualizerKubernetesDeployRegistrationProd,
 	);
 	productionDeployWithApproval.with(kubernetesDeployRegistrationProd);
-	demoProductionDeploy.with(kubernetesDeployRegistrationDemo);
-	integrationProductionDeploy.with(kubernetesDeployRegistrationIntegration);
 
 	const NoGoals = goals("No Goals");
 
@@ -224,7 +217,7 @@ export function machine(
 			isNamed("k8s-sdm"),
 		)
 			.itMeans("Multi Cluster Deploy")
-			.setGoals(MultiKubernetesDeployGoals),
+			.setGoals(KubernetesDeployGoals),
 
 		whenPushSatisfies(isNamed("cli"), IsNode, ToDefaultBranch)
 			.itMeans("CLI Release Build")

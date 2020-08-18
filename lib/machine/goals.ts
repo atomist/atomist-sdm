@@ -68,12 +68,6 @@ export const productionDeployWithApproval = new KubernetesDeploy({
 	environment: "production",
 	approval: true,
 });
-export const demoProductionDeploy = new KubernetesDeploy({
-	environment: "production",
-});
-export const integrationProductionDeploy = new KubernetesDeploy({
-	environment: "production",
-});
 
 export const deploymentGate = goal(
 	{
@@ -310,18 +304,6 @@ export const SimplifiedKubernetesDeployGoals = goals("Simplified Deploy")
 	.after(dockerBuild, autoCodeInspection)
 	.plan(release, releaseDocker, releaseDocs, releaseVersion)
 	.after(productionDeployWithApproval)
-	.plan(releaseTag)
-	.after(release, releaseDocker);
-
-// Docker build and testing and multiple production kubernetes deploys
-export const MultiKubernetesDeployGoals = goals("Multiple Deploy")
-	.plan(DockerGoals)
-	.plan(stagingDeploy)
-	.after(dockerBuild)
-	.plan(demoProductionDeploy, integrationProductionDeploy, productionDeploy)
-	.after(stagingDeploy, autoCodeInspection)
-	.plan(release, releaseDocker, releaseDocs, releaseVersion)
-	.after(stagingDeploy)
 	.plan(releaseTag)
 	.after(release, releaseDocker);
 
