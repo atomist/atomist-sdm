@@ -22,7 +22,7 @@
     "url": "https://github.com/atomist/atomist-sdm/issues"
   },
   "dependencies": {
-    "@atomist/sdm": "2.0.0-main.20200720194232",
+    "@atomist/sdm": "^2.0.0-main.20200825161405",
     "@atomist/slack-messages": "^1.1.1",
     "@google-cloud/storage": "^3.0.2",
     "@types/app-root-path": "^1.2.4",
