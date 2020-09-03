@@ -237,7 +237,8 @@ async function npmIncrementPatch(
 }
 
 function npmPackageUrl(p: ProjectRegistryInfo): string {
-	return `${p.registry}/${p.name}/-/${p.name}-${p.version}.tgz`;
+	const pkg = p.name.replace(/^@.*?\//, "");
+	return `${p.registry}/${p.name}/-/${pkg}-${p.version}.tgz`;
 }
 
 /**
