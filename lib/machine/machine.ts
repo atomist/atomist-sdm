@@ -26,7 +26,6 @@ import {
 	ToDefaultBranch,
 	whenPushSatisfies,
 } from "@atomist/sdm";
-import { isSdmEnabled } from "@atomist/sdm/lib/api-helper/pushtest/configuration/configurationTests";
 import { buttonForCommand, guid } from "@atomist/sdm/lib/client";
 import {
 	createSoftwareDeliveryMachine,
@@ -43,19 +42,13 @@ import { IsNode } from "@atomist/sdm/lib/pack/node";
 import { notificationSupport } from "@atomist/sdm/lib/pack/notification";
 import { bold, channel, codeLine, italic, url } from "@atomist/slack-messages";
 import { ApprovalCommand, CancelApprovalCommand } from "../command/approval";
-import {
-	isNamed,
-	isOrgNamed,
-	isTeam,
-	nameMatches,
-} from "../support/identityPushTests";
+import { isNamed, isOrgNamed, nameMatches } from "../support/identityPushTests";
 import { MaterialChangeToNodeRepo } from "../support/materialChangeToNodeRepo";
 import { addDockerSupport } from "./dockerSupport";
 import { addGithubSupport } from "./githubSupport";
 import {
 	BuildGoals,
 	BuildReleaseGoals,
-	CheckGoals,
 	DockerGoals,
 	DockerReleaseAndHomebrewGoals,
 	DockerReleaseGoals,
@@ -84,9 +77,6 @@ import { addNodeSupport } from "./nodeSupport";
 import { IsReleaseCommit } from "./release";
 import { addFileVersionerSupport } from "./version";
 
-const AtomistHQWorkspace = "T095SFFBK";
-const AtomistCustomerWorkspace = "A62C8F8L8";
-
 export function machine(
 	configuration: SoftwareDeliveryMachineConfiguration,
 ): SoftwareDeliveryMachine {
@@ -108,8 +98,6 @@ export function machine(
 			configuration,
 		},
 
-		whenPushSatisfies(isOrgNamed("atomist-playground")).setGoals(NoGoals),
-
 		whenPushSatisfies(isOrgNamed("atomist-skills")).setGoals(NoGoals),
 
 		whenPushSatisfies(isOrgNamed("atomist-seeds"), not(nameMatches(/sdm/)))
@@ -130,31 +118,6 @@ export function machine(
 		whenPushSatisfies(IsNode, IsInLocalMode)
 			.itMeans("Node repository in local mode")
 			.setGoals(LocalGoals),
-
-		whenPushSatisfies(
-			isOrgNamed("atomisthq"),
-			isNamed("web-static", "web-app", "web-site"),
-		)
-			.itMeans("Built by atomist-web-sdm")
-			.setGoals(NoGoals),
-
-		whenPushSatisfies(
-			not(isSdmEnabled(configuration.name)),
-			isTeam(AtomistHQWorkspace),
-		)
-			.itMeans("Disabled repository in atomisthq workspace")
-			.setGoals(NoGoals),
-
-		whenPushSatisfies(isTeam(AtomistHQWorkspace), nameMatches(/poc-sdm/))
-			.itMeans("POC SDM in atomisthq")
-			.setGoals(NoGoals),
-
-		whenPushSatisfies(
-			isTeam(AtomistCustomerWorkspace),
-			nameMatches(/poc-sdm/),
-		)
-			.itMeans("POC SDM in atomist-customer")
-			.setGoals(CheckGoals),
 
 		// Node
 		whenPushSatisfies(IsNode, not(IsMaven), not(MaterialChangeToNodeRepo))
