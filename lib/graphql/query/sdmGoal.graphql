@@ -4,7 +4,9 @@ query SdmGoal(
   $uniqueName: [String]!
 ) {
   SdmGoal(goalSetId: $goalSetId, state: $state, uniqueName: $uniqueName) {
+    id
     goalSet
+    registration
     goalSetId
     environment
     uniqueName
@@ -19,6 +21,7 @@ query SdmGoal(
     fulfillment {
       method
       name
+      registration
     }
     description
     url
@@ -36,6 +39,7 @@ query SdmGoal(
       environment
       name
     }
+    approvalRequired
     approval {
       correlationId
       registration
@@ -45,6 +49,7 @@ query SdmGoal(
       userId
       channelId
     }
+    preApprovalRequired
     preApproval {
       correlationId
       registration
@@ -63,6 +68,19 @@ query SdmGoal(
       userId
       channelId
     }
+    descriptions {
+      canceled
+      completed
+      failed
+      inProcess
+      planned
+      requested
+      stopped
+      skipped
+      waitingForApproval
+      waitingForPreApproval
+    }
+    parameters
     data
     version
   }
