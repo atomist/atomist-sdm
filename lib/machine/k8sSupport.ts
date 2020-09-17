@@ -66,9 +66,7 @@ export async function kubernetesApplicationData(
 	let replicas = 1;
 	if (ns === "production") {
 		if (name === "lifecycle-automation") {
-			replicas = 10;
-		} else if (name === "aspect-sdm") {
-			replicas = 5;
+			replicas = 8;
 		} else {
 			replicas = 2;
 		}
@@ -106,7 +104,7 @@ export async function orgVisualizerJobKubernetesApplicationData(
 	const port = 2866;
 	let replicas = 1;
 	if (ns === "production") {
-		replicas = 10;
+		replicas = 2;
 	}
 
 	const deploymentSpec = _.merge({}, app.deploymentSpec, {
