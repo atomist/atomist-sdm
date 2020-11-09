@@ -99,7 +99,7 @@ export function machine(
 		},
 
 		whenPushSatisfies(isOrgNamed("atomist-skills")).setGoals(NoGoals),
-
+		whenPushSatisfies(isOrgNamed("atomist-blogs")).setGoals(NoGoals),
 		whenPushSatisfies(isOrgNamed("atomist-seeds"), not(nameMatches(/sdm/)))
 			.itMeans("Non-Atomist seed")
 			.setGoals(NoGoals),
