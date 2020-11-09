@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 -   Do not add community files to atomist-sdm. [8014035](https://github.com/atomist/atomist-sdm/commit/8014035e580449509f03b44d4223bffc3212abb2)
 -   Make email a link in SECURITY.md. [9da81f2](https://github.com/atomist/atomist-sdm/commit/9da81f2aca6db9110d9ab60a5dedb4eed1577765)
 -   Update sdm, remove other Atomist dependencies. [da68baf](https://github.com/atomist/atomist-sdm/commit/da68baf56db93708c33b7f3b567b241417c52b53)
+-   Disable builds in atomist-blogs. [6c2f1ae](https://github.com/atomist/atomist-sdm/commit/6c2f1ae5e77caad5b1a77a05525ae7ac9e249beb)
 
 ### Removed
 
