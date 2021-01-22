@@ -85,6 +85,7 @@
           {
             "name": "atomist-sdm",
             "secret": {
+			  "defaultMode": 288,
               "secretName": "atomist-sdm"
             }
           }
