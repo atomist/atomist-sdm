@@ -69,10 +69,6 @@
                 "mountPath": "/opt/atm",
                 "name": "atomist-sdm",
                 "readOnly": true
-              },
-              {
-                "mountPath": "/opt/data",
-                "name": "data"
               }
             ]
           }
@@ -91,13 +87,6 @@
             "secret": {
               "secretName": "atomist-sdm"
             }
-          },
-          {
-            "hostPath": {
-              "path": "/mnt/disks/ssd0/data/atomist-sdm",
-              "type": "DirectoryOrCreate"
-            },
-            "name": "data"
           }
         ]
       }
