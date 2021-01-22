@@ -24,15 +24,6 @@
               {
                 "name": "FORCE_COLOR",
                 "value": "1"
-              },
-              {
-                "name": "GITHUB_TOKEN",
-                "valueFrom": {
-                  "secretKeyRef": {
-                    "key": "token",
-                    "name": "atomist"
-                  }
-                }
               }
             ],
             "livenessProbe": {
