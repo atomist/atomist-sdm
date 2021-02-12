@@ -15,18 +15,14 @@
  */
 
 import {
-	GoalApprovalRequestVote,
 	goals,
 	IsDeployEnabled,
 	not,
-	slackFooter,
-	slackQuestionMessage,
 	SoftwareDeliveryMachine,
 	SoftwareDeliveryMachineConfiguration,
 	ToDefaultBranch,
 	whenPushSatisfies,
 } from "@atomist/sdm";
-import { buttonForCommand, guid } from "@atomist/sdm/lib/client";
 import {
 	createSoftwareDeliveryMachine,
 	DisableDeploy,
@@ -40,7 +36,6 @@ import { IsMaven, MaterialChangeToJavaRepo } from "@atomist/sdm/lib/pack/jvm";
 import { k8sGoalSchedulingSupport } from "@atomist/sdm/lib/pack/k8s";
 import { IsNode } from "@atomist/sdm/lib/pack/node";
 import { notificationSupport } from "@atomist/sdm/lib/pack/notification";
-import { bold, channel, codeLine, italic, url } from "@atomist/slack-messages";
 import { ApprovalCommand, CancelApprovalCommand } from "../command/approval";
 import { isNamed, isOrgNamed, nameMatches } from "../support/identityPushTests";
 import { MaterialChangeToNodeRepo } from "../support/materialChangeToNodeRepo";
@@ -231,72 +226,6 @@ export function machine(
 		githubGoalStatusSupport(),
 		notificationSupport(),
 	);
-
-	// sdm.addGoalApprovalRequestVoter(gitHubTeamVoter("atomist-automation"));
-	sdm.addGoalApprovalRequestVoter(async gi => {
-		if (gi.goal.data) {
-			const data = JSON.parse(gi.goal.data);
-			if (data.approved) {
-				return {
-					vote: GoalApprovalRequestVote.Granted,
-				};
-			}
-		}
-		if (!gi.goal.approval) {
-			return {
-				vote: GoalApprovalRequestVote.Granted,
-			};
-		}
-
-		const msgId = guid();
-		const channelLink = gi.goal.approval.channelId
-			? ` \u00B7 ${channel(gi.goal.approval.channelId)}`
-			: "";
-		const msg = slackQuestionMessage(
-			"Goal Approval",
-			`Goal ${italic(
-				gi.goal.url ? url(gi.goal.url, gi.goal.name) : gi.goal.name,
-			)} on ${codeLine(gi.goal.sha.slice(0, 7))} of ${bold(
-				`${gi.goal.repo.owner}/${gi.goal.repo.name}/${gi.goal.branch}`,
-			)} requires your confirmation to approve`,
-			{
-				actions: [
-					buttonForCommand(
-						{ text: "Approve" },
-						"ApproveSdmGoalCommand",
-						{
-							goalSetId: gi.goal.goalSetId,
-							goalUniqueName: gi.goal.uniqueName,
-							goalState: gi.goal.state,
-							msgId,
-						},
-					),
-					buttonForCommand(
-						{ text: "Cancel" },
-						"CancelApproveSdmGoalCommand",
-						{
-							goalSetId: gi.goal.goalSetId,
-							goalUniqueName: gi.goal.uniqueName,
-							goalState: gi.goal.state,
-							msgId,
-						},
-					),
-				],
-				footer: `${slackFooter()} \u00B7 ${gi.goal.goalSetId.slice(
-					0,
-					7,
-				)}${channelLink}`,
-			},
-		);
-		await gi.context.messageClient.addressUsers(
-			msg,
-			gi.goal.approval.userId,
-			{ id: msgId },
-		);
-		return {
-			vote: GoalApprovalRequestVote.Abstain,
-		};
-	});
 
 	sdm.addCommand(ApprovalCommand).addCommand(CancelApprovalCommand);
 
