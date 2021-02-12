@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 -   Make email a link in SECURITY.md. [9da81f2](https://github.com/atomist/atomist-sdm/commit/9da81f2aca6db9110d9ab60a5dedb4eed1577765)
 -   Update sdm, remove other Atomist dependencies. [da68baf](https://github.com/atomist/atomist-sdm/commit/da68baf56db93708c33b7f3b567b241417c52b53)
 -   Disable builds in atomist-blogs. [6c2f1ae](https://github.com/atomist/atomist-sdm/commit/6c2f1ae5e77caad5b1a77a05525ae7ac9e249beb)
--   Update to @atomist/sdm@2.1.2. [c6ffca7](https://github.com/atomist/atomist-sdm/commit/c6ffca7fc5d8b79521e1af0e141076edd6ebb500)
+-   Update to @atomist/[sdm@2.1.2.](mailto:sdm@2.1.2.) [c6ffca7](https://github.com/atomist/atomist-sdm/commit/c6ffca7fc5d8b79521e1af0e141076edd6ebb500)
 
 ### Removed
 
@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 -   Remove sdm-pack-changelog. [3283a56](https://github.com/atomist/atomist-sdm/commit/3283a56042d23f784bb24735b72f1fae42f72b65)
 -   Remove client extensions. [64a6338](https://github.com/atomist/atomist-sdm/commit/64a6338f36f16caf213887220ba0e101423e0a37)
 -   Remove sdm-pack-issue. [a1cf416](https://github.com/atomist/atomist-sdm/commit/a1cf416c201a5b0ae4ca4dfa14c4e6d56ec0be8e)
+-   Remove approval voting. [#226](https://github.com/atomist/atomist-sdm/issues/226)
 
 ### Fixed
 
