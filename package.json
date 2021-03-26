@@ -22,14 +22,14 @@
     "url": "https://github.com/atomist/atomist-sdm/issues"
   },
   "dependencies": {
-    "@atomist/sdm": "^2.1.2",
-    "@atomist/slack-messages": "^1.2.1",
-    "@google-cloud/storage": "^5.8.1",
+    "@atomist/sdm": "^2.1.3",
+    "@atomist/slack-messages": "^1.2.2",
+    "@google-cloud/storage": "^5.8.2",
     "@types/app-root-path": "^1.2.4",
     "@types/fs-extra": "^7.0.0",
     "@types/json-stringify-safe": "^5.0.0",
     "@types/lodash": "^4.14.168",
-    "@types/node": "^12.20.5",
+    "@types/node": "^12.20.6",
     "@types/semver": "^6.2.2",
     "app-root-path": "^2.1.0",
     "fs-extra": "^8.0.1",
@@ -41,7 +41,7 @@
     "spdx-license-list": "^6.4.0"
   },
   "devDependencies": {
-    "@types/mocha": "^8.2.1",
+    "@types/mocha": "^8.2.2",
     "@types/power-assert": "^1.5.3",
     "@typescript-eslint/eslint-plugin": "^3.10.1",
     "@typescript-eslint/parser": "^3.10.1",
