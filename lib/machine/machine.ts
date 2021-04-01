@@ -218,6 +218,7 @@ export function machine(
 	addFileVersionerSupport(sdm);
 
 	sdm.addExtensionPacks(
+		newGitHubTokenSupport(),
 		k8sGoalSchedulingSupport(),
 		goalStateSupport({
 			cancellation: {
@@ -226,7 +227,6 @@ export function machine(
 		}),
 		githubGoalStatusSupport(),
 		notificationSupport(),
-		newGitHubTokenSupport(),
 	);
 
 	sdm.addCommand(ApprovalCommand).addCommand(CancelApprovalCommand);
