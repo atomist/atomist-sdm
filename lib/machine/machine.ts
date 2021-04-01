@@ -23,7 +23,6 @@ import {
 	ToDefaultBranch,
 	whenPushSatisfies,
 } from "@atomist/sdm";
-import { newGitHubTokenSupport } from "@atomist/sdm-pack-github-token";
 import {
 	createSoftwareDeliveryMachine,
 	DisableDeploy,
@@ -218,7 +217,6 @@ export function machine(
 	addFileVersionerSupport(sdm);
 
 	sdm.addExtensionPacks(
-		newGitHubTokenSupport(),
 		k8sGoalSchedulingSupport(),
 		goalStateSupport({
 			cancellation: {
